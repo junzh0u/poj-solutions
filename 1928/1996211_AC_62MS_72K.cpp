@@ -1,0 +1,53 @@
+#include<iostream.h>
+#include<math.h>
+
+void main()
+{
+	int iCaseNum,iMap[50][50],iHeight,iWidth,iLimit,i,j;
+	int iTime,iMax,iLine,iCol,iLineNext,iColNext,iSum;
+	cin>>iCaseNum;
+	while(iCaseNum--)
+	{
+		iMax=iSum=0;
+		cin>>iHeight>>iWidth>>iLimit;
+		for(i=0;i<iHeight;i++)
+			for(j=0;j<iWidth;j++)
+			{
+				cin>>iMap[i][j];
+				if(iMap[i][j]>iMax)
+				{
+					iMax=iMap[i][j];
+					iLine=i;
+					iCol=j;
+				}
+			}
+		if(2*iLine+3<=iLimit)
+		{
+			iTime=iLine+2;
+			iSum=iMax;
+			while(1)
+			{
+				iMax=0;
+				iMap[iLine][iCol]=0;
+				for(i=0;i<iHeight;i++)
+					for(j=0;j<iWidth;j++)
+						if(iMap[i][j]>iMax)
+						{
+							iMax=iMap[i][j];
+							iLineNext=i;
+							iColNext=j;
+						}
+				if(iTime+fabs(iLineNext-iLine)+fabs(iColNext-iCol)+iLineNext+2>iLimit)
+					break;
+				else
+				{
+					iTime+=fabs(iLineNext-iLine)+fabs(iColNext-iCol)+1;
+					iSum+=iMax;
+					iLine=iLineNext;
+					iCol=iColNext;
+				}
+			}
+		}
+		cout<<iSum<<endl;
+	}
+}

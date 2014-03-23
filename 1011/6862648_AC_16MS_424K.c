@@ -1,0 +1,1 @@
+L,F,*I;c(n,l,p,j){--I[p];for(j=l-=p;F*j;--j)I[j]&&c(n,l,j);for(j=F=--n?F:0;!I[j];)--j;l||c(n,L,j);++I[p];}main(s){int w[101]={s=F};for(scanf("%d",I=w);~--*w;++w[L],s+=F<L?F=L:L)scanf("%d",&L);for(L=F-1;F;s%++L||c(s/L,L,F));s&&main(printf("%d\n",L));}

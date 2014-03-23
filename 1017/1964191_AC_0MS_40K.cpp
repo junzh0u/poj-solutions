@@ -1,0 +1,80 @@
+#include<iostream.h>
+
+void main()
+{
+	int iA,iB,iC,iD,iE,iF,iSum;
+	while(1)
+	{
+		iSum=0;
+		cin>>iA>>iB>>iC>>iD>>iE>>iF;
+		if(!(iA || iB || iC || iD || iE || iF))
+			break;
+		iSum+=iF;
+		iF=0;
+		iSum+=iE;
+		iA-=iE*11;
+		if(iA<0)
+			iA=0;
+		iE=0;
+		iSum+=iD;
+		iB-=iD*5;
+		if(iB<0)
+		{
+			iA+=iB*4;
+			iB=0;
+			if(iA<0)
+				iA=0;
+		}
+		iSum+=iC/4;
+		iC%=4;
+		if(iC==0)
+		{
+			iSum+=(iA+iB*4+35)/36;
+			iA=0;
+			iB=0;
+		}
+		else if(iC==1)
+		{
+			iSum++;
+			iB-=5;
+			if(iB<0)
+			{
+				iA+=iB*4;
+				iB=0;
+			}
+			iA-=7;
+			if(iA<0)
+				iA=0;
+			iSum+=(iA+iB*4+35)/36;
+		}
+		else if(iC==2)
+		{
+			iSum++;
+			iB-=3;
+			if(iB<0)
+			{
+				iA+=iB*4;
+				iB=0;
+			}
+			iA-=6;
+			if(iA<0)
+				iA=0;
+			iSum+=(iA+iB*4+35)/36;
+		}
+		else if(iC==3)
+		{
+			iSum++;
+			iB-=1;
+			if(iB<0)
+			{
+				iA+=iB*4;
+				iB=0;
+			}
+			iA-=5;
+			if(iA<0)
+				iA=0;
+			iSum+=(iA+iB*4+35)/36;
+		}
+		cout<<iSum<<endl;
+	}
+}

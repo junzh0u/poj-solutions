@@ -1,0 +1,1 @@
+m['rqA'],d,i,q=m,*r,v=1e4;main(c){for(;~(c=getchar());)d=c<11?i--&&!++*(r=q+d*3):c>45?d*10+(c/58?29+c*.325:c)-48:d;for(;++c<1e7;)(i=*(r=q+c*3)<<8>>8)>1&&printf("%03d-%04d %d\n",c/v,c%v,d=i);d||puts("No duplicates.");}

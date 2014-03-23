@@ -1,0 +1,60 @@
+#include<iostream.h>
+#include<ctype.h>
+
+void main()
+{
+	char cTemp[100],cBoard[8][9],cMap[17][40];
+	int iPoint,i,j;
+	for(i=0;i<8;i++)
+	{
+		for(j=0;j<8;j++)
+			cBoard[i][j]=((i+j)%2)?(':'):('.');
+		cBoard[i][8]='\0';
+	}
+	cin.getline(cTemp,99);
+	iPoint=7;
+	while(1)
+	{
+		if(cTemp[iPoint]=='\0')
+			break;
+		if(cTemp[iPoint]==',')
+			iPoint++;
+		if(isupper(cTemp[iPoint]))
+		{
+			cBoard['8'-cTemp[iPoint+2]][cTemp[iPoint+1]-'a']=cTemp[iPoint];
+			iPoint+=3;
+		}
+		else
+		{
+			cBoard['8'-cTemp[iPoint+1]][cTemp[iPoint]-'a']='P';
+			iPoint+=2;
+		}
+	}
+	cin.getline(cTemp,99);
+	iPoint=7;
+	while(1)
+	{
+		if(cTemp[iPoint]=='\0')
+			break;
+		if(cTemp[iPoint]==',')
+			iPoint++;
+		if(isupper(cTemp[iPoint]))
+		{
+			cBoard['8'-cTemp[iPoint+2]][cTemp[iPoint+1]-'a']=tolower(cTemp[iPoint]);
+			iPoint+=3;
+		}
+		else
+		{
+			cBoard['8'-cTemp[iPoint+1]][cTemp[iPoint]-'a']='p';
+			iPoint+=2;
+		}
+	}
+	for(i=0;i<8;i++)
+	{
+		cout<<"+---+---+---+---+---+---+---+---+"<<endl;
+		for(j=0;j<8;j++)
+			cout<<"|"<<(((i+j)%2)?(':'):('.'))<<cBoard[i][j]<<(((i+j)%2)?(':'):('.'));
+		cout<<"|"<<endl;
+	}
+	cout<<"+---+---+---+---+---+---+---+---+"<<endl;
+}
