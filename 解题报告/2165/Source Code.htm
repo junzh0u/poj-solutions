@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0063)http://acm.pku.edu.cn/JudgeOnline/showsource?solution_id=361316 -->
+<HTML><HEAD><TITLE>Source Code</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content="MSHTML 6.00.2800.1476" name=GENERATOR></HEAD>
+<BODY>
+<P align=center><FONT color=#333399 size=4>Source</FONT></P>
+<P align=center><FONT size=2>Problem Id:2165&nbsp;&nbsp;User Id:c0500301036 
+<BR>Memory:48K&nbsp;&nbsp;Time:15MS<BR>Language:C++&nbsp;&nbsp;Result:Accepted</FONT></P>
+<UL>
+  <LI><FONT color=#333399 size=5>Source</FONT> 
+  <P><FONT face=Times size=3 Roman New><PRE>#include&lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#define MIN 1e-10
+int n;
+char cont='t';
+double xleft[101],xright[101],ylow[101],yhigh[101],z[101];
+double kyhigh,kylow,ky,kx;
+double qleft,qright,solu;
+void inity() {
+	int i;
+	kyhigh=1e+10;kylow=-1.0;
+	for (i=0;i&lt;n;i++) {
+		if (double(yhigh[i])/z[i]&lt;kyhigh) kyhigh=double(yhigh[i])/z[i];
+		if (double(ylow[i])/z[i]&gt;kylow) kylow=double(ylow[i])/z[i];
+	}
+	if (kyhigh&lt;kylow-MIN) {cont='f';return;}
+	ky=(kyhigh+kylow)/2;
+}
+void initx() {
+	double maxleft=-1.0,minright=1e+15,re;
+	int i;
+	for (i=0;i&lt;n;i++) {
+		re=(xleft[i]-solu)/(sqrt((xleft[i]-solu)*(xleft[i]-solu)+z[i]*z[i]));
+		if (re&gt;maxleft) maxleft=re;
+		re=(xright[i]-solu)/(sqrt((xright[i]-solu)*(xright[i]-solu)+z[i]*z[i]));
+		if (re&lt;minright) minright=re;
+	}
+	if (maxleft&gt;minright+MIN) {cont='f';return;}
+	kx=((maxleft+minright)/2)/(sin(acos((maxleft+minright)/2)));
+}
+void main() {
+	int i,j;
+	double na,nb;
+	scanf("%d",&amp;n);
+	for (i=0;i&lt;n;i++) scanf("%lf%lf%lf%lf%lf",&amp;xleft[i],&amp;ylow[i],&amp;xright[i],&amp;yhigh[i],&amp;z[i]);
+	inity();
+	if (cont=='f') {printf("UNSOLVABLE\n");return;}
+	qleft=-1e+15;qright=1e+15;
+	for (i=0;i&lt;n-1;i++) for (j=i+1;j&lt;n;j++) {
+		na=xleft[i]-(double(z[i])/double(z[j]-z[i]))*(xright[j]-xleft[i]);
+		nb=xright[i]-(double(z[i])/double(z[j]-z[i]))*(xleft[j]-xright[i]);
+		if (na&gt;qright+MIN || nb&lt;qleft-MIN) {cont='f';goto pa;}
+		if (na&gt;qleft) qleft=na;
+		if (nb&lt;qright) qright=nb;
+	}
+pa:	if (cont=='f') {printf("UNSOLVABLE\n");return;}
+	solu=(qleft+qright)/2;
+	initx();
+	if (cont=='f') {printf("UNSOLVABLE\n");return;}
+	printf("SOLUTION\n%.6lf\n",solu);
+	for (i=0;i&lt;n;i++) printf("%.6lf %.6lf %.6lf\n",solu+z[i]*kx,z[i]*ky,z[i]);
+}
+</PRE></FONT>
+  <P></P></LI></UL></BODY></HTML>

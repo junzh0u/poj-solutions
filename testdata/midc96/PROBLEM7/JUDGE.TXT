@@ -1,0 +1,14 @@
+1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST
+PROBLEM #7 - 18-WHEELER CARAVANS (AKA SEMIGROUPS)
+
+JUDGE'S NOTES
+
+Note that there could be more than one possible reason that a set does
+not form a semigroup (test case #4 in the official judge's input data
+is an example of such a set).  The problem asks only for one reason,
+however, so any valid reason should be judged correct.  For this
+reason this problem should not be judged using a text comparison
+utility, but rather by visual inspection.
+
+Ron Pacheco
+Regional Chief Judge

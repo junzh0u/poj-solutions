@@ -1,0 +1,6 @@
+Sample solution for problem Departement doesn't handle properly situation,
+when agent with high priority joins the queue and agent with lower priority
+is ought to exit the same queue in the same time.
+
+Sample solution for problem John's trip doesn't takes the first street
+as where John's parents lives, not the street with No. 1.

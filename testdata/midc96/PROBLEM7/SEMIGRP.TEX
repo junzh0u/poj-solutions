@@ -1,0 +1,244 @@
+\documentstyle[11pt,../tex/prgcon]{article}
+
+\newcommand{\op}{{\tt\#}}
+
+\begin{document}
+
+\pages{4}
+\pagestyle{contest}
+
+\contest{1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST}
+\probno{7}
+\probname{18-Wheeler Caravans (aka Semigroups)}
+\source{semigrp.\{c$|$cpp$|$pas\}}
+\infile{semigrp.in}
+\outfile{semigrp.out}
+
+\maketitle
+
+\division{The Problem}
+
+A {\bf binary operation} on a set S is a function that assigns to each
+ordered pair of elements of S a unique element of S.  We often use
+some special symbol (such as $*$ or $+$) to represent a binary
+operation.  For example, if we use the symbol '\op' to represent some
+arbitrary binary operation on the set S = \{a,b,c\}, then a{\op}b equals
+some element of S (as does b{\op}a, a{\op}a, a{\op}c, and every other
+possible permutation).
+
+From the above definition, it would follow that the normal definitions
+for addition, subtraction, and multiplication are all binary
+operations when defined on the set of all integers.  However, division
+(the mathematical kind - not ``integer division'') is not a binary
+operation for the set of integers, since $1/2=0.5$ which is not
+an integer.
+
+The use of the word ``ordered'' in the definition for binary operations
+is important, for it allows the possibility that the element assigned
+to a{\op}b may be different from the one assigned to b{\op}a.  In the case
+of integers, this is evident with the binary operation we know as
+subtraction, since 5 - 3 is not equal to 3 - 5.  If in a particular
+case, x~\op~y = y~\op~x for all elements x and y in the set, we say
+that the binary operation is {\bf commutative}.  The standard addition
+operation on the set of integers is commutative.
+
+For the remainder of this problem we will only concern ourselves with
+small sets (1 to 26 elements).  For small sets such as these, the
+unique assignments that define an operation can be expressed by simply
+writing down all possible assignments in a "multiplication" table.
+For instance, the binary operation '\op' on the set S=\{a,b,c\} might be
+defined by:
+
+\begin{verbatim}
+	# | a b c
+	---------
+	a | b c b
+	b | a c b
+	c | c b a
+\end{verbatim}
+
+The left column of the table represents the first number in an ordered
+pair, and the top row represents the second.  Thus, in this example,
+a~\op~b = c, b~\op~a = a, and c~\op~c = a.  Notice that the body of
+the table consists solely of elements from the set S, which must be
+true for any binary operation.  Also notice that this operation is not
+commutative, since b~\op~a is not equal to a~\op~b.
+
+A binary operation, \op, on a set S is {\bf associative} if
+(x{\op}y){\op}z = x{\op}(y{\op}z) for all elements x, y, and z in the
+set X.  In the example with the table above, the operation is not
+associative, since (a{\op}b){\op}c is not equal to a{\op}(b{\op}c).
+If a binary operation, \op, on a set is associative, then we say that
+the pair $<$S,\op$>$ forms a {\bf semigroup}.  If the binary operation
+is commutative as well as associative, then we say that the semigroup
+is commutative.
+
+\bigskip
+\division{Input/Output Specification}
+
+Write a program that will read the elements of sets together with
+corresponding ``multiplication'' tables which denote possible binary
+operations.  Your program should then determine if the set S with the
+defined operation constitutes a semigroup.  If the set and
+corresponding table do not form a semigroup, your program should
+report that the pair do not form a semigroup and state why.  If the
+set and operation pair do form a semigroup, your program should check
+to see if the semigroup is also a commutative semigroup.
+
+Thus, for each set and corresponding table one of the following four
+results is possible:
+
+{\small
+\begin{verbatim}
+NOT A SEMIGROUP:  x#y = z  WHICH IS NOT AN ELEMENT OF THE SET
+NOT A SEMIGROUP:  (x#y)#z  IS NOT EQUAL TO  x#(y#z)
+SEMIGROUP BUT NOT COMMUTATIVE  (x#y IS NOT EQUAL TO y#x)
+COMMUTATIVE SEMIGROUP
+\end{verbatim}
+}
+
+In the first three results you should substitute actual elements of
+the set that yield a counter-example to the definitions for a
+semigroup and a commutative operation.  If more than one
+counter-example exist, simply use one of your choice.
+
+The first line of the input file contains a single integer, $n$ where
+$(1 \le n \le 26)$.
+
+The next line of the input file will contain $n$ unique, lower case
+letters of the alphabet.  These letters represent the elements of the
+set.  Although each letter is unique (no duplicates), they are not
+necessarily arranged in alphabetical order.
+
+The next $n$ lines contain the body of the ``multiplication'' table that
+corresponds to the elements in the previous line.  Each of these lines
+will contain $n$ lower case letters.  For example, the first such line
+corresponds to the first row of the body of the table.  We will assume
+that the ordering of the rows and columns of the table coincide with
+the ordering in the line that defines the elements of the set.
+
+After the table, the input file will contain a line with a single
+integer, $n$ where $(0 \le n \le 26)$.  If $n > 0$ then there is
+another set and corresponding table contained in the next $n+1$ lines
+that should be reported.  If $n = 0$ then you have reached the end of
+the input file.
+
+\newpage
+
+The output file should contain the following for each set and table
+found in the input file:
+
+\begin{enumerate}
+
+\item List of the elements of S in same order as found in the input
+file using the following format: \verb|S = {a,b,c,d}|
+
+\item A line that starts with a space followed by the characters
+'\op\verb"|"' followed by the $n$ elements of the set (no spaces or
+commas).  For example: \verb'#|abcd'
+
+\item A line that begins with a space followed by the characters
+'\verb|-+|' followed by $n$ more dashes '\verb|-|'.  For example:
+\verb|-+----|
+
+\item List of the $n$ rows and columns of the ``multiplication'' table
+in the same order as found in the input file.  The $i^{\rm th}$ line
+of the table should begin with a space followed by the $i^{\rm th}$
+element of the set followed by the '\verb"|"' character followed by
+the $n$ characters in the $i^{\rm th}$ row of the body of the table
+(no spaces).  For example: \verb'a|abcd'
+
+\item One blank line.
+
+\item One line that reports what your program found to be true.  This
+must be one of the four possible results listed above.
+
+\item A line of 30 dashes.
+
+\item One blank line to separate this report from subsequent reports.
+
+\end{enumerate}
+
+\bigskip
+\division{Sample Input}
+
+{\small
+\begin{verbatim}
+3
+abc
+abc
+bca
+cab
+3
+abc
+abc
+bca
+cad
+4
+acdb
+aaaa
+aaca
+aada
+aaab
+5
+abcde
+aaaaa
+bbabb
+cccbc
+ddddd
+eeeee
+0
+\end{verbatim}
+}
+
+\bigskip
+\division{Sample Output}
+
+{\small
+\begin{verbatim}
+S = {a,b,c}
+ #|abc
+ -+---
+ a|abc
+ b|bca
+ c|cab
+
+COMMUTATIVE SEMIGROUP
+------------------------------
+
+S = {a,b,c}
+ #|abc
+ -+---
+ a|abc
+ b|bca
+ c|cad
+
+NOT A SEMIGROUP: c#c = d  WHICH IS NOT AN ELEMENT OF THE SET
+------------------------------
+
+S = {a,c,d,b}
+ #|acdb
+ -+----
+ a|aaaa
+ c|aaca
+ d|aada
+ b|aaab
+
+SEMIGROUP BUT NOT COMMUTATIVE  (c#d IS NOT EQUAL TO d#c)
+------------------------------
+
+S = {a,b,c,d,e}
+ #|abcde
+ -+-----
+ a|aaaaa
+ b|bbabb
+ c|cccbc
+ d|ddddd
+ e|eeeee
+
+NOT A SEMIGROUP: (b#a)#c IS NOT EQUAL TO b#(a#c)
+------------------------------
+\end{verbatim}
+}
+
+\end{document}

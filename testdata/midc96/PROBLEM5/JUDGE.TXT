@@ -1,0 +1,28 @@
+1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST
+PROBLEM #5 - TOP DOG
+
+JUDGE'S NOTES
+
+The description for this problem is exessively wordy and occassionally
+vague.  This is by the author's design!  The solution to this problem
+is actually very straightforward (though a bit lengthy), and the real
+challenge is to be able to take a program specification and an example
+of what the program is supposed to produce, and use the two create a
+program which meets the requirements.  This is seldom straightforward
+in real life, and it is not intended to be straightforward in this
+problem.  So for those who might complain to you or ask questions, the
+lack of absolute clarity and excess verbage in this problem's
+description is the major part of the problem!  The job the program is
+to do can be completely determined by carefully examining and
+reconciling the problem statement with the sample data.
+
+Judging this problem will require running the program against several
+different sets of test data supplied by the problem author.  To
+simplify this process these have been placed in separate
+subdirectories (case1 through case4).  The problem requires strict
+enough output formatting that a text comparison utility such as the
+DOS "FC" program can be used for checking the output files against the
+judge's solutions.
+
+Ron Pacheco
+Regional Chief Judge

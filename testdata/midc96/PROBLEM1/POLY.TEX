@@ -1,0 +1,86 @@
+\documentstyle[11pt,../tex/prgcon]{article}
+
+\begin{document}
+
+\pages{2}
+\pagestyle{contest}
+
+\contest{1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST}
+\probno{1}
+\probname{Polynomial Showdown}
+\source{poly.\{c$|$cpp$|$pas\}}
+\infile{poly.in}
+\outfile{poly.out}
+
+\maketitle
+
+\division{The Problem}
+
+Given the coefficients of a polynomial from degree 8 down to 0, you
+are to format the polynomial in a readable format with unnecessary
+characters removed.  For instance, given the coefficients 0, 0, 0, 1,
+22, -333, 0, 1, and -1, you should generate an output line which
+displays \verb|x^5 + 22x^4 - 333x^3 + x - 1|.
+
+The formatting rules which must be adhered to are as follows:
+
+\begin{enumerate}
+
+\item Terms must appear in decreasing order of degree.
+
+\item Exponents should appear after a caret ``\verb|^|''.
+
+\item The constant term appears as only the constant.
+
+\item Only terms with nonzero coefficients should appear, unless all terms
+have zero coefficients in which case the constant term should appear.
+
+\item The only spaces should be a single space on either side of the
+binary $+$ and $-$ operators.
+    
+\item If the leading term is positive then no sign should precede it;
+a negative leading term should be preceded by a minus sign, as in
+\verb|-7x^2 + 30x + 66|.
+
+\item Negated terms should appear as a subtracted unnegated term (with
+the exception of a negative leading term which should appear as
+described above).  That is, rather than \verb|x^2 + -3x|, the output
+should be \verb|x^2 - 3x|.
+
+\item The constants 1 and -1 should appear only as the constant
+term.  That is, rather than \verb|-1x^3 + 1x^2 + 3x^1 - 1|, the output
+should appear as \verb|-x^3 + x^2 + 3x - 1|.
+
+\end{enumerate}
+
+\bigskip
+\division{Input/Output Specification}
+
+The input file will contain one or more lines of coefficients
+delimited by one or more spaces.  There are nine coefficients per
+line, each coefficient being an integer with a magnitude of less than
+1000.  The output file should contain the formatted polynomials, one
+per line.
+
+\newpage
+
+\division{Sample Input}
+
+{\small
+\begin{verbatim}
+0    0    0    1   22 -333    0    1   -1
+0    0    0    0    0    0  -55    5    0
+\end{verbatim}
+}
+
+\bigskip
+\division{Sample Output}
+
+{\small
+\begin{verbatim}
+x^5 + 22x^4 - 333x^3 + x - 1
+-55x^2 + 5x
+\end{verbatim}
+}
+
+\end{document}

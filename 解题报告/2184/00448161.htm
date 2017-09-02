@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0063)http://acm.pku.edu.cn/JudgeOnline/showsource?solution_id=473969 -->
+<HTML><HEAD><TITLE>Source Code</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content="MSHTML 6.00.2900.2627" name=GENERATOR></HEAD>
+<BODY>
+<P align=center><FONT color=#333399 size=4>Source</FONT></P>
+<P align=center><FONT size=2>Problem Id:2184&nbsp;&nbsp;User Id:c0500448161 
+<BR>Memory:36K&nbsp;&nbsp;Time:0MS<BR>Language:C++&nbsp;&nbsp;Result:Accepted</FONT></P>
+<UL>
+  <LI><FONT color=#333399 size=5>Source</FONT> 
+  <P><FONT face=Times size=3 Roman New><PRE>#include &lt;iostream.h&gt;
+#include &lt;string.h&gt;
+
+int  TotalMax, nNum, Si[100], Fi[100];
+
+int GetMax(int TotalSi, int TotalFi, int Order){
+	if (TotalSi &gt;= 0 &amp;&amp; TotalFi &gt;=0){
+		if (TotalSi + TotalFi &gt; TotalMax) TotalMax = TotalSi + TotalFi;
+		return TotalSi + TotalFi;
+	}
+	if (Order &gt;= nNum || TotalSi + TotalFi &lt;= TotalMax)
+		return 0;
+	int i = 0, j = 0;
+	i = GetMax(TotalSi, TotalFi, Order + 1);
+	j = GetMax(TotalSi + Si[Order], TotalFi + Fi[Order], Order + 1);
+	return i &gt; j ? i : j;
+}
+
+int main(){
+	int TotalSi = 0, TotalFi = 0, i;
+	cin &gt;&gt;i;
+	while (i--){
+		cin &gt;&gt;Si[nNum] &gt;&gt;Fi[nNum];
+		if (Si[nNum] &gt;= 0 &amp;&amp; Fi[nNum] &gt;= 0){
+			TotalSi += Si[nNum];
+			TotalFi += Fi[nNum];
+			TotalMax += Si[nNum] + Fi[nNum];
+		}
+		if (Si[nNum] * Fi[nNum] &lt;= 0) {
+			if (Si[nNum] + Fi[nNum] &gt;= 0){
+				TotalSi += Si[nNum];
+				TotalFi += Fi[nNum];
+				Si[nNum] = -Si[nNum];
+				Fi[nNum] = -Fi[nNum];
+
+			}
+			nNum++;
+		}
+	}
+	cout &lt;&lt;GetMax(TotalSi, TotalFi,0) &lt;&lt;endl;
+	return 0;
+}
+
+
+</PRE></FONT>
+  <P></P></LI></UL></BODY></HTML>

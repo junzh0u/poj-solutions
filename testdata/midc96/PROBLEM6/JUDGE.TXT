@@ -1,0 +1,12 @@
+1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST
+PROBLEM #6 - EQUATION ELATION
+
+JUDGE'S NOTES
+
+This problem specifically states that the spacing in the output is NOT
+critical.  Therefore, the solution to this problem should not be
+judged using a text comparision utility, but rather by visual
+inspection.
+
+Ron Pacheco
+Regional Chief Judge

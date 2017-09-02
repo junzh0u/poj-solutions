@@ -1,0 +1,135 @@
+\documentstyle[11pt,../tex/prgcon]{article}
+
+\begin{document}
+
+\pages{3}
+\pagestyle{contest}
+
+\contest{1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST}
+\probno{4}
+\probname{Board Silly}
+\source{board.\{c$|$cpp$|$pas\}}
+\infile{board.in}
+\outfile{board.out}
+
+\maketitle
+
+\division{The Problem}
+
+You are a member of a team of programmers whose task is to write a
+board game.  Your job is to write the part that examines a board
+layout and enumerates all possible moves for a given player.  The game
+you are writing is played on an 8 by 8 grid of squares (similar to a
+chess or checker board but the squares are all the same color).  The
+rows are labeled with the letters A through H from top to bottom.  The
+columns are labeled with the numbers 1 through 8 from left to right.
+
+At any particular time in the game, each player may have from 1 to 12
+pieces on the board (there is only one type of piece for each player).
+Valid moves are determined by the following rules:
+
+\begin{enumerate}
+
+\item Pieces may be moved in a straight line, either left, right, up,
+down or diagonally.
+
+\item The number of spaces a piece may be moved is determined by the
+total number of pieces in the row, column or diagonal in which the
+piece is being moved.  Pieces may only be moved by this exact number,
+no more, no less.
+
+\item A player may jump over his own pieces.
+
+\item A player may not jump over his opponent's pieces.
+
+\item A player may capture an opponent's piece by landing on it.
+
+\item A player may not land on a space he already occupies.
+
+\end{enumerate}
+
+\bigskip
+\division{Input/Output Specification}
+
+The input file consists of one or more board layouts followed by which
+piece, either 'X' or 'O' (that's an ``oh'' not a zero), for which
+moves should be displayed for.  Each board is specified as 8 lines of
+8 characters each.  Each board position will contain an 'X', an 'O' or
+a period.  The 'X' and 'O' position represent the occupied positions,
+and the periods represent empty board positions.  Immediately
+following each board is line containing a single 'X' or 'O' character,
+and it is for this piece that moves should be displayed.  The end of
+the input is indicated by the end of the file.
+
+The output file should contain one line for each possible move.  The
+moves may be printed in any order.  Each line should specify the
+origin and destination of each piece, in that order, separated by a
+single dash character.  Each board location (origins and destinations)
+should be specified as a row letter followed by a column number.  If
+no moves are possible then the output should simply specify ``No moves
+are possible''.  The output for each board should be separated by a
+single blank line.
+
+\bigskip
+\division{Sample Input}
+
+{\small
+\begin{verbatim}
+O.......
+O......X
+O.....XX
+O....XXX
+.O...XXX
+........
+..O..XXX
+........
+O
+..OXO...
+..OOO...
+........
+........
+........
+........
+........
+........
+X
+\end{verbatim}
+}
+
+\bigskip
+\division{Sample Output}
+
+{\small
+\begin{verbatim}
+A1-A2
+A1-C3
+A1-E1
+B1-A2
+B1-B3
+B1-D3
+B1-F1
+C1-B2
+C1-C4
+C1-D2
+C1-G1
+D1-C2
+D1-D5
+D1-F3
+D1-H1
+E2-D2
+E2-D3
+E2-E6
+E2-G4
+E2-F2
+E2-F1
+G3-F2
+G3-F3
+G3-H4
+G3-H3
+
+No moves are possible
+\end{verbatim}
+}
+
+\end{document}
+

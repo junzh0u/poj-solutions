@@ -1,0 +1,20 @@
+1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST
+PROBLEM #2 - THE DOORS
+
+JUDGE'S NOTES
+
+The author of this problem has stated that roundoff error resulting
+from different methods of implementing the solution to this problem do
+not appear to result in answers different from those reported by the
+judge's solution.  I have personally tested two different programs
+using different floating point data types in each, and in every case I
+have always obtained the same results as the problem author's program.
+
+I would caution those judging this problem, however, to be aware that
+since floating point arithmetic is being used, representation,
+precision and error are legitimate concerns.  If a solution reports
+numbers which are "reasonably close" (I would suggest off by no more
+than plus or minus 0.05) then the solution should be judged correct.
+
+Ron Pacheco
+Regional Chief Judge

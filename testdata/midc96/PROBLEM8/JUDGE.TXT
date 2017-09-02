@@ -1,0 +1,15 @@
+1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST
+PROBLEM #8 - ANOTHER PUZZLING PROBLEM
+
+JUDGE'S NOTES
+
+The author of this problem has provided a batch file for judging the
+problem.  It is named JUDGE.BAT and requires that the FC and FCTEST
+programs be on the path.  FC is a DOS program usually located in the
+C:\DOS or C:\WINDOWS\COMMAND (for Windows 95) directory.  FCTEST is a
+program supplied by the problem author.  Copy JUDGE.BAT, FCTEST.EXE,
+all of the *.IN and *.ASC files, and the submitted problem to a
+subdirectory and execute the JUDGE.BAT program.
+
+Ron Pacheco
+Regional Chief Judge

@@ -1,0 +1,113 @@
+\documentstyle[11pt,../tex/prgcon]{article}
+
+\begin{document}
+
+\pages{2}
+\pagestyle{contest}
+
+\contest{1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST}
+\probno{3}
+\probname{Mapmaker}
+\source{arraymap.\{c$|$cpp$|$pas\}}
+\infile{arraymap.in}
+\outfile{arraymap.out}
+
+\maketitle
+
+\division{The Problem}
+
+The Cybersoft Computer Company (a leader in programming languages) has
+hired you to work on a new programming language named A\verb|--|.
+Your task is to work on the array mapping tasks of the language.  You
+will take an array reference such as \verb'x[5,6]' and map it to an
+actual physical address.  In preparation for doing this, you will
+write a program that will read in several array declarations and
+references and give the physical address of each reference.  The
+physical address output by the program should be an integer number in
+base 10.
+
+The physical address of an array reference $A[i_1,i_2,\ldots,i_D]$ is
+calculated from the formula $C_0 + C_1 i_1 + C_2 i_2 + \cdots + C_D
+i_D$, where the constants $C_0\ldots C_D$ are calculated as specified
+below.
+
+\begin{tabular}{lcl}
+$B$   & $=$ & Base address of the array \\
+$D$   & $=$ & Number of dimensions in the array \\
+$L_d$ & $=$ & Lower bound of dimension $d$ \\
+$U_d$ & $=$ & Upper bound of dimension $d$ \\
+$C_D$ & $=$ & Array element size in bytes \\
+$C_d$ & $=$ & $C_{d+1}(U_{d+1}-L_{d+1}+1)$ for $1\le d<D$ \\
+$C_0$ & $=$ & $B - C_1 L_1 - C_2 L_2 - \cdots - C_D L_D$
+\end{tabular}
+
+\bigskip
+\division{Input/Output Specification}
+
+The first line of the input file contains two positive integers.  The
+first integer specifies $N$, the number of arrays defined in the data
+file, and the second integer specifies $R$, the number of array
+references for which addresses should be calculated.  The next $N$
+lines each define an array, one per line, and the following $R$ lines
+contain one array reference per line for which an address should be
+calculated.
+
+Each line which defines an array contains, in the following order, the
+name of the array (which is limited to 10 characters), a positive
+integer which specifies the base address of the array, a positive
+integer which specifies the size in bytes of each array element, and
+$D$, the number of dimensions in the array (no array will have fewer
+than 1 or more than 10 dimensions).  This is followed on the same line
+by $D$ pairs of integers which represent the lower and upper bounds,
+respectively, of dimensions $1\ldots D$ of the array.
+
+Each line which specifies an array reference contains the name of the
+array followed by the integer indexes $i_1,i_2,\ldots,i_D$ where $D$
+is the dimension of the array.
+
+The output file should contain the array references and the physical
+addresses.  There should be one array reference and physical address
+per line.  The formatting guidelines below {\em must\/} be adhered to.
+
+For each line of output:
+
+\begin{enumerate}
+\item Output the name of the array
+\item Output a left square bracket
+\item Output each index value (each pair of indexes should have a
+single comma and space between them)
+\item Output a right square bracket, a space, an equal sign, and
+another space
+\item Output the physical address
+\end{enumerate}
+
+\bigskip
+\division{Sample Input}
+
+{\small
+\begin{verbatim}
+3 4
+ONE       1500 2 2 0 3 1 5
+TWO       2000 4 3 1 4 0 5 5 10
+THREE     3000 1 1 1 9
+ONE       2 4
+THREE     7
+TWO       2 0 6
+TWO       3 3 9
+\end{verbatim}
+}
+
+\bigskip
+\division{Sample Output}
+
+{\small
+\begin{verbatim}
+ONE[2, 4] = 1526
+THREE[7] = 3006
+TWO[2, 0, 6] = 2148
+TWO[3, 3, 9] = 2376
+\end{verbatim}
+}
+
+\end{document}
+

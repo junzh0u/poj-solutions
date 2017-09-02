@@ -1,0 +1,11 @@
+1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST
+PROBLEM #4 - BOARD SILLY
+
+JUDGE'S NOTES
+
+This problem allows the list of valid moves to be output in any order.
+For this reason this problem should not be judged with a text
+comparison utility but rather by visual inspection.
+
+Ron Pacheco
+Regional Chief Judge

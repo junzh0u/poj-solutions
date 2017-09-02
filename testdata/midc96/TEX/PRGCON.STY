@@ -1,0 +1,40 @@
+\input stdpage.sty
+
+\newcommand{\thecontest}{}
+\newcommand{\theprobno}{}
+\newcommand{\theprobname}{}
+\newcommand{\thesource}{}
+\newcommand{\theinfile}{}
+\newcommand{\theoutfile}{}
+\newcommand{\thepages}{}
+\newcommand{\contest}[1]{\renewcommand{\thecontest}{#1}}
+\newcommand{\probno}[1]{\renewcommand{\theprobno}{#1}}
+\newcommand{\probname}[1]{\renewcommand{\theprobname}{#1}}
+\newcommand{\source}[1]{\renewcommand{\thesource}{#1}}
+\newcommand{\infile}[1]{\renewcommand{\theinfile}{#1}}
+\newcommand{\outfile}[1]{\renewcommand{\theoutfile}{#1}}
+\newcommand{\pages}[1]{\renewcommand{\thepages}{#1}}
+
+\renewcommand{\maketitle}{
+\begin{center}
+{\large\bf\thecontest}\\[\bigskipamount]
+{\Large\bf Problem \#\theprobno{} - \theprobname}\\[\bigskipamount]
+\begin{tabular}{rl}
+%\makebox[3in]{\hfill} & \makebox[3in]{\hfill}\\
+{\Large Source File:} & {\Large\bf\thesource}\\[4pt]
+{\Large Input File:}  & {\Large\bf\theinfile}\\[4pt]
+{\Large Output File:} & {\Large\bf\theoutfile}\\
+\end{tabular}
+\end{center}
+\bigskip\bigskip\bigskip}
+
+\hyphenpenalty=9999
+
+\def\ps@contest{\let\@mkboth\markboth
+   \def\@oddfoot{{\footnotesize
+      1996 ACM Mid-Central Regional Programming Contest \hf
+      Problem \#\theprobno, Page \thepage{} of \thepages}}
+   \def\@evenfoot{}\def\@oddhead{}\def\@evenhead{}}
+
+\newcommand{\division}[1]{\framebox{\rule[-2pt]{0pt}{13pt}\large\bf#1}}
+

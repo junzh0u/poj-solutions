@@ -1,0 +1,37 @@
+% STDPAGE.STY - Standard Page Setup for LaTex
+% 1992 by Ronald T. Pacheco
+
+% Input the Encapsulated Postscript routines.
+\input epsf.tex
+\newcommand{\eps}[1]{\begin{center}\leavevmode\epsfbox{#1}\end{center}}
+
+% The following style parameters create a page with 1 inch margins on each
+% side.  Paragraphs are not indented and are separated by 11pt of space.
+\oddsidemargin    0.00in
+\evensidemargin   0.00in
+\marginparwidth   0.00in
+\marginparsep     0.00in
+\topmargin        0.00in
+\headheight       0.00in
+\headsep          0.00in
+
+\textheight       8.50in
+\textwidth        6.50in
+\footheight       0.25in
+\footskip         0.50in
+\parindent        0.00pt
+\parskip         11.00pt
+
+% Prevent as many hyphenations as possbile.
+\hyphenpenalty 9999
+
+% Short macros for infinitely stretchable horizontal and vertical space.
+\newcommand{\hf}{\hspace{\fill}}
+\newcommand{\vf}{\vspace{\fill}}
+
+% Macro for including EPS icon in a title line.
+\newcommand{\icontitle}[3]{\epsfbox{#1}
+   \vskip-0.6in\makebox[1in]{}\hf{#2}\hf\makebox[1in][r]{{#3}}\par}
+
+% Macro for including a right justified quote at the bottom of a page.
+\newcommand{\qftd}[2]{{\raggedleft#1\\\makebox[\columnwidth][r]{--#2}}}

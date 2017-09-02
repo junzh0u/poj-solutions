@@ -1,0 +1,15 @@
+1996 ACM MID-CENTRAL REGIONAL PROGRAMMING CONTEST
+PROBLEM #3 - MAPMAKER
+
+JUDGE'S NOTES
+
+The author of this problem has provided a sizeable test data file, but
+has also made very specific requirements regarding the output format.
+Solutions which do not adhere to the output format are to be judged
+incorrect.  Since the output format is very specific, a problem's
+output can be judged for correctness using a file comparison utility
+(such as the DOS 'FC' program) to check for any differences between
+the submission's output and the author's solution.
+
+Ron Pacheco
+Regional Chief Judge
