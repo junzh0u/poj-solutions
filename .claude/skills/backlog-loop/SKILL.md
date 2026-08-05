@@ -1,28 +1,28 @@
 ---
 name: backlog-loop
-description: Run the POJ TODO backlog unattended — compose a /loop prompt that carries the run's full state (stop condition, model policy, usage-limit handling), start the self-paced loop, and report verdicts as they land. Use whenever the user wants problems solved without supervision, e.g. "work the backlog", "solve N problems on a loop", "run overnight", "keep solving until it stalls", or "/backlog-loop" — even if they don't mention /loop by name.
+description: Run the POJ TODO backlog unattended in Claude Code — compose a self-paced /loop prompt with a bounded stop condition, model escalation, and usage-limit recovery. Use when the user asks Claude to work or keep solving the backlog without supervision, run overnight, solve problems until progress stalls, or invokes /backlog-loop.
 ---
 
-# Working the backlog unattended
+# Work the backlog unattended
 
-An unattended run is the `loop` skill with **no interval**, so it self-paces: each firing runs one "solve N problems" cycle per AGENTS.md (fan out one agent per problem, park failures as `_attempts_/<id>.md`, commit accepts one per problem). The loop continues because the solve agents are harness-tracked, so their completions re-invoke the parent automatically. The `ScheduleWakeup` between cycles is only a fallback for a hung agent — 1800s, not a polling interval.
+Read `../../../.agents/skills/backlog-loop/references/policy.md` completely before starting. Follow `AGENTS.md` for problem selection, solving, submission, parking, and commits; this skill only adds Claude-specific unattended orchestration.
 
-## Composing the loop prompt
+## Compose the loop
 
-The prompt carries all the run's state, because it is passed back verbatim on every firing and so is the only thing that survives a context compaction. Baseline:
+Invoke `/loop` with no interval so each firing runs one cycle and agent completions re-invoke the parent. The prompt must carry the complete run state because it is passed back verbatim on every firing and survives context compaction.
 
+Default to batches of five and stop after two consecutive confirmed barren cycles unless the user specifies otherwise. Baseline:
+
+```text
+/loop solve 5 problems, stop when two confirmed cycles in a row produce no accept. Spawn subagents with model "sonnet" until the first model park. Starting with the following batch, go back to the default model (opus) and rerun that parked id with its _attempts_ notes before continuing. A usage or rate limit is not a park: do not create attempt notes or advance the barren-cycle counter; wait for the reset and retry the same ids. Report each verdict as it arrives. Do not push.
 ```
-/loop solve 5 problems, stop when two cycles in a row park without an accept. Spawn subagents with model "sonnet" until the first park happens; from the batch after that first park, go back to the default (opus) model, and re-run the parked id on opus in that batch, handing the agent its _attempts_ notes. If a cycle dies to usage or rate limits, that is not a park: do not write attempt files, do not count it toward the stop condition, wait for the limit to reset and rerun the same ids.
-```
 
-Adapt the batch size and model policy to what the user asked for, but keep every clause — each exists for a reason:
+Adapt the batch size, stop condition, and model policy to the user's request without dropping the safety rules in the shared policy.
 
-- **A stop condition is mandatory.** `TODO` holds thousands of ids, so "solve 5 problems" on a loop never terminates on its own. Two barren cycles is the signal that the backlog has outrun the setup.
-- **A usage limit is not a park.** It kills the agent before it says anything about the problem, so parking it would file an empty write-up and skip the problem forever. Wait out the reset and rerun the same ids. `ScheduleWakeup` caps at an hour, so a longer reset needs chained wakeups.
+## Recover from stalls
 
-  Arm that wakeup **first**, before working out exactly when the reset falls. The limit takes out every agent in the cycle at once and can take the environment part-way down with it — a `date` call to compute a precise delay went out with a classifier outage during one such stall. `ScheduleWakeup` needs no shell, the error text states the reset time, and the delay only has to be an over-estimate because the wake can re-check the clock. Fix the loop, then refine the timing.
-- **A model park is not a problem park** — the cheap-model-first escalation rule from AGENTS.md, which is tool-neutral there. In Claude Code the concrete names are: spawn solve agents with model `"sonnet"` until the first park, then revert to the default (`opus`) and re-run the parked id on it with its `_attempts_` notes.
+Use `ScheduleWakeup` only as a fallback for a hung agent or rate-limit reset, not as the cycle interval. For a normal hung-agent fallback, schedule 1800 seconds.
 
-## During the run
+On a usage limit, arm the wakeup before refining the reset time because the environment may be partially unavailable. `ScheduleWakeup` caps at one hour, so chain wakeups for a longer reset. When the loop resumes, inspect status before resubmitting; the interrupted turn may already have landed a submission.
 
-Report each verdict as it lands rather than batching them at the end of a cycle — the user is watching an unattended run and a silent hour is indistinguishable from a stalled one.
+Report verdicts as they arrive rather than waiting for the cycle summary.

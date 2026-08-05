@@ -1,0 +1,4 @@
+interface:
+  display_name: "POJ Backlog Loop"
+  short_description: "Work the POJ backlog unattended"
+  default_prompt: "/goal Use $backlog-loop to solve the POJ backlog in batches of five until two consecutive cycles produce no accept."
