@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 2 || ! $1 =~ ^[0-9]+$ || ! -f $2 ]]; then
+  echo "usage: build-submit-js <problem-id> <source-file>" >&2
+  exit 2
+fi
+
+problem_id=$1
+source_file=$2
+source_b64=$(base64 < "$source_file" | tr -d '\r\n')
+
+payload=$(printf '%s\n' \
+  "const src = atob('$source_b64');" \
+  "const f = document.forms[2];" \
+  "if (!f || f.problem_id.value !== '$problem_id') throw new Error('wrong or logged-out submit page');" \
+  "f.language.value = '4';" \
+  "f.source.value = src;" \
+  "if (f.source.value.length !== src.replace(/\r\n/g, '\n').length) throw new Error('source length mismatch');" \
+  "f.elements['submit'].click();")
+
+printf '%s' "$payload" | base64 | tr -d '\r\n'
+printf '\n'
