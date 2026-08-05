@@ -19,9 +19,18 @@ Default to batches of five and stop after two consecutive confirmed barren cycle
 
 Adapt the batch size, stop condition, and model policy to the user's request without dropping the safety rules in the shared policy.
 
-Preflight the submit path yourself before spawning, per `AGENTS.md`. It is the one failure that would otherwise hit every agent in the batch at once, and it costs one tab.
+Preflight the submit path yourself before spawning, per `AGENTS.md`. It is the one failure that would otherwise hit every agent in the batch at once, and it costs one tab. Loaded browser tools with no connected Chrome are not a submission path either — check that a browser is actually attached before reading the form. A failed preflight is an infrastructure stop: no attempt notes, no barren-cycle progress, the ids stay eligible.
 
 `sonnet` is the right default for the top of the backlog — those problems are the most-solved ones and are textbook by construction. Escalate on a park, not on a hunch.
+
+## What every solve-agent task must carry
+
+`AGENTS.md` is the canonical copy of the guarded snippet, the form facts, and the dropped-click rule; relay its §3–4 text **verbatim** in the task prompt rather than paraphrasing it here. On top of that, each task prompt must carry:
+
+- The **exact model identifier** assigned to that agent, and the requirement to report its finalized `// Model:` line alongside the verdict. The transport refuses to build a payload from a source that does not declare it exactly once, and a provenance error found after Accepted cannot be fixed without either another submission or a falsified archive.
+- The claude-in-chrome transport rules in `CLAUDE.md` — in particular that every click, first attempt and retry alike, is reserved through `.agents/skills/backlog-loop/scripts/with-submit-lock` as the tool call immediately preceding it. Agents that space their clicks by their own finishing times are not coordinating.
+
+Track each agent's submit tab id in the parent. An agent can exit before a queued cleanup message reaches it, so after every agent finishes, confirm its tracked tab is gone — matching on that id plus the problem's submit URL or POJ's status landing URL, never closing POJ tabs indiscriminately. End each cycle with zero tracked tabs open.
 
 ## Recover from stalls
 
