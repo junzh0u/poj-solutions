@@ -33,26 +33,14 @@ Tell every solve agent which preflighted control path to use. For AppleScript, t
 
 ## Give every solve agent the submission recipe
 
-Every solve-agent task must tell the agent to read `AGENTS.md` and must include or point to this exact submission sequence so a fresh agent does not have to rediscover the browser workflow:
+Every solve-agent task must tell the agent to read `AGENTS.md` and must relay its §3 guarded JavaScript and §3–4 submission/confirmation rules **verbatim** — `AGENTS.md` is the canonical copy of the snippet, the form facts, and the dropped-click rule; do not paraphrase them here or in task prompts. What this skill adds is the Codex transport mapping:
 
-1. Use fail-visible curl for the statement and verdicts: `curl -fsS`, save the response, and require an expected page marker before parsing it. An empty response or failed command is unknown state, never evidence of zero rows; if curl cannot resolve POJ, use a retained-ID background Chrome status tab or stop as an infrastructure interruption.
-2. Base64-encode the plain source locally. Open `http://poj.org/submit?problem_id=<id>` through the preflighted browser MCP path or as a retained-ID background tab in an existing Chrome window for AppleScript.
-3. In one JavaScript call against that exact tab/window, decode the source with `atob`, require `document.forms[2]`, guard that `f.problem_id.value === '<id>'`, set `f.language.value = '4'`, assign `f.source.value`, require its length to equal `src.replace(/\r\n/g, '\n').length`, and click `f.elements['submit']`. Never split planting and clicking across calls, and never use `form.submit()` because that skips POJ's base64 `onsubmit` handler.
-4. After the click, poll `curl -fsS 'http://poj.org/status?problem_id=<id>&user_id=150014'` or a separate retained-ID background Chrome status tab until a new row appears and leaves `Waiting`, `Compiling`, or `Running & Judging`. Require the loaded `Problem Status List` page before interpreting its rows, and match the new row's Code Length to the LF-normalized source length. Close only the retained submission/status tabs when finished.
+1. Fail-visible curl for statements and verdicts stays exactly as `AGENTS.md` specifies; if curl cannot resolve POJ, use a retained-ID background Chrome status tab, or stop as an infrastructure interruption.
+2. Open `http://poj.org/submit?problem_id=<id>` through the preflighted path: the browser MCP tools if exposed, otherwise a retained-ID background tab in an existing Chrome window via AppleScript.
+3. Run the canonical guarded JS in one call against that exact tab/window specifier. Never split planting and clicking across calls.
+4. Poll status per `AGENTS.md` §4, substituting a separate retained-ID background status tab when curl is unavailable. Close only the retained submission/status tabs when finished.
 5. Treat AppleScript's `missing value` after a click as ambiguous navigation, not proof that a submission landed or failed. Likewise, cancelling a delayed AppleScript command does not prove it stopped before the click; recheck authoritative status before retrying.
-6. If a fully loaded status page still has no new row after at least 30 seconds, POJ dropped the click and it does not count against the five-submission cap. Wait out the global window and make at most one clean retry from a fresh retained-ID background tab; repeated guarded clicks that produce no row are a submission-infrastructure interruption, not permission to grind retries.
-
-The guarded JavaScript core is:
-
-```js
-const src = atob('<base64>');
-const f = document.forms[2];
-if (!f || f.problem_id.value !== '<id>') throw new Error('wrong or logged-out submit page');
-f.language.value = '4';
-f.source.value = src;
-if (f.source.value.length !== src.replace(/\r\n/g, '\n').length) throw new Error('source length mismatch');
-f.elements['submit'].click();
-```
+6. The dropped-click bound (30 seconds, one clean retry, then infrastructure interruption) is `AGENTS.md` §4's rule; the Codex-specific detail is that the retry starts from a fresh retained-ID background tab.
 
 ## Run each cycle
 

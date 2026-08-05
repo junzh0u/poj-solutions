@@ -14,7 +14,7 @@ An archive of accepted [POJ](http://poj.org) submissions, one directory per prob
 
 "Solve N problems" means: take the **top N ids of `TODO`** — the list is already ordered so the most-solved (roughly easiest and best-documented) come first — skipping any that already have an `_attempts_/<id>.md`, and work them. A specific problem id the user names overrides both the ordering and the skip.
 
-To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exactly the problems the logged-in user has not solved, each with its global solve count. This is the one step besides submitting that must run in the browser — the form posts no user field, so identity comes only from the session cookie, and the curl detour around it is closed too (`userstatus` returns 403 to non-browser requests). Only the `ID` and `Solved` columns are wanted, so re-render the table in the page as `<id> <solved>` lines inside a `<pre>` and replace the body with it before calling `get_page_text` — the page as served runs to ~150 KB and would be cut off at the tool's 50 KB default, while two numeric columns fit comfortably. Then sort by solve count descending and write out the ids alone.
+To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exactly the problems the logged-in user has not solved, each with its global solve count. This is the one step besides submitting that must run in the browser — the form posts no user field, so identity comes only from the session cookie, and the curl detour around it is closed too (`userstatus` returns 403 to non-browser requests). Only the `ID` and `Solved` columns are wanted, and the page as served runs to ~150 KB — more than text extraction returns whole — so re-render the table in the page as `<id> <solved>` lines inside a `<pre>` and replace the body with it before extracting the text. Then sort by solve count descending and write out the ids alone.
 
 ## Solving a problem end to end
 
@@ -22,7 +22,7 @@ A solve always runs in a **subagent**, even for a single problem — the stateme
 
 **Never end a turn waiting for anything.** An agent that backgrounds a sleep or a long differential test and ends its turn to await the notification never wakes, and the task dies silently mid-run with no report. Waits go in the foreground — `python3 -c "import time; time.sleep(N)"` — and the agent continues in the same turn. A test too slow to sit through in the foreground should be made smaller: a few hundred trials whose result is actually collected beat thousands that are not. When resuming an agent that stalled this way, have it read the status page first — it may already have a submission judged, and resubmitting on top of it wastes an attempt.
 
-Only the submit itself needs the user's Chrome session (logged in as user `150014`). Everything else — the statement, the samples, the verdict — is plain `curl` with no login, so the browser is touched exactly once per submission: open a tab (`tabs_create_mcp`) when ready to submit and close it right after the click is confirmed. A shorter browser window means fewer chances for a sibling agent to re-navigate the tab, but the in-call guard in step 3 stays regardless.
+Only the submit itself needs the user's Chrome session (logged in as user `150014`). Everything else — the statement, the samples, the verdict — is plain `curl` with no login, so the browser is touched exactly once per submission: open a fresh tab when ready to submit and close it right after the click is confirmed. A shorter browser window means fewer chances for a sibling agent to re-navigate the tab, but the in-call guard in step 3 stays regardless.
 
 ### 1. Read the statement
 
@@ -47,9 +47,9 @@ Before the first submission, finalize the source's leading comment block: `// PO
 
 ### 3. Submit
 
-The one step that needs the browser: curl cannot borrow the session cookie (the extension blocks `document.cookie` reads), so the post has to happen from the logged-in page.
+The one step that needs the browser: curl cannot borrow the session cookie, so the post has to happen from the logged-in page. *How* a tab is opened and JS is run in it is the one harness-specific part of the whole procedure — the transport note lives in `CLAUDE.md` for claude-in-chrome and in the Codex skill for its browser-MCP/AppleScript paths. Everything in this section is the same on every harness.
 
-If the browser tools report that several Chrome browsers are connected and demand a choice, do **not** stop to ask — a subagent cannot reach the user, and the whole run stalls behind it; `select_browser` with any deviceId. Then check the tab is actually logged in: on a logged-out page the login form replaces everything and `document.forms[2]` does not exist (`document.forms.length` is 1). POJ sessions expire, and only one of the connected Chromes may hold the login — if the form is missing, switch to the other browser before concluding the session is gone; if both are logged out, only the user can log back in (agents report back rather than wait).
+Check the tab is actually logged in before planting anything: on a logged-out page the login form replaces everything and `document.forms[2]` does not exist (`document.forms.length` is 1). POJ sessions expire; if no reachable browser holds the login, only the user can log back in — agents report back rather than wait.
 
 The submit form is `document.forms[2]` on `http://poj.org/submit?problem_id=<id>`: fields `problem_id`, `language` (`0=G++ 1=GCC 2=Java 3=Pascal 4=C++ 5=C 6=Fortran`), `source`, and a hidden `encoded=1` because `onsubmit` base64-encodes the textarea. So plant the **plain** source and submit by clicking the real button — `form.submit()` skips `onsubmit` and would post unencoded source under `encoded=1`.
 
@@ -65,7 +65,7 @@ if (f.source.value.length !== src.replace(/\r\n/g, '\n').length) throw new Error
 f.elements['submit'].click();
 ```
 
-A gzip variant (`DecompressionStream`) can shrink a very long payload to about a third, but it has thrown `Failed to fetch` in this page context before; plain `atob` is the default.
+Plain `atob` is the default for any payload; compression variants have proven fragile in page context (see the harness transport notes).
 
 Do the whole thing — plant, verify, click — in a **single** JS call, guarded by `f.problem_id.value === '<id>'` and aborting if it does not match. With several agents in one browser a sibling can re-navigate your tab between two calls, and then the click submits *their* form: nothing appears under your problem and the source you planted is gone. The guard is a line long and the failure mode is otherwise silent.
 
