@@ -53,18 +53,19 @@ If the browser tools report that several Chrome browsers are connected and deman
 
 The submit form is `document.forms[2]` on `http://poj.org/submit?problem_id=<id>`: fields `problem_id`, `language` (`0=G++ 1=GCC 2=Java 3=Pascal 4=C++ 5=C 6=Fortran`), `source`, and a hidden `encoded=1` because `onsubmit` base64-encodes the textarea. So plant the **plain** source and submit by clicking the real button — `form.submit()` skips `onsubmit` and would post unencoded source under `encoded=1`.
 
-Getting the source into the textarea: base64 it and decode with `atob` inside the page. For a source of a few KB that is the whole story, and it depends on nothing but `atob`.
-
-The gzip variant below is a size optimisation for long sources — it keeps the payload to about a third — but it costs a dependency on `DecompressionStream`, which has thrown `Failed to fetch` in this page context. Reach for it only when the plain payload is genuinely unwieldy:
+Getting the source into the textarea: base64 it locally and decode with `atob` inside the page. This snippet is the **canonical** plant-and-click — every solve agent, on any harness, runs it as written; relay it verbatim rather than paraphrasing, so a behavior change happens here and nowhere else:
 
 ```js
-const bin = Uint8Array.from(atob(B), c => c.charCodeAt(0));
-const src = await new Response(new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+const src = atob('<base64>');
 const f = document.forms[2];
+if (!f || f.problem_id.value !== '<id>') throw new Error('wrong or logged-out submit page');
 f.language.value = '4';
 f.source.value = src;
+if (f.source.value.length !== src.replace(/\r\n/g, '\n').length) throw new Error('source length mismatch');
 f.elements['submit'].click();
 ```
+
+A gzip variant (`DecompressionStream`) can shrink a very long payload to about a third, but it has thrown `Failed to fetch` in this page context before; plain `atob` is the default.
 
 Do the whole thing — plant, verify, click — in a **single** JS call, guarded by `f.problem_id.value === '<id>'` and aborting if it does not match. With several agents in one browser a sibling can re-navigate your tab between two calls, and then the click submits *their* form: nothing appears under your problem and the source you planted is gone. The guard is a line long and the failure mode is otherwise silent.
 
@@ -74,7 +75,7 @@ Check `f.source.value.length` before clicking — against the **LF-normalized** 
 
 `curl -fsS 'http://poj.org/status?problem_id=<id>&user_id=150014'` — no login, no browser. Require a successful response containing `Problem Status List` before interpreting its rows; a transport failure or empty response is unknown state, not zero submissions. Each `<tr align=center>` row is a submission, newest first, cells `Run ID | User | Problem | Result | Memory | Time | Language | Code Length | Submit Time`. Poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
 
-A clean click is not evidence the submission landed, either. POJ drops a submission arriving within ~10s of any other — from a sibling agent as much as from you — and says nothing: the guard passes, the source length checks out, and no status row ever appears. So confirm a **new** row before believing anything; a submission that produced no row is not an attempt and must not count against the cap — wait out the window and resubmit rather than treating it as a verdict.
+A clean click is not evidence the submission landed, either. POJ drops a submission arriving within ~10s of any other — from a sibling agent as much as from you — and says nothing: the guard passes, the source length checks out, and no status row ever appears. So confirm a **new** row before believing anything. No new row on a fully loaded status page 30 seconds after the click — three times the window — means the click was dropped: it is not an attempt and does not count against the cap. Wait out the window and make **one** clean retry; a second rowless click means the problem is structural — an infrastructure interruption to report, not permission to keep clicking.
 
 A browser error *after* the submit click is not evidence the submission was lost — with several agents in one browser, a sibling's navigation can take the tab out from under you, so the JS that was going to confirm the click fails even though the post went through. Always look at the status page before resubmitting, or phantom retries eat the submission cap.
 
