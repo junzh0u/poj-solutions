@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 2 || ! $1 =~ ^[0-9]+$ || ! -f $2 ]]; then
-  echo "usage: build-submit-js <problem-id> <source-file>" >&2
+if [[ $# -ne 3 || ! $1 =~ ^[0-9]+$ || ! -f $2 || -z $3 ]]; then
+  echo "usage: build-submit-js <problem-id> <source-file> <model-id>" >&2
   exit 2
 fi
 
 problem_id=$1
 source_file=$2
+expected_model=$3
+
+model_line_count=$(grep -c '^// Model:' "$source_file" || true)
+if [[ $model_line_count -ne 1 ]] || ! grep -Fqx "// Model: $expected_model" "$source_file"; then
+  echo "source must contain exactly one // Model: $expected_model line" >&2
+  exit 2
+fi
+
 source_b64=$(base64 < "$source_file" | tr -d '\r\n')
 
 payload=$(printf '%s\n' \

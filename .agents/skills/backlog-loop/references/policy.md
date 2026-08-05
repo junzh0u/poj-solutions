@@ -5,6 +5,7 @@
 - Count only genuine problem parks toward a barren cycle. A cheaper model failing is a model park, not a problem park: retry that id on the stronger model with its `_attempts_` notes before retiring or counting it.
 - Treat usage and rate limits as interruptions, not verdicts or parks. Do not create attempt notes, advance the barren-cycle counter, or select replacement ids. Resume the same ids after the reset.
 - Preflight a working and authorized submission path before spawning solve agents. Submission-control failures are infrastructure interruptions, not verdicts or parks; do not create attempt notes or advance the barren-cycle counter.
+- Validate the assigned model identifier against the finalized source comment before building any submission payload. Provenance errors discovered after Accepted cannot be repaired without either falsifying the archive or spending another submission.
 - Serialize every actual submit click, including retries, with a process-scoped shared lock and a last-attempt timestamp. Fixed delays from independently reached readiness points are not submission coordination.
 - Make status checks fail visibly and confirm the expected page before interpreting rows. A transport failure or empty response is unknown state, not evidence that no submission landed.
 - Confirm external state before retrying after any interruption. A submit click, browser error, or lost agent response can hide a submission that already landed.
