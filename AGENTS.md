@@ -18,7 +18,11 @@ To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exa
 
 ## Solving a problem end to end
 
-Only the submit itself needs the user's Chrome session (logged in as user `150014`). Everything else — the statement, the samples, the verdict — is plain `curl` with no login, so the browser is touched exactly once per submission.
+A solve always runs in a **subagent**, even for a single problem — the statement, the test scaffolding, and the failed attempts stay out of the parent's context, which only ever sees the verdict. The agent owns steps 1–5, ending at **Accepted**, and writes the annotated source file; the commit and the `TODO` strike-off are the parent's (step 6), because both are shared state — concurrent `git add`/`git commit` in one worktree races on `index.lock` and can sweep a sibling's files into the wrong commit.
+
+**Never end a turn waiting for anything.** An agent that backgrounds a sleep or a long differential test and ends its turn to await the notification never wakes, and the task dies silently mid-run with no report. Waits go in the foreground — `python3 -c "import time; time.sleep(N)"` — and the agent continues in the same turn. A test too slow to sit through in the foreground should be made smaller: a few hundred trials whose result is actually collected beat thousands that are not. When resuming an agent that stalled this way, have it read the status page first — it may already have a submission judged, and resubmitting on top of it wastes an attempt.
+
+Only the submit itself needs the user's Chrome session (logged in as user `150014`). Everything else — the statement, the samples, the verdict — is plain `curl` with no login, so the browser is touched exactly once per submission: open a tab (`tabs_create_mcp`) when ready to submit and close it right after the click is confirmed. A shorter browser window means fewer chances for a sibling agent to re-navigate the tab, but the in-call guard in step 3 stays regardless.
 
 ### 1. Read the statement
 
@@ -43,7 +47,7 @@ Work in the scratchpad, not the repo — only the accepted source gets committed
 
 The one step that needs the browser: curl cannot borrow the session cookie (the extension blocks `document.cookie` reads), so the post has to happen from the logged-in page.
 
-First check the tab is actually logged in: on a logged-out page the login form replaces everything and `document.forms[2]` does not exist (`document.forms.length` is 1). POJ sessions expire, and with two Chromes connected only one may hold the login — if the form is missing, try the other browser before concluding the session is gone; if both are logged out, only the user can log back in (agents report back rather than wait).
+If the browser tools report that several Chrome browsers are connected and demand a choice, do **not** stop to ask — a subagent cannot reach the user, and the whole run stalls behind it; `select_browser` with any deviceId. Then check the tab is actually logged in: on a logged-out page the login form replaces everything and `document.forms[2]` does not exist (`document.forms.length` is 1). POJ sessions expire, and only one of the connected Chromes may hold the login — if the form is missing, switch to the other browser before concluding the session is gone; if both are logged out, only the user can log back in (agents report back rather than wait).
 
 The submit form is `document.forms[2]` on `http://poj.org/submit?problem_id=<id>`: fields `problem_id`, `language` (`0=G++ 1=GCC 2=Java 3=Pascal 4=C++ 5=C 6=Fortran`), `source`, and a hidden `encoded=1` because `onsubmit` base64-encodes the textarea. So plant the **plain** source and submit by clicking the real button — `form.submit()` skips `onsubmit` and would post unencoded source under `encoded=1`.
 
@@ -68,7 +72,7 @@ Check `f.source.value.length` before clicking — against the **LF-normalized** 
 
 `curl -s 'http://poj.org/status?problem_id=<id>&user_id=150014'` — no login, no browser. Each `<tr align=center>` row is a submission, newest first, cells `Run ID | User | Problem | Result | Memory | Time | Language | Code Length | Submit Time`. Poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
 
-A clean click is not evidence the submission landed, either. POJ drops a submission arriving within ~10s of any other — from a sibling agent as much as from you — and says nothing: the guard passes, the source length checks out, and no status row ever appears. So confirm a **new** row before believing anything, and a submission that produced no row is not an attempt and must not count against the cap.
+A clean click is not evidence the submission landed, either. POJ drops a submission arriving within ~10s of any other — from a sibling agent as much as from you — and says nothing: the guard passes, the source length checks out, and no status row ever appears. So confirm a **new** row before believing anything; a submission that produced no row is not an attempt and must not count against the cap — wait out the window and resubmit rather than treating it as a verdict.
 
 A browser error *after* the submit click is not evidence the submission was lost — with several agents in one browser, a sibling's navigation can take the tab out from under you, so the JS that was going to confirm the click fails even though the post went through. Always look at the status page before resubmitting, or phantom retries eat the submission cap.
 
@@ -81,33 +85,24 @@ Report each verdict as it arrives rather than silently resubmitting.
 - **Time Limit Exceeded** — profile the local stress case; POJ is slow, so an algorithmic fix usually beats micro-optimisation.
 - **Runtime Error** — usually an out-of-bounds index or recursion depth, both reproducible locally under `-fsanitize=address,undefined`.
 
+Cap the run at **5 submissions**. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. On hitting the cap, or getting stuck before submitting at all, report the last verdict, what was tried, and what the problem actually needs; the parent turns that report into the `_attempts_/<id>.md` park.
+
 ### 6. Commit
 
-Only after **Accepted**. Copy the exact accepted source to `<id>/<runId>_AC_<time>MS_<mem>K.<ext>`, prefixed with a `// POJ <id> - <Title>` comment block explaining the approach and any ambiguity in the statement.
+The agent's part ends with the file: only after **Accepted**, copy the exact accepted source to `<id>/<runId>_AC_<time>MS_<mem>K.<ext>`, prefixed with a `// POJ <id> - <Title>` comment block explaining the approach and any ambiguity in the statement.
 
-Commit subject is `<id> <Title>` — plain, no Conventional Commits prefix. The body explains the algorithm and the decisions behind it, not the code. One problem per commit.
+The commit itself is the parent's, one problem per commit. Subject is `<id> <Title>` — plain, no Conventional Commits prefix; the body explains the algorithm and the decisions behind it, not the code. Once the commit lands, the parent strikes the id from `TODO`.
 
 Do not push unless asked.
 
 ## Solving several at once
 
-Spawn **one agent per problem**, all in a single message so they run concurrently, and keep the statements, the test scaffolding, and the failed attempts out of the main context — the parent only ever sees a verdict per problem.
+A batch adds only orchestration on top of the procedure above: spawn the solve subagents **one per problem, all in a single message** so they run concurrently, and collect a verdict per problem.
 
-Each agent owns steps 1–5 for its problem, ending at **Accepted**, and writes the annotated source to `<id>/<runId>_AC_<time>MS_<mem>K.<ext>`. Two things it must **not** do, because they are shared state:
+Past three concurrent agents, collisions with POJ's ~10s submission window stop being rare — the agents finish local testing at similar times, and each collision costs a poll-and-retry cycle. Give each agent a **submit slot**: agent k waits 25*k seconds before its first click — in the foreground, per the wait rule above, or the stagger backfires into a silent stall. The stagger costs one agent a minute or two and buys back more than that in avoided collisions.
 
-- **Do not commit.** Concurrent `git add`/`git commit` in one worktree races on `index.lock` and can sweep another agent's files into the wrong commit. The parent commits afterwards, one problem per commit, in TODO order.
-- **Do not edit `TODO`.** The parent strikes each accepted problem's id once its commit lands.
-
-With reads and verdict polling on curl, an agent touches the browser only for its submit clicks: open a tab (`tabs_create_mcp`) when ready to submit and close it right after the click is confirmed. A shorter browser window means fewer chances for a sibling to re-navigate the tab, but the in-call guard stays regardless. If the browser tools report that several Chrome browsers are connected and demand a choice, an agent must **not** stop to ask — it cannot reach the user, and the whole fan-out stalls behind it. `select_browser` with any deviceId, but verify the login (`document.forms[2]` exists on the submit page) before planting — only one of the connected Chromes may hold the POJ session; if the form is missing, switch to the other.
-
-POJ rejects submissions that arrive within ~10s of the previous one, so an agent that gets turned away should wait and resubmit rather than treat it as a verdict. Past three agents this stops being rare — they finish local testing at similar times and collide, each collision costing a poll-and-retry cycle. Give each agent a **submit slot**: agent k waits 25*k seconds before its first click. The stagger costs one agent a minute or two and buys back more than that in avoided collisions.
-
-Tell the agent how to wait, though, or the instruction backfires: an agent that starts a *background* sleep and ends its turn to await the notification never wakes, and the task dies silently mid-run with no report. Waits go in the foreground — `python3 -c "import time; time.sleep(N)"` — and the agent continues in the same turn.
-
-State it as the general rule, **never end a turn waiting for anything**, because the stall does not only come from the stagger: an agent that backgrounds a long differential test and ends its turn to await the result dies exactly the same way. A test too slow to sit through in the foreground should be made smaller — a few hundred trials whose result is actually collected beat thousands that are not. When resuming an agent that stalled, have it read the status page first: it may already have a submission judged, and resubmitting on top of it wastes an attempt.
-
-Cap an agent at **5 submissions** for its problem. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. An agent that hits the cap, or that gets stuck before submitting at all, reports the last verdict, what it tried, and what it thinks the problem actually needs.
+The parent commits the accepts afterwards, one problem per commit, in TODO order.
 
 An agent that dies to a usage or rate limit has not attempted anything — no write-up, no park, and the id keeps its place at the top of `TODO`. Wait for the reset and rerun it.
 
-The parent turns that report into `_attempts_/<id>.md` — the reading of the statement, the algorithm tried, the verdict of each submission, and the failing case if one was found — and commits it as `<id> attempt notes`. The id stays where it is in `TODO`, but a problem carrying an attempt file is skipped when picking the next N; solve it only when asked for by id, and hand the file to the agent so it starts where the last one stopped instead of re-deriving the dead end.
+A hand-back report — cap hit, or stuck before submitting — becomes `_attempts_/<id>.md`: the reading of the statement, the algorithm tried, the verdict of each submission, and the failing case if one was found. The parent writes it and commits it as `<id> attempt notes`. The id stays where it is in `TODO`, but a problem carrying an attempt file is skipped when picking the next N; solve it only when asked for by id, and hand the file to the agent so it starts where the last one stopped instead of re-deriving the dead end.
