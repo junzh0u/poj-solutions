@@ -24,6 +24,8 @@ The whole loop runs through the user's Chrome session, which is already logged i
 
 `http://poj.org/problem?id=<id>` — `get_page_text` returns the whole statement including the samples and the limits. Note the time and memory limits; they decide how much the algorithm can afford.
 
+**Exponents lose their superscript.** A bound written `2^54` on the page arrives as `254`, and `10^9` as `109`, because the markup carries the exponent and the text does not. Read any implausible constant that way — a limit of "254" on a problem about factoring large numbers is 2^54 — and check it against the samples and the memory limit before sizing anything to it. Getting this wrong invents a range the problem never had: one solve here chased a 66-second worst case that turned out to sit outside the real bound entirely.
+
 ### 2. Write and test locally
 
 Work in the scratchpad, not the repo — only the accepted source gets committed.
