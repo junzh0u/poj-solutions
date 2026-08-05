@@ -90,6 +90,8 @@ Each agent should also open its own tab (`tabs_create_mcp`) and close it when do
 
 POJ rejects submissions that arrive within ~10s of the previous one, so an agent that gets turned away should wait and resubmit rather than treat it as a verdict. Past three agents this stops being rare — they finish local testing at similar times and collide, each collision costing a poll-and-retry cycle. Give each agent a **submit slot**: agent k waits 25*k seconds before its first click. The stagger costs one agent a minute or two and buys back more than that in avoided collisions.
 
+Tell the agent how to wait, though, or the instruction backfires: an agent that starts a *background* sleep and ends its turn to await the notification never wakes, and the task dies silently mid-run with no report. Waits go in the foreground — `python3 -c "import time; time.sleep(N)"` — and the agent continues in the same turn. When resuming one that stalled this way, have it read the status page first: it may already have a submission judged, and resubmitting on top of it wastes an attempt.
+
 Cap an agent at **5 submissions** for its problem. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. An agent that hits the cap, or that gets stuck before submitting at all, reports the last verdict, what it tried, and what it thinks the problem actually needs.
 
 An agent that dies to a usage or rate limit has not attempted anything — no write-up, no park, and the id keeps its place at the top of `TODO`. Wait for the reset and rerun it.
