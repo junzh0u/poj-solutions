@@ -78,6 +78,8 @@ A clean click is not evidence the submission landed, either. POJ drops a submiss
 
 A browser error *after* the submit click is not evidence the submission was lost — with several agents in one browser, a sibling's navigation can take the tab out from under you, so the JS that was going to confirm the click fails even though the post went through. Always look at the status page before resubmitting, or phantom retries eat the submission cap.
 
+The same churn also drops tabs *before* the click: the JS call fails with `couldn't determine which page this action targets` because the tab group went out from under it. That one is recoverable in place — recreate the tab, re-navigate, run the guarded plant-and-click again — but confirm on the status page that no row exists first, because the error message alone does not distinguish a call that never ran from one that clicked and then lost the tab.
+
 ### 5. Iterate
 
 Report each verdict as it arrives rather than silently resubmitting.
@@ -103,7 +105,9 @@ A batch adds only orchestration on top of the procedure above: spawn the solve s
 
 Past three concurrent agents, collisions with POJ's ~10s submission window stop being rare — the agents finish local testing at similar times, and each collision costs a poll-and-retry cycle. Give each agent a **submit slot**: agent k waits 25*k seconds before its first click — in the foreground, per the wait rule above, or the stagger backfires into a silent stall. The stagger costs one agent a minute or two and buys back more than that in avoided collisions.
 
-The parent commits the accepts afterwards, one problem per commit, in TODO order.
+Before spawning, the parent **preflights the submit path once** — the agents cannot, because a logged-out session looks to each of them like an individual failure and all five burn their run discovering it. Navigate a tab to `http://poj.org/submit?problem_id=<first id>` and read `document.forms.length` and `document.forms[2].problem_id.value`: three forms with a matching id is a live session, one form is the login page. Close the tab; the agents open their own. A failed preflight is an infrastructure stop, not a park — nothing is attempted and no ids are consumed.
+
+The parent commits each accept as its agent reports, one problem per commit — in whatever order the verdicts arrive, not `TODO` order. Ordering the commits means holding a finished solve hostage to a slower sibling, and buys nothing: the commits are independent and `TODO` is a set, not a sequence.
 
 An agent that dies to a usage or rate limit has not attempted anything — no write-up, no park, and the id keeps its place at the top of `TODO`. Wait for the reset and rerun it.
 

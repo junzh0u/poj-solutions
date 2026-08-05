@@ -19,10 +19,14 @@ Default to batches of five and stop after two consecutive confirmed barren cycle
 
 Adapt the batch size, stop condition, and model policy to the user's request without dropping the safety rules in the shared policy.
 
+Preflight the submit path yourself before spawning, per `AGENTS.md`. It is the one failure that would otherwise hit every agent in the batch at once, and it costs one tab.
+
+`sonnet` is the right default for the top of the backlog — those problems are the most-solved ones and are textbook by construction. Escalate on a park, not on a hunch.
+
 ## Recover from stalls
 
 Use `ScheduleWakeup` only as a fallback for a hung agent or rate-limit reset, not as the cycle interval. For a normal hung-agent fallback, schedule 1800 seconds.
 
 On a usage limit, arm the wakeup before refining the reset time because the environment may be partially unavailable. `ScheduleWakeup` caps at one hour, so chain wakeups for a longer reset. When the loop resumes, inspect status before resubmitting; the interrupted turn may already have landed a submission.
 
-Report verdicts as they arrive rather than waiting for the cycle summary.
+Report verdicts as they arrive rather than waiting for the cycle summary, and commit each accept in the same turn you report it — a verdict held for a tidier batch summary is a verdict the user did not get.
