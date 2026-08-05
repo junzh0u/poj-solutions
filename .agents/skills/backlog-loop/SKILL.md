@@ -11,18 +11,55 @@ Read [references/policy.md](references/policy.md) completely before starting. Fo
 
 Use Goal mode, not a fixed-interval scheduler. If this skill was not invoked from `/goal`, create a goal from the user's request and the policy below. Keep the assembled goal text complete enough to survive context compaction.
 
-Default to batches of five and stop after two consecutive confirmed barren cycles unless the user specifies otherwise. A complete baseline goal is:
+Default to batches of three, which fills the three solve-agent slots available alongside the parent, and stop after two consecutive confirmed barren cycles unless the user specifies otherwise. A complete baseline goal is:
 
 ```text
-Use $backlog-loop to solve the POJ backlog in batches of 5, following AGENTS.md and spawning one solve subagent per problem concurrently. Stop after two consecutive confirmed cycles produce no Accepted solution. Use gpt-5.6-terra solve agents until the first model park. Starting with the following batch, use gpt-5.6-sol and rerun that parked problem with its _attempts_ notes before continuing. A usage or rate limit is not a park: do not create attempt notes or advance the barren-cycle counter; keep the goal active and retry the same problem ids after the reset. Report each verdict as it arrives. Do not push.
+Use $backlog-loop to solve the POJ backlog in batches of 3, following AGENTS.md and spawning one solve subagent per problem concurrently. Before spawning, preflight one working, authorized browser submission path. Stop after two consecutive confirmed cycles produce no Accepted solution. Use gpt-5.6-terra solve agents until the first model park. Starting with the following batch, use gpt-5.6-sol and rerun that parked problem with its _attempts_ notes before continuing. A submission-control interruption is not a park: do not create attempt notes or advance the barren-cycle counter; keep the same problem ids eligible after the interruption clears. On a Codex usage or rate limit, abort the run safely without notes, replacement ids, or barren-cycle progress; do not wait for a five-hour reset. Report each verdict as it arrives. Do not push.
 ```
 
 Adapt the batch size, stop condition, and model policy to the user's request without dropping the safety rules in the shared policy.
+
+## Preflight submission control
+
+Do this once in the parent before spawning a cycle; do not make every solve agent rediscover the same missing capability after it has finished a solution.
+
+1. Inspect the enabled tool inventory for `tabs_create_mcp`, `select_browser`, and browser JavaScript execution. Tool instructions may describe these names even when the current runtime does not actually expose them, so verify availability rather than assuming it from `AGENTS.md`.
+2. If the browser tools are exposed, open a POJ submit page and verify that `document.forms[2]` exists in a logged-in Chrome session. Close the preflight tab without changing the form.
+3. If the browser tools are absent, the supported fallback is Chrome AppleScript. Before using it, the user must enable Chrome's View > Developer > Allow JavaScript from Apple Events setting and explicitly authorize both AppleScript control and submitting solutions to the user's POJ account. Enabling the Chrome setting alone is not submission authorization. Spawn submission agents only after the authorization so their inherited user context contains it directly; relaying the authorization to an older agent is insufficient for the external-action reviewer.
+4. Preflight AppleScript read-only without interrupting the user: choose an existing normal Chrome window, save its window id and active-tab index, create the submit page as a tab at the end, retain the new tab's unique id, and restore the saved active-tab index immediately. Verify the logged-in form by addressing that exact background tab id, then close only that tab. Do not create or activate a new window, and do not rely on the frontmost tab because concurrent agents can change it.
+5. If neither path passes preflight, do not spawn the cycle. A missing browser tool, disabled Chrome setting, logged-out session, or rejected external-action authorization is an infrastructure interruption: it creates no `_attempts_` note, does not advance the barren-cycle counter, and leaves the same problem ids eligible to resume.
+
+Tell every solve agent which preflighted control path to use. For AppleScript, tell it to retain an existing window id plus its own background tab's unique id, restore the user's prior active-tab index, execute the guarded JavaScript against that exact tab specifier, and close only that tab after the click/status check.
+
+## Give every solve agent the submission recipe
+
+Every solve-agent task must tell the agent to read `AGENTS.md` and must include or point to this exact submission sequence so a fresh agent does not have to rediscover the browser workflow:
+
+1. Use fail-visible curl for the statement and verdicts: `curl -fsS`, save the response, and require an expected page marker before parsing it. An empty response or failed command is unknown state, never evidence of zero rows; if curl cannot resolve POJ, use a retained-ID background Chrome status tab or stop as an infrastructure interruption.
+2. Base64-encode the plain source locally. Open `http://poj.org/submit?problem_id=<id>` through the preflighted browser MCP path or as a retained-ID background tab in an existing Chrome window for AppleScript.
+3. In one JavaScript call against that exact tab/window, decode the source with `atob`, require `document.forms[2]`, guard that `f.problem_id.value === '<id>'`, set `f.language.value = '4'`, assign `f.source.value`, require its length to equal `src.replace(/\r\n/g, '\n').length`, and click `f.elements['submit']`. Never split planting and clicking across calls, and never use `form.submit()` because that skips POJ's base64 `onsubmit` handler.
+4. After the click, poll `curl -fsS 'http://poj.org/status?problem_id=<id>&user_id=150014'` or a separate retained-ID background Chrome status tab until a new row appears and leaves `Waiting`, `Compiling`, or `Running & Judging`. Require the loaded `Problem Status List` page before interpreting its rows, and match the new row's Code Length to the LF-normalized source length. Close only the retained submission/status tabs when finished.
+5. Treat AppleScript's `missing value` after a click as ambiguous navigation, not proof that a submission landed or failed. Likewise, cancelling a delayed AppleScript command does not prove it stopped before the click; recheck authoritative status before retrying.
+6. If a fully loaded status page still has no new row after at least 30 seconds, POJ dropped the click and it does not count against the five-submission cap. Wait out the global window and make at most one clean retry from a fresh retained-ID background tab; repeated guarded clicks that produce no row are a submission-infrastructure interruption, not permission to grind retries.
+
+The guarded JavaScript core is:
+
+```js
+const src = atob('<base64>');
+const f = document.forms[2];
+if (!f || f.problem_id.value !== '<id>') throw new Error('wrong or logged-out submit page');
+f.language.value = '4';
+f.source.value = src;
+if (f.source.value.length !== src.replace(/\r\n/g, '\n').length) throw new Error('source length mismatch');
+f.elements['submit'].click();
+```
 
 ## Run each cycle
 
 Select the next batch exactly as `AGENTS.md` specifies, then spawn all solve agents in one concurrent batch. Use `gpt-5.6-terra` until its first model park; from the next batch onward, use `gpt-5.6-sol` and include the parked id for its required stronger-model retry.
 
-Keep the goal active between cycles. Do not mark it complete until the stop condition is satisfied, and do not mark it blocked merely because work is slow, a subagent is still running, or a usage reset must pass. On resumption, inspect status and the worktree before retrying so an already-judged submission or completed agent is not duplicated.
+Keep the goal active between successful cycles. Do not mark it complete until the stop condition is satisfied, and do not mark it blocked merely because work is slow or a subagent is still running. On resumption, inspect status and the worktree before retrying so an already-judged submission or completed agent is not duplicated.
+
+Codex has no five-hour reset workflow to wait through. If a solve agent or the parent hits a usage or rate limit, stop spawning and retrying, confirm any in-flight submission from authoritative status when possible, preserve scratch sources and the same problem ids, leave `TODO` and `_attempts_` unchanged for unfinished work, do not advance the barren-cycle counter, and abort the current run with a concise handoff.
 
 Report verdicts as they arrive. After all agents finish, make the parent-only commits and `TODO` edits required by `AGENTS.md`, update the run state, and immediately begin the next cycle unless the goal is complete.

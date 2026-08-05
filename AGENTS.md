@@ -43,6 +43,8 @@ Work in the scratchpad, not the repo — only the accepted source gets committed
 - Then go past the sample: a stress case near the stated input limits (`/usr/share/dict/words` is a handy source of real words), the degenerate inputs, and — where the answer is a classification rather than a value — a randomized differential test against a brute-force reference on small instances. POJ reports nothing but the verdict, so anything not caught locally costs a blind submission.
 - Judge machines are much slower than a modern laptop; leave several times the stated limit as headroom.
 
+Before the first submission, finalize the source's leading comment block: `// POJ <id> - <Title>`, `// Model: <model-id>`, the approach, and any statement ambiguity. Use the exact model identifier that authored the solution, then compile and test this annotated file again. Every submission must plant this exact file so the Accepted source can be archived byte-for-byte without post-verdict edits.
+
 ### 3. Submit
 
 The one step that needs the browser: curl cannot borrow the session cookie (the extension blocks `document.cookie` reads), so the post has to happen from the logged-in page.
@@ -70,7 +72,7 @@ Check `f.source.value.length` before clicking — against the **LF-normalized** 
 
 ### 4. Check the verdict
 
-`curl -s 'http://poj.org/status?problem_id=<id>&user_id=150014'` — no login, no browser. Each `<tr align=center>` row is a submission, newest first, cells `Run ID | User | Problem | Result | Memory | Time | Language | Code Length | Submit Time`. Poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
+`curl -fsS 'http://poj.org/status?problem_id=<id>&user_id=150014'` — no login, no browser. Require a successful response containing `Problem Status List` before interpreting its rows; a transport failure or empty response is unknown state, not zero submissions. Each `<tr align=center>` row is a submission, newest first, cells `Run ID | User | Problem | Result | Memory | Time | Language | Code Length | Submit Time`. Poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
 
 A clean click is not evidence the submission landed, either. POJ drops a submission arriving within ~10s of any other — from a sibling agent as much as from you — and says nothing: the guard passes, the source length checks out, and no status row ever appears. So confirm a **new** row before believing anything; a submission that produced no row is not an attempt and must not count against the cap — wait out the window and resubmit rather than treating it as a verdict.
 
@@ -89,9 +91,9 @@ Cap the run at **5 submissions**. Iterating past that means the approach is wron
 
 ### 6. Commit
 
-The agent's part ends with the file: only after **Accepted**, copy the exact accepted source to `<id>/<runId>_AC_<time>MS_<mem>K.<ext>`, prefixed with a `// POJ <id> - <Title>` comment block explaining the approach and any ambiguity in the statement.
+The agent's part ends with the file: only after **Accepted**, copy the exact submitted source byte-for-byte to `<id>/<runId>_AC_<time>MS_<mem>K.<ext>`. Its title, model, approach, and ambiguity comment block was finalized and tested before submission; do not add or edit it after the verdict.
 
-The commit itself is the parent's, one problem per commit. Subject is `<id> <Title>` — plain, no Conventional Commits prefix; the body explains the algorithm and the decisions behind it, not the code. Once the commit lands, the parent strikes the id from `TODO`.
+The commit itself is the parent's, one problem per commit. Subject is `<id> <Title>` — plain, no Conventional Commits prefix; the body explains the algorithm and the decisions behind it, not the code, and ends with `Model: <model-id>` matching the source comment. Once the commit lands, the parent strikes the id from `TODO`.
 
 Do not push unless asked.
 
