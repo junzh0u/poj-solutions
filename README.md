@@ -5,4 +5,6 @@ Here are my solutions of [POJ](http://poj.org). My POJ id is [150014](http://poj
 
 Some of these codes are very old and might not work with the new compilers they use now, but they should be easy to fix.
 
+**Two eras.** Everything committed before 2026 — 758 problems, all from 2014 — I solved myself. Everything from 2026 onward (171 problems so far) is a coding-agent experiment: Claude Code reads the statement, writes and tests the solution, submits it through the browser, and iterates on the verdict. `AGENTS.md` is the workflow it follows, `TODO` is the backlog it works through, and `_attempts_/` holds the write-ups of problems it tried and did not get accepted. Check the commit date if you want to know which era a solution came from.
+
 Feel free to clone/fork this repo. But **DO NOT USE IT TO CHEAT YOUR HOMEWORK!**
