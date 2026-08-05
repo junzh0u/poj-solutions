@@ -34,13 +34,18 @@ Read the HTML itself, not a text extraction — two documented misreadings here 
 
 **Leading whitespace.** 1523's expected output indents every line by two spaces, visible in the sample's raw `<pre>` but not in extracted text — missing it turns into a Presentation Error that reads like a wrong answer. In the curl output the bytes are exact (samples also carry `\r\n` line endings; strip them when diffing).
 
+**Prose semantics.** Not every trap is markup. 3661's "she cannot commence running again until her exhaustion factor reaches 0" means rest, once begun, is forced until zero — read as a free per-minute choice it still matches the sample, and the misreading only surfaced as a Wrong Answer. Constraint sentences deserve a second literal read: what exactly do they forbid?
+
+Skim the problem's discuss board too — `curl -s 'http://poj.org/bbs?problem_id=<id>'`, the Discuss link on the problem page, no login needed. It usually holds the problem's known pitfalls, often with a concrete failing case, and reading it costs seconds where rediscovering the pitfall costs a submission.
+
 ### 2. Write and test locally
 
-Work in the scratchpad, not the repo — only the accepted source gets committed.
+Work in the scratchpad, not the repo — only the accepted source gets committed. Use a `<id>/` subdirectory (or prefix every filename with the id): the scratchpad is shared with concurrent sibling agents, and a generic `brute.cpp` has silently collided with a sibling's before.
 
 - Target **C++98**: POJ's compilers are ancient, so no `auto`, no range-`for`, no `<cstdint>`. Build with `g++ -std=c++98 -pedantic -Wall -Wextra -O2`.
 - Reproduce the statement's sample first and `diff` against the expected output verbatim.
 - Then go past the sample: a stress case near the stated input limits (`/usr/share/dict/words` is a handy source of real words), the degenerate inputs, and — where the answer is a classification rather than a value — a randomized differential test against a brute-force reference on small instances. POJ reports nothing but the verdict, so anything not caught locally costs a blind submission.
+- A differential test only proves agreement with its reference, and a reference written from the same reading of the statement shares its misreading: 3661's 500 passing trials validated the same wrong rule the solution used. Derive the brute force from the statement's own words, not from the solution's model of them.
 - Judge machines are much slower than a modern laptop; leave several times the stated limit as headroom.
 
 Before the first submission, finalize the source's leading comment block: `// POJ <id> - <Title>`, `// Model: <model-id>`, the approach, and any statement ambiguity. Use the exact model identifier that authored the solution, then compile and test this annotated file again. Every submission must plant this exact file so the Accepted source can be archived byte-for-byte without post-verdict edits.
@@ -69,7 +74,7 @@ Plain `atob` is the default for any payload; compression variants have proven fr
 
 Do the whole thing — plant, verify, click — in a **single** JS call, guarded by `f.problem_id.value === '<id>'` and aborting if it does not match. With several agents in one browser a sibling can re-navigate your tab between two calls, and then the click submits *their* form: nothing appears under your problem and the source you planted is gone. The guard is a line long and the failure mode is otherwise silent.
 
-Check `f.source.value.length` before clicking — against the **LF-normalized** source, not the file size: the textarea converts `\r\n` to `\n`, so a 118-byte CRLF file plants (and judges) as 111 bytes. Compare `src.replace(/\r\n/g,'\n').length` inside the same JS call, then `Code Length` in the status row after — that is the proof the source arrived intact. Serving the file from a local HTTP server and `fetch`ing it from the page does **not** work: Chrome's private-network access blocks a public page from reaching `127.0.0.1`.
+Check `f.source.value.length` before clicking — against the **LF-normalized** source, not the file size: the textarea converts `\r\n` to `\n`, so a 118-byte CRLF file plants (and judges) as 111 bytes. Compare `src.replace(/\r\n/g,'\n').length` inside the same JS call, then `Code Length` in the status row after — that is the proof the source arrived intact. Do not re-read `f.source.value` *after* the click as verification: `onsubmit` runs synchronously inside `.click()` and re-encodes the textarea, so the post-click value is the base64 (about 4/3 the size), not the source. Serving the file from a local HTTP server and `fetch`ing it from the page does **not** work: Chrome's private-network access blocks a public page from reaching `127.0.0.1`.
 
 ### 4. Check the verdict
 
@@ -86,9 +91,11 @@ The same churn also drops tabs *before* the click: the JS call fails with `could
 Report each verdict as it arrives rather than silently resubmitting.
 
 - **Compile Error** — a C++98 slip; check `Compile Error` on the status page for the message, or retry under language `0` (G++) which is a different compiler from `4` (C++).
-- **Wrong Answer** — re-read the statement for the case that was missed, reproduce it locally, then resubmit.
+- **Wrong Answer** — re-read the statement for the case that was missed and rebuild the differential reference from that re-reading (a reference sharing the old misreading passes every trial); mine the discuss board for the failing case; reproduce locally, then resubmit.
 - **Time Limit Exceeded** — profile the local stress case; POJ is slow, so an algorithmic fix usually beats micro-optimisation.
 - **Runtime Error** — usually an out-of-bounds index or recursion depth, both reproducible locally under `-fsanitize=address,undefined`.
+
+Sometimes the judge is the bug. When an independently-derived known-good solution (a canonical reference implementation submitted as a control) fails the same way as yours, check the problem's **general** status page — `status?problem_id=<id>` with no user filter: every recent submission from unrelated users failing identically, against the same account accepting other problems the same hour, means the problem's judge or data is broken (1734 has rejected everything since 2026-02, including solutions of the exact shape it accepted in January). That is a park with the evidence recorded, revisited only if the judge recovers — and not a model park, so no stronger-model retry is owed.
 
 Cap the run at **5 submissions**. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. On hitting the cap, or getting stuck before submitting at all, report the last verdict, what was tried, and what the problem actually needs; the parent turns that report into the `_attempts_/<id>.md` park.
 
