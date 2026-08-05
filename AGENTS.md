@@ -24,7 +24,9 @@ The whole loop runs through the user's Chrome session, which is already logged i
 
 `http://poj.org/problem?id=<id>` — `get_page_text` returns the whole statement including the samples and the limits. Note the time and memory limits; they decide how much the algorithm can afford.
 
-**Exponents lose their superscript.** A bound written `2^54` on the page arrives as `254`, and `10^9` as `109`, because the markup carries the exponent and the text does not. Read any implausible constant that way — a limit of "254" on a problem about factoring large numbers is 2^54 — and check it against the samples and the memory limit before sizing anything to it. Getting this wrong invents a range the problem never had: one solve here chased a 66-second worst case that turned out to sit outside the real bound entirely.
+**Exponents lose their superscript.** A bound written `2^54` on the page arrives as `254`, and `10^9` as `109`, because the markup carries the exponent and the text does not. Read any implausible constant that way — a limit of "254" on a problem about factoring large numbers is 2^54 — and check it against the samples and the memory limit before sizing anything to it. Getting this wrong invents a range the problem never had: one solve here chased a 66-second worst case that turned out to sit outside the real bound entirely. Not every such constant is an exponent, though: 2409's `cs<=32` really is the product c*s, which the statement's own gloss settles.
+
+**Leading whitespace is lost too.** 1523's expected output indents every line by two spaces, and nothing in the extracted text shows it — it is visible only in the sample's raw `<pre>`. When the output format looks like it might carry indentation or alignment, read the sample out of the HTML rather than the text, or the verdict is a Presentation Error that reads like a wrong answer.
 
 ### 2. Write and test locally
 
@@ -39,7 +41,9 @@ Work in the scratchpad, not the repo — only the accepted source gets committed
 
 The submit form is `document.forms[2]` on `http://poj.org/submit?problem_id=<id>`: fields `problem_id`, `language` (`0=G++ 1=GCC 2=Java 3=Pascal 4=C++ 5=C 6=Fortran`), `source`, and a hidden `encoded=1` because `onsubmit` base64-encodes the textarea. So plant the **plain** source and submit by clicking the real button — `form.submit()` skips `onsubmit` and would post unencoded source under `encoded=1`.
 
-Getting the source into the textarea: gzip+base64 it (`gzip -9nc x.cpp | base64 | tr -d '\n'`) and inflate it inside the page, which keeps the payload about a third of the source:
+Getting the source into the textarea: base64 it and decode with `atob` inside the page. For a source of a few KB that is the whole story, and it depends on nothing but `atob`.
+
+The gzip variant below is a size optimisation for long sources — it keeps the payload to about a third — but it costs a dependency on `DecompressionStream`, which has thrown `Failed to fetch` in this page context. Reach for it only when the plain payload is genuinely unwieldy:
 
 ```js
 const bin = Uint8Array.from(atob(B), c => c.charCodeAt(0));
