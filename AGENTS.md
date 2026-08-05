@@ -14,19 +14,21 @@ An archive of accepted [POJ](http://poj.org) submissions, one directory per prob
 
 "Solve N problems" means: take the **top N ids of `TODO`** — the list is already ordered so the most-solved (roughly easiest and best-documented) come first — skipping any that already have an `_attempts_/<id>.md`, and work them. A specific problem id the user names overrides both the ordering and the skip.
 
-To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exactly the problems the logged-in user has not solved, each with its global solve count. Only the `ID` and `Solved` columns are wanted, so re-render the table in the page as `<id> <solved>` lines inside a `<pre>` and replace the body with it before calling `get_page_text` — the page as served runs to ~150 KB and would be cut off at the tool's 50 KB default, while two numeric columns fit comfortably. Then sort by solve count descending and write out the ids alone.
+To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exactly the problems the logged-in user has not solved, each with its global solve count. This is the one step besides submitting that must run in the browser — the form posts no user field, so identity comes only from the session cookie, and the curl detour around it is closed too (`userstatus` returns 403 to non-browser requests). Only the `ID` and `Solved` columns are wanted, so re-render the table in the page as `<id> <solved>` lines inside a `<pre>` and replace the body with it before calling `get_page_text` — the page as served runs to ~150 KB and would be cut off at the tool's 50 KB default, while two numeric columns fit comfortably. Then sort by solve count descending and write out the ids alone.
 
 ## Solving a problem end to end
 
-The whole loop runs through the user's Chrome session, which is already logged in as user `150014`.
+Only the submit itself needs the user's Chrome session (logged in as user `150014`). Everything else — the statement, the samples, the verdict — is plain `curl` with no login, so the browser is touched exactly once per submission.
 
 ### 1. Read the statement
 
-`http://poj.org/problem?id=<id>` — `get_page_text` returns the whole statement including the samples and the limits. Note the time and memory limits; they decide how much the algorithm can afford.
+`curl -s 'http://poj.org/problem?id=<id>'` — the raw HTML carries the whole statement, samples, and limits, and needs no login. Note the time and memory limits; they decide how much the algorithm can afford.
 
-**Exponents lose their superscript.** A bound written `2^54` on the page arrives as `254`, and `10^9` as `109`, because the markup carries the exponent and the text does not. Read any implausible constant that way — a limit of "254" on a problem about factoring large numbers is 2^54 — and check it against the samples and the memory limit before sizing anything to it. Getting this wrong invents a range the problem never had: one solve here chased a 66-second worst case that turned out to sit outside the real bound entirely. Not every such constant is an exponent, though: 2409's `cs<=32` really is the product c*s, which the statement's own gloss settles.
+Read the HTML itself, not a text extraction — two documented misreadings here were both extraction artifacts that the raw markup makes unambiguous:
 
-**Leading whitespace is lost too.** 1523's expected output indents every line by two spaces, and nothing in the extracted text shows it — it is visible only in the sample's raw `<pre>`. When the output format looks like it might carry indentation or alignment, read the sample out of the HTML rather than the text, or the verdict is a Presentation Error that reads like a wrong answer.
+**Exponents.** Text extraction drops superscripts: a bound written `2<sup>54</sup>` in the HTML arrives as `254`, and `10^9` as `109`. In the raw HTML the `<sup>` tag is right there (1811's is `2<sup>54</sup>`). Getting this wrong invents a range the problem never had: one solve here chased a 66-second worst case that turned out to sit outside the real bound entirely. Not every odd constant is a mangled exponent, though: 2409's `cs<=32` really is the product c*s, which the statement's own gloss settles.
+
+**Leading whitespace.** 1523's expected output indents every line by two spaces, visible in the sample's raw `<pre>` but not in extracted text — missing it turns into a Presentation Error that reads like a wrong answer. In the curl output the bytes are exact (samples also carry `\r\n` line endings; strip them when diffing).
 
 ### 2. Write and test locally
 
@@ -38,6 +40,10 @@ Work in the scratchpad, not the repo — only the accepted source gets committed
 - Judge machines are much slower than a modern laptop; leave several times the stated limit as headroom.
 
 ### 3. Submit
+
+The one step that needs the browser: curl cannot borrow the session cookie (the extension blocks `document.cookie` reads), so the post has to happen from the logged-in page.
+
+First check the tab is actually logged in: on a logged-out page the login form replaces everything and `document.forms[2]` does not exist (`document.forms.length` is 1). POJ sessions expire, and with two Chromes connected only one may hold the login — if the form is missing, try the other browser before concluding the session is gone; if both are logged out, only the user can log back in (agents report back rather than wait).
 
 The submit form is `document.forms[2]` on `http://poj.org/submit?problem_id=<id>`: fields `problem_id`, `language` (`0=G++ 1=GCC 2=Java 3=Pascal 4=C++ 5=C 6=Fortran`), `source`, and a hidden `encoded=1` because `onsubmit` base64-encodes the textarea. So plant the **plain** source and submit by clicking the real button — `form.submit()` skips `onsubmit` and would post unencoded source under `encoded=1`.
 
@@ -56,11 +62,11 @@ f.elements['submit'].click();
 
 Do the whole thing — plant, verify, click — in a **single** JS call, guarded by `f.problem_id.value === '<id>'` and aborting if it does not match. With several agents in one browser a sibling can re-navigate your tab between two calls, and then the click submits *their* form: nothing appears under your problem and the source you planted is gone. The guard is a line long and the failure mode is otherwise silent.
 
-Check `f.source.value.length` against the file before clicking, and `Code Length` in the status row after — that is the proof the source arrived intact. Serving the file from a local HTTP server and `fetch`ing it from the page does **not** work: Chrome's private-network access blocks a public page from reaching `127.0.0.1`.
+Check `f.source.value.length` before clicking — against the **LF-normalized** source, not the file size: the textarea converts `\r\n` to `\n`, so a 118-byte CRLF file plants (and judges) as 111 bytes. Compare `src.replace(/\r\n/g,'\n').length` inside the same JS call, then `Code Length` in the status row after — that is the proof the source arrived intact. Serving the file from a local HTTP server and `fetch`ing it from the page does **not** work: Chrome's private-network access blocks a public page from reaching `127.0.0.1`.
 
 ### 4. Check the verdict
 
-`http://poj.org/status?problem_id=<id>&user_id=150014`, first row of `table.a`, cells `Run ID | User | Problem | Result | Memory | Time | Language | Code Length | Submit Time`. Poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
+`curl -s 'http://poj.org/status?problem_id=<id>&user_id=150014'` — no login, no browser. Each `<tr align=center>` row is a submission, newest first, cells `Run ID | User | Problem | Result | Memory | Time | Language | Code Length | Submit Time`. Poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
 
 A clean click is not evidence the submission landed, either. POJ drops a submission arriving within ~10s of any other — from a sibling agent as much as from you — and says nothing: the guard passes, the source length checks out, and no status row ever appears. So confirm a **new** row before believing anything, and a submission that produced no row is not an attempt and must not count against the cap.
 
@@ -92,7 +98,7 @@ Each agent owns steps 1–5 for its problem, ending at **Accepted**, and writes 
 - **Do not commit.** Concurrent `git add`/`git commit` in one worktree races on `index.lock` and can sweep another agent's files into the wrong commit. The parent commits afterwards, one problem per commit, in TODO order.
 - **Do not edit `TODO`.** The parent strikes each accepted problem's id once its commit lands.
 
-Each agent should also open its own tab (`tabs_create_mcp`) and close it when done. If the browser tools report that several Chrome browsers are connected and demand a choice, an agent must **not** stop to ask — it cannot reach the user, and the whole fan-out stalls behind it. Any of them works: `select_browser` with any deviceId and carry on.
+With reads and verdict polling on curl, an agent touches the browser only for its submit clicks: open a tab (`tabs_create_mcp`) when ready to submit and close it right after the click is confirmed. A shorter browser window means fewer chances for a sibling to re-navigate the tab, but the in-call guard stays regardless. If the browser tools report that several Chrome browsers are connected and demand a choice, an agent must **not** stop to ask — it cannot reach the user, and the whole fan-out stalls behind it. `select_browser` with any deviceId, but verify the login (`document.forms[2]` exists on the submit page) before planting — only one of the connected Chromes may hold the POJ session; if the form is missing, switch to the other.
 
 POJ rejects submissions that arrive within ~10s of the previous one, so an agent that gets turned away should wait and resubmit rather than treat it as a verdict. Past three agents this stops being rare — they finish local testing at similar times and collide, each collision costing a poll-and-retry cycle. Give each agent a **submit slot**: agent k waits 25*k seconds before its first click. The stagger costs one agent a minute or two and buys back more than that in avoided collisions.
 
