@@ -56,6 +56,8 @@ Check `f.source.value.length` against the file before clicking, and `Code Length
 
 `http://poj.org/status?problem_id=<id>&user_id=150014`, first row of `table.a`, cells `Run ID | User | Problem | Result | Memory | Time | Language | Code Length | Submit Time`. Poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
 
+A clean click is not evidence the submission landed, either. POJ drops a submission arriving within ~10s of any other — from a sibling agent as much as from you — and says nothing: the guard passes, the source length checks out, and no status row ever appears. So confirm a **new** row before believing anything, and a submission that produced no row is not an attempt and must not count against the cap.
+
 A browser error *after* the submit click is not evidence the submission was lost — with several agents in one browser, a sibling's navigation can take the tab out from under you, so the JS that was going to confirm the click fails even though the post went through. Always look at the status page before resubmitting, or phantom retries eat the submission cap.
 
 ### 5. Iterate
@@ -86,7 +88,7 @@ Each agent owns steps 1–5 for its problem, ending at **Accepted**, and writes 
 
 Each agent should also open its own tab (`tabs_create_mcp`) and close it when done. If the browser tools report that several Chrome browsers are connected and demand a choice, an agent must **not** stop to ask — it cannot reach the user, and the whole fan-out stalls behind it. Any of them works: `select_browser` with any deviceId and carry on.
 
-POJ rejects submissions that arrive within ~10s of the previous one, so an agent that gets turned away should wait and resubmit rather than treat it as a verdict.
+POJ rejects submissions that arrive within ~10s of the previous one, so an agent that gets turned away should wait and resubmit rather than treat it as a verdict. Past three agents this stops being rare — they finish local testing at similar times and collide, each collision costing a poll-and-retry cycle. Give each agent a **submit slot**: agent k waits 25*k seconds before its first click. The stagger costs one agent a minute or two and buys back more than that in avoided collisions.
 
 Cap an agent at **5 submissions** for its problem. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. An agent that hits the cap, or that gets stuck before submitting at all, reports the last verdict, what it tried, and what it thinks the problem actually needs.
 
