@@ -16,6 +16,8 @@ Each clause exists for a reason:
 
 - **A stop condition is mandatory.** `TODO` holds thousands of ids, so "solve 5 problems" on a loop never terminates on its own. Two barren cycles is the signal that the backlog has outrun the setup.
 - **A usage limit is not a park.** It kills the agent before it says anything about the problem, so parking it would file an empty write-up and skip the problem forever. Wait out the reset and rerun the same ids. `ScheduleWakeup` caps at an hour, so a longer reset needs chained wakeups.
+
+  Arm that wakeup **first**, before working out exactly when the reset falls. The limit takes out every agent in the cycle at once and can take the environment part-way down with it — a `date` call to compute a precise delay went out with a classifier outage during one such stall. `ScheduleWakeup` needs no shell, the error text states the reset time, and the delay only has to be an over-estimate because the wake can re-check the clock. Fix the loop, then refine the timing.
 - **A model park is not a problem park.** When a cheaper model is being trialled, a problem it could not finish still deserves a run on the stronger one; the `_attempts_` file goes to that agent as its starting point rather than retiring the problem.
 
 Report each verdict as it lands rather than batching them at the end of a cycle — the user is watching an unattended run and a silent hour is indistinguishable from a stalled one.
