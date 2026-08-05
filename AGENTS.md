@@ -7,6 +7,14 @@ An archive of accepted [POJ](http://poj.org) submissions, one directory per prob
 - `<id>/<runId>_AC_<time>MS_<memory>K.<ext>` — one file per accepted submission, named from its POJ status row (time before memory). Several files in a directory means the problem was solved more than once, e.g. in another language.
 - `<id>/test_data/<id>.in` / `.out` — sample data, only where it was worth keeping.
 - `<id>/tags/<tag>` — empty marker files used as tags; manage them with `./tag.sh` (`tag.sh` lists all tags, `tag.sh <id>` lists a problem's, `tag.sh <id> <tag>` adds one).
+- `TODO` — the backlog, nothing but problem ids one per line: those POJ says user `150014` has not solved, ranked by global solve count, most-solved first.
+- `_attempts_/<id>.md` — the write-up left behind by a problem that was tried and not accepted: what was understood, what was submitted, the verdicts, and where it stalled. Its existence is what marks the problem as parked.
+
+## Picking what to solve
+
+"Solve N problems" means: take the **top N ids of `TODO`** — the list is already ordered so the most-solved (roughly easiest and best-documented) come first — skipping any that already have an `_attempts_/<id>.md`, and work them. A specific problem id the user names overrides both the ordering and the skip.
+
+To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exactly the problems the logged-in user has not solved, each with its global solve count. Only the `ID` and `Solved` columns are wanted, so re-render the table in the page as `<id> <solved>` lines inside a `<pre>` and replace the body with it before calling `get_page_text` — the page as served runs to ~150 KB and would be cut off at the tool's 50 KB default, while two numeric columns fit comfortably. Then sort by solve count descending and write out the ids alone.
 
 ## Solving a problem end to end
 
@@ -40,11 +48,15 @@ f.source.value = src;
 f.elements['submit'].click();
 ```
 
+Do the whole thing — plant, verify, click — in a **single** JS call, guarded by `f.problem_id.value === '<id>'` and aborting if it does not match. With several agents in one browser a sibling can re-navigate your tab between two calls, and then the click submits *their* form: nothing appears under your problem and the source you planted is gone. The guard is a line long and the failure mode is otherwise silent.
+
 Check `f.source.value.length` against the file before clicking, and `Code Length` in the status row after — that is the proof the source arrived intact. Serving the file from a local HTTP server and `fetch`ing it from the page does **not** work: Chrome's private-network access blocks a public page from reaching `127.0.0.1`.
 
 ### 4. Check the verdict
 
 `http://poj.org/status?problem_id=<id>&user_id=150014`, first row of `table.a`, cells `Run ID | User | Problem | Result | Memory | Time | Language | Code Length | Submit Time`. Poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
+
+A browser error *after* the submit click is not evidence the submission was lost — with several agents in one browser, a sibling's navigation can take the tab out from under you, so the JS that was going to confirm the click fails even though the post went through. Always look at the status page before resubmitting, or phantom retries eat the submission cap.
 
 ### 5. Iterate
 
@@ -62,3 +74,20 @@ Only after **Accepted**. Copy the exact accepted source to `<id>/<runId>_AC_<tim
 Commit subject is `<id> <Title>` — plain, no Conventional Commits prefix. The body explains the algorithm and the decisions behind it, not the code. One problem per commit.
 
 Do not push unless asked.
+
+## Solving several at once
+
+Spawn **one agent per problem**, all in a single message so they run concurrently, and keep the statements, the test scaffolding, and the failed attempts out of the main context — the parent only ever sees a verdict per problem.
+
+Each agent owns steps 1–5 for its problem, ending at **Accepted**, and writes the annotated source to `<id>/<runId>_AC_<time>MS_<mem>K.<ext>`. Two things it must **not** do, because they are shared state:
+
+- **Do not commit.** Concurrent `git add`/`git commit` in one worktree races on `index.lock` and can sweep another agent's files into the wrong commit. The parent commits afterwards, one problem per commit, in TODO order.
+- **Do not edit `TODO`.** The parent strikes each accepted problem's id once its commit lands.
+
+Each agent should also open its own tab (`tabs_create_mcp`) and close it when done. If the browser tools report that several Chrome browsers are connected and demand a choice, an agent must **not** stop to ask — it cannot reach the user, and the whole fan-out stalls behind it. Any of them works: `select_browser` with any deviceId and carry on.
+
+POJ rejects submissions that arrive within ~10s of the previous one, so an agent that gets turned away should wait and resubmit rather than treat it as a verdict.
+
+Cap an agent at **5 submissions** for its problem. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. An agent that hits the cap, or that gets stuck before submitting at all, reports the last verdict, what it tried, and what it thinks the problem actually needs.
+
+The parent turns that report into `_attempts_/<id>.md` — the reading of the statement, the algorithm tried, the verdict of each submission, and the failing case if one was found — and commits it as `<id> attempt notes`. The id stays where it is in `TODO`, but a problem carrying an attempt file is skipped when picking the next N; solve it only when asked for by id, and hand the file to the agent so it starts where the last one stopped instead of re-deriving the dead end.
