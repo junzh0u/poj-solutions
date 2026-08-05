@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""Run one submit-click command with cross-agent spacing."""
+
+from __future__ import annotations
+
+import fcntl
+import os
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+
+def main(arguments: list[str]) -> int:
+    if len(arguments) < 2:
+        print("usage: with-submit-lock <submit-click-command> [arg ...]", file=sys.stderr)
+        return 2
+
+    try:
+        minimum_interval = float(os.environ.get("POJ_SUBMIT_MIN_INTERVAL", "15"))
+    except ValueError:
+        print("POJ_SUBMIT_MIN_INTERVAL must be a number", file=sys.stderr)
+        return 2
+    if minimum_interval < 0:
+        print("POJ_SUBMIT_MIN_INTERVAL must not be negative", file=sys.stderr)
+        return 2
+
+    default_directory = Path(tempfile.gettempdir()) / f"poj-submit-150014-{os.getuid()}"
+    coordinator_directory = Path(
+        os.environ.get("POJ_SUBMIT_COORDINATOR_DIR", default_directory)
+    )
+    coordinator_directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    lock_path = coordinator_directory / "submit.lock"
+    timestamp_path = coordinator_directory / "last-attempt"
+
+    with lock_path.open("a+", encoding="utf-8") as lock_file:
+        fcntl.flock(lock_file, fcntl.LOCK_EX)
+        try:
+            elapsed = time.time() - timestamp_path.stat().st_mtime
+        except FileNotFoundError:
+            elapsed = minimum_interval
+        remaining = minimum_interval - elapsed
+        if remaining > 0:
+            print(
+                f"submit coordinator: waiting {remaining:.1f}s for the POJ window",
+                file=sys.stderr,
+            )
+            time.sleep(remaining)
+
+        # Reserve the attempt before spawning so a killed coordinator still leaves
+        # a conservative timestamp. Refresh it after the command because the click
+        # can occur near the end of a slow browser call.
+        timestamp_path.touch()
+        try:
+            completed = subprocess.run(arguments[1:], check=False)
+            return completed.returncode
+        finally:
+            timestamp_path.touch()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))
