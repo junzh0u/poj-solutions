@@ -90,4 +90,6 @@ POJ rejects submissions that arrive within ~10s of the previous one, so an agent
 
 Cap an agent at **5 submissions** for its problem. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. An agent that hits the cap, or that gets stuck before submitting at all, reports the last verdict, what it tried, and what it thinks the problem actually needs.
 
+An agent that dies to a usage or rate limit has not attempted anything — no write-up, no park, and the id keeps its place at the top of `TODO`. Wait for the reset and rerun it.
+
 The parent turns that report into `_attempts_/<id>.md` — the reading of the statement, the algorithm tried, the verdict of each submission, and the failing case if one was found — and commits it as `<id> attempt notes`. The id stays where it is in `TODO`, but a problem carrying an attempt file is skipped when picking the next N; solve it only when asked for by id, and hand the file to the agent so it starts where the last one stopped instead of re-deriving the dead end.
