@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 3 || ! $1 =~ ^[0-9]+$ || ! $2 =~ ^[0-9]+$ || ! $3 =~ ^[A-Za-z0-9+/]+={0,2}$ ]]; then
+  echo "usage: submit-via-applescript <window-id> <tab-id> <base64-javascript>" >&2
+  exit 2
+fi
+
+window_id=$1
+tab_id=$2
+payload=$3
+
+# Build the JavaScript string inside AppleScript. Shell interpolation around
+# `atob('$payload')` strips those JavaScript quotes before osascript sees them.
+exec osascript \
+  -e 'on run argv' \
+  -e 'set targetWindowId to item 1 of argv as integer' \
+  -e 'set targetTabId to item 2 of argv as integer' \
+  -e 'set payload to item 3 of argv' \
+  -e 'tell application "Google Chrome"' \
+  -e 'set targetWindow to first window whose id is targetWindowId' \
+  -e 'set targetTab to first tab of targetWindow whose id is targetTabId' \
+  -e 'execute targetTab javascript ("eval(atob(" & character id 39 & payload & character id 39 & "))")' \
+  -e 'end tell' \
+  -e 'end run' \
+  "$window_id" "$tab_id" "$payload"
