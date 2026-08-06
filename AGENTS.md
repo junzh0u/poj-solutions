@@ -8,7 +8,7 @@ An archive of accepted [POJ](http://poj.org) submissions, one directory per prob
 - `<id>/test_data/<id>.in` / `.out` — sample data, only where it was worth keeping.
 - `<id>/tags/<tag>` — empty marker files used as tags; manage them with `./tag.sh` (`tag.sh` lists all tags, `tag.sh <id>` lists a problem's, `tag.sh <id> <tag>` adds one).
 - `TODO` — the backlog, nothing but problem ids one per line: those POJ says user `150014` has not solved and that are not parked, ranked by global solve count, most-solved first.
-- `_attempts_/<id>.md` — the write-up left behind by a problem that was tried and not accepted: what was understood, what was submitted, the verdicts, and where it stalled. Parking also strikes the id from `TODO` (same commit); the file is the record and the retry starting point.
+- `_attempts_/<id>.md` — the write-up left behind by a problem that was tried and not accepted: what was understood, what was submitted, the verdicts, and where it stalled. Parking also strikes the id from `TODO` (same commit); the file is the record and the retry starting point. It must be self-contained: never refer to scratchpad, temporary, private, or other uncommitted local files; preserve any detail needed for a retry in the write-up itself.
 
 ## Picking what to solve
 
