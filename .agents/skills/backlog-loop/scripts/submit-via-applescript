@@ -20,7 +20,19 @@ exec osascript \
   -e 'tell application "Google Chrome"' \
   -e 'set targetWindow to first window whose id is targetWindowId' \
   -e 'set targetTab to first tab of targetWindow whose id is targetTabId' \
+  -e 'set submitUrl to URL of targetTab' \
   -e 'execute targetTab javascript ("eval(atob(" & character id 39 & payload & character id 39 & "))")' \
+  -e 'set navigationStarted to false' \
+  -e 'repeat 400 times' \
+  -e 'if URL of targetTab is not submitUrl then set navigationStarted to true' \
+  -e 'if navigationStarted and loading of targetTab is false then' \
+  -e 'set completedUrl to URL of targetTab' \
+  -e 'if completedUrl is "http://poj.org/status" then return completedUrl' \
+  -e 'error "submit navigation ended at unexpected URL: " & completedUrl' \
+  -e 'end if' \
+  -e 'delay 0.05' \
+  -e 'end repeat' \
+  -e 'error "submit navigation did not finish"' \
   -e 'end tell' \
   -e 'end run' \
   "$window_id" "$tab_id" "$payload"
