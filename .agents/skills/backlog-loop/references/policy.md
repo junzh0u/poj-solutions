@@ -2,7 +2,7 @@
 
 - Treat one batch of problems as one cycle. Follow `AGENTS.md` for selection, concurrent ownership, submission limits, attempt notes, commits, and `TODO` edits.
 - Require a finite stop condition. Default to stopping after two consecutive confirmed cycles with no Accepted solution; reset the counter whenever a cycle accepts anything.
-- Count only genuine problem parks toward a barren cycle. A cheaper model failing is a model park, not a problem park: retry that id on the stronger model with its `_attempts_` notes before retiring or counting it.
+- Count only genuine problem parks toward a barren cycle. A cheaper model failing is a model park, not a problem park: retry that id on the stronger model with its `attempts/<id>.md` notes before retiring or counting it.
 - Treat usage and rate limits as interruptions, not verdicts or parks. Do not create attempt notes, advance the barren-cycle counter, or select replacement ids. Resume the same ids after the reset.
 - Preflight a working and authorized submission path before spawning solve agents. Submission-control failures are infrastructure interruptions, not verdicts or parks; do not create attempt notes or advance the barren-cycle counter.
 - Pin the exact browser profile and window selected by preflight for the whole cycle. Agents must not rediscover or switch to a newly opened window; losing the preflighted target is a submission-control interruption.

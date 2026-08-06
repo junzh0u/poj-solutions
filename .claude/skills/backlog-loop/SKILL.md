@@ -14,7 +14,7 @@ Invoke `/loop` with no interval so each firing runs one cycle and agent completi
 Default to batches of five and stop after two consecutive confirmed barren cycles unless the user specifies otherwise. Baseline:
 
 ```text
-/loop solve 5 problems, stop when two confirmed cycles in a row produce no accept. Spawn subagents with model "sonnet" until the first model park. Starting with the following batch, go back to the default model (opus) and rerun that parked id with its _attempts_ notes before continuing. A usage or rate limit is not a park: do not create attempt notes or advance the barren-cycle counter; wait for the reset and retry the same ids. Report each verdict as it arrives. Do not push.
+/loop solve 5 problems, stop when two confirmed cycles in a row produce no accept. Spawn subagents with model "sonnet" until the first model park. Starting with the following batch, go back to the default model (opus) and rerun that parked id with its `attempts/<id>.md` notes before continuing. A usage or rate limit is not a park: do not create attempt notes or advance the barren-cycle counter; wait for the reset and retry the same ids. Report each verdict as it arrives. Do not push.
 ```
 
 Adapt the batch size, stop condition, and model policy to the user's request without dropping the safety rules in the shared policy.

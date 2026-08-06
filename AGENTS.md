@@ -1,20 +1,20 @@
 # POJ Solutions — Agent Instructions
 
-An archive of accepted [POJ](http://poj.org) submissions, one directory per problem ID. Nothing is built or tested by the repo itself; the judge is the test suite.
+An archive of accepted [POJ](http://poj.org) submissions, one directory per problem ID under `solutions/`. Nothing is built or tested by the repo itself; the judge is the test suite.
 
 ## Layout
 
-- `<id>/<runId>_AC_<time>MS_<memory>K.<ext>` — one file per accepted submission, named from its POJ status row (time before memory). Several files in a directory means the problem was solved more than once, e.g. in another language.
-- `<id>/test_data/<id>.in` / `.out` — sample data, only where it was worth keeping.
-- `<id>/tags/<tag>` — empty marker files used as tags; manage them with `./tag.sh` (`tag.sh` lists all tags, `tag.sh <id>` lists a problem's, `tag.sh <id> <tag>` adds one).
+- `solutions/<id>/<runId>_AC_<time>MS_<memory>K.<ext>` — one file per accepted submission, named from its POJ status row (time before memory). Several files in a directory means the problem was solved more than once, e.g. in another language.
+- `solutions/<id>/test_data/<id>.in` / `.out` — sample data, only where it was worth keeping.
+- `solutions/<id>/tags/<tag>` — empty marker files used as tags; manage them with `./tag.sh` (`tag.sh` lists all tags, `tag.sh <id>` lists a problem's, `tag.sh <id> <tag>` adds one).
 - `TODO` — the backlog, nothing but problem ids one per line: those POJ says user `150014` has not solved and that are not parked, ranked by global solve count, most-solved first.
-- `_attempts_/<id>.md` — the write-up left behind by a problem that was tried and not accepted: what was understood, what was submitted, the verdicts, and where it stalled. Parking also strikes the id from `TODO` (same commit); the file is the record and the retry starting point. It must be self-contained: never refer to scratchpad, temporary, private, or other uncommitted local files; preserve any detail needed for a retry in the write-up itself.
+- `attempts/<id>.md` — the write-up left behind by a problem that was tried and not accepted: what was understood, what was submitted, the verdicts, and where it stalled. Parking also strikes the id from `TODO` (same commit); the file is the record and the retry starting point. It must be self-contained: never refer to scratchpad, temporary, private, or other uncommitted local files; preserve any detail needed for a retry in the write-up itself.
 
 ## Picking what to solve
 
-"Solve N problems" means: take the **top N ids of `TODO`** — the list is already ordered so the most-solved (roughly easiest and best-documented) come first — and work them. A specific problem id the user names overrides the ordering, and is the one way a parked problem comes back: hand its `_attempts_/<id>.md` to the agent so it starts where the last run stopped.
+"Solve N problems" means: take the **top N ids of `TODO`** — the list is already ordered so the most-solved (roughly easiest and best-documented) come first — and work them. A specific problem id the user names overrides the ordering, and is the one way a parked problem comes back: hand its `attempts/<id>.md` to the agent so it starts where the last run stopped.
 
-To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exactly the problems the logged-in user has not solved, each with its global solve count. This is the one step besides submitting that must run in the browser — the form posts no user field, so identity comes only from the session cookie, and the curl detour around it is closed too (`userstatus` returns 403 to non-browser requests). Only the `ID` and `Solved` columns are wanted, and the page as served runs to ~150 KB — more than text extraction returns whole — so re-render the table in the page as `<id> <solved>` lines inside a `<pre>` and replace the body with it before extracting the text. Then sort by solve count descending, subtract every id that has an `_attempts_/<id>.md` — POJ still lists parked problems as unsolved, and without the subtraction every rebuild would silently un-park them — and write out the ids alone.
+To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exactly the problems the logged-in user has not solved, each with its global solve count. This is the one step besides submitting that must run in the browser — the form posts no user field, so identity comes only from the session cookie, and the curl detour around it is closed too (`userstatus` returns 403 to non-browser requests). Only the `ID` and `Solved` columns are wanted, and the page as served runs to ~150 KB — more than text extraction returns whole — so re-render the table in the page as `<id> <solved>` lines inside a `<pre>` and replace the body with it before extracting the text. Then sort by solve count descending, subtract every id that has an `attempts/<id>.md` — POJ still lists parked problems as unsolved, and without the subtraction every rebuild would silently un-park them — and write out the ids alone.
 
 ## Solving a problem end to end
 
@@ -101,11 +101,11 @@ Report each verdict as it arrives rather than silently resubmitting.
 
 Sometimes the judge is the bug. When an independently-derived known-good solution (a canonical reference implementation submitted as a control) fails the same way as yours, check the problem's **general** status page — `status?problem_id=<id>` with no user filter: every recent submission from unrelated users failing identically, against the same account accepting other problems the same hour, means the problem's judge or data is broken — this has happened, to a problem that had been accepting solutions of the same shape weeks earlier. That is a park with the evidence recorded, revisited only if the judge recovers — and not a model park, so no stronger-model retry is owed.
 
-Cap the run at **5 submissions**. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. On hitting the cap, or getting stuck before submitting at all, report the last verdict, what was tried, and what the problem actually needs; the parent turns that report into the `_attempts_/<id>.md` park.
+Cap the run at **5 submissions**. Iterating past that means the approach is wrong rather than buggy, and each blind retry costs judge time — better to hand the problem back than to grind. On hitting the cap, or getting stuck before submitting at all, report the last verdict, what was tried, and what the problem actually needs; the parent turns that report into the `attempts/<id>.md` park.
 
 ### 6. Commit
 
-The agent's part ends with the file: only after **Accepted**, copy the exact submitted source byte-for-byte to `<id>/<runId>_AC_<time>MS_<mem>K.<ext>`. Its title, model, approach, and ambiguity comment block was finalized and tested before submission; do not add or edit it after the verdict.
+The agent's part ends with the file: only after **Accepted**, copy the exact submitted source byte-for-byte to `solutions/<id>/<runId>_AC_<time>MS_<mem>K.<ext>`. Its title, model, approach, and ambiguity comment block was finalized and tested before submission; do not add or edit it after the verdict.
 
 The commit itself is the parent's, one problem per commit. Subject is `<id> <Title>` — plain, no Conventional Commits prefix; the body explains the algorithm and the decisions behind it, not the code, and ends with `Model: <model-id>` matching the source comment. Once the commit lands, the parent strikes the id from `TODO`.
 
@@ -123,6 +123,6 @@ The parent commits each accept as its agent reports, one problem per commit — 
 
 An agent that dies to a usage or rate limit has not attempted anything — no write-up, no park, and the id keeps its place at the top of `TODO`. Wait for the reset and rerun it.
 
-A hand-back report — cap hit, or stuck before submitting — becomes `_attempts_/<id>.md`: the reading of the statement, the algorithm tried, the verdict of each submission, and the failing case if one was found. The parent writes it, strikes the id from `TODO`, and commits both as `<id> attempt notes`. From then on the problem is solved only when the user asks for it by id; a model park's stronger-model retry in the next batch is unaffected, because that id is carried by the run's own state, not by `TODO`.
+A hand-back report — cap hit, or stuck before submitting — becomes `attempts/<id>.md`: the reading of the statement, the algorithm tried, the verdict of each submission, and the failing case if one was found. The parent writes it, strikes the id from `TODO`, and commits both as `<id> attempt notes`. From then on the problem is solved only when the user asks for it by id; a model park's stronger-model retry in the next batch is unaffected, because that id is carried by the run's own state, not by `TODO`.
 
-Solve agents may run on a cheaper model than the parent to stretch the budget — most backlog problems don't need the strongest model. But **a model park is not a problem park**: a problem the cheap model could not finish still deserves one run on the default (stronger) model, handed the `_attempts_` notes as its starting point, before the park is final. Once the cheap model produces its first park, stop trialling it — later batches go back to the default model.
+Solve agents may run on a cheaper model than the parent to stretch the budget — most backlog problems don't need the strongest model. But **a model park is not a problem park**: a problem the cheap model could not finish still deserves one run on the default (stronger) model, handed its `attempts/<id>.md` as the starting point, before the park is final. Once the cheap model produces its first park, stop trialling it — later batches go back to the default model.
