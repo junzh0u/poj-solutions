@@ -1,0 +1,418 @@
+#!/usr/bin/env python3
+"""Read and update the park record carried by attempts/<id>.md front matter."""
+
+from __future__ import annotations
+
+import argparse
+import datetime
+import json
+import re
+import sys
+from pathlib import Path
+from typing import TypedDict
+
+PARK_KINDS = ("model", "judge", "infeasible")
+FIELD_ORDER = ("problem", "park", "parked", "solvers", "recheck")
+DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+SOLVER_PATTERN = re.compile(
+    r"^(?P<model>\S+)"
+    r"\s+(?P<date>\d{4}-\d{2}-\d{2})"
+    r"\s+(?P<submissions>\d+)"
+    r"\s+(?P<verdict>\S.*)$"
+)
+
+
+class ParkNoteError(ValueError):
+    """A note whose park record cannot be trusted — never a silent skip."""
+
+
+class Attempt(TypedDict):
+    model: str
+    date: str
+    submissions: int
+    verdict: str
+
+
+class ParkNote(TypedDict):
+    problem: str
+    park: str
+    parked: str
+    solvers: list[Attempt]
+    recheck: str | None
+
+
+def parse_ranks(text: str) -> dict[str, int]:
+    ranks: dict[str, int] = {}
+    for number, line in enumerate(text.splitlines(), start=1):
+        stripped = line.split("#", 1)[0].strip()
+        if not stripped:
+            continue
+        parts = stripped.split()
+        if len(parts) != 2 or not parts[0].isdigit():
+            raise ParkNoteError(f"model ranks line {number}: expected '<rank> <model-id>'")
+        if parts[1] in ranks:
+            raise ParkNoteError(f"model ranks line {number}: {parts[1]} listed twice")
+        ranks[parts[1]] = int(parts[0])
+    if not ranks:
+        raise ParkNoteError("model ranks file lists no models")
+    return ranks
+
+
+def split_front_matter(text: str) -> tuple[list[str] | None, str]:
+    if not text.startswith("---\n"):
+        return None, text
+    end = text.find("\n---\n", 3)
+    if end == -1:
+        raise ParkNoteError("front matter is not terminated by a --- line")
+    return text[4 : end + 1].splitlines(), text[end + 5 :]
+
+
+def parse_front_matter(lines: list[str]) -> tuple[dict[str, str], list[str]]:
+    fields: dict[str, str] = {}
+    solvers: list[str] = []
+    in_solvers = False
+    for line in lines:
+        if not line.strip():
+            continue
+        if line.startswith("  - "):
+            if not in_solvers:
+                raise ParkNoteError(f"list item outside solvers: {line.strip()!r}")
+            solvers.append(line[4:].strip())
+            continue
+        if line.startswith(" "):
+            raise ParkNoteError(f"unexpected indented line: {line.strip()!r}")
+        key, separator, value = line.partition(":")
+        key = key.strip()
+        value = value.strip()
+        if not separator:
+            raise ParkNoteError(f"line is not '<key>: <value>': {line.strip()!r}")
+        if key in fields or (key == "solvers" and in_solvers):
+            raise ParkNoteError(f"duplicate key {key!r}")
+        if key not in FIELD_ORDER:
+            raise ParkNoteError(f"unknown key {key!r}")
+        in_solvers = key == "solvers"
+        if in_solvers:
+            if value:
+                raise ParkNoteError("solvers must be a list of '  - <entry>' lines")
+        else:
+            fields[key] = value
+    return fields, solvers
+
+
+def parse_note(text: str, problem: str) -> ParkNote:
+    lines, _ = split_front_matter(text)
+    if lines is None:
+        raise ParkNoteError("no park record — the note starts with no front matter")
+    fields, raw_solvers = parse_front_matter(lines)
+
+    for key in ("problem", "park", "parked"):
+        if key not in fields:
+            raise ParkNoteError(f"missing key {key!r}")
+    if fields["problem"] != problem:
+        raise ParkNoteError(
+            f"front matter says problem {fields['problem']}, filename says {problem}"
+        )
+    if fields["park"] not in PARK_KINDS:
+        raise ParkNoteError(
+            f"park must be one of {', '.join(PARK_KINDS)}, not {fields['park']!r}"
+        )
+    if not DATE_PATTERN.match(fields["parked"]):
+        raise ParkNoteError(f"parked must be YYYY-MM-DD, not {fields['parked']!r}")
+    if not raw_solvers:
+        raise ParkNoteError("solvers lists no attempt")
+    if fields["park"] == "judge" and not fields.get("recheck"):
+        raise ParkNoteError("a judge park must carry the recheck URL that would retire it")
+
+    solvers: list[Attempt] = []
+    for entry in raw_solvers:
+        match = SOLVER_PATTERN.match(entry)
+        if match is None:
+            raise ParkNoteError(
+                f"solver entry must be '<model-id> <YYYY-MM-DD> <submissions> <verdict>',"
+                f" not {entry!r}"
+            )
+        solvers.append(
+            {
+                "model": match["model"],
+                "date": match["date"],
+                "submissions": int(match["submissions"]),
+                "verdict": match["verdict"],
+            }
+        )
+
+    return {
+        "problem": fields["problem"],
+        "park": fields["park"],
+        "parked": fields["parked"],
+        "solvers": solvers,
+        "recheck": fields.get("recheck") or None,
+    }
+
+
+def render_front_matter(note: ParkNote) -> str:
+    lines = [
+        "---",
+        f"problem: {note['problem']}",
+        f"park: {note['park']}",
+        f"parked: {note['parked']}",
+        "solvers:",
+    ]
+    for attempt in note["solvers"]:
+        lines.append(
+            f"  - {attempt['model']} {attempt['date']}"
+            f" {attempt['submissions']} {attempt['verdict']}"
+        )
+    if note["recheck"]:
+        lines.append(f"recheck: {note['recheck']}")
+    lines.append("---")
+    return "\n".join(lines) + "\n"
+
+
+def eligibility(
+    note: ParkNote, ranks: dict[str, int], for_model: str
+) -> tuple[str, str]:
+    """Classify a note as 'retry', 'final' or 'triage' for the model about to run."""
+    unranked = sorted({a["model"] for a in note["solvers"] if a["model"] not in ranks})
+    if unranked:
+        return "triage", f"unranked model(s): {', '.join(unranked)}"
+    if for_model not in ranks:
+        return "triage", f"unranked model: {for_model}"
+    if note["park"] != "model":
+        return "final", f"{note['park']} park — no model retry is owed"
+    best = max(ranks[a["model"]] for a in note["solvers"])
+    if best < ranks[for_model]:
+        strongest = max(note["solvers"], key=lambda a: ranks[a["model"]])["model"]
+        return "retry", f"parked by {strongest}, weaker than {for_model}"
+    return "final", f"already attempted at or above {for_model}"
+
+
+def park_status(note: ParkNote, ranks: dict[str, int]) -> tuple[str, str]:
+    """Classify a note as 'owed', 'final' or 'triage' against the whole fleet.
+
+    This is what decides whether a park is provisional. `final` means no ranked
+    model could still be owed the problem, so the park counts as a problem park
+    now; `owed` means at least one ranked model outranks every attempt so far.
+    """
+    unranked = sorted({a["model"] for a in note["solvers"] if a["model"] not in ranks})
+    if unranked:
+        return "triage", f"unranked model(s): {', '.join(unranked)}"
+    if note["park"] != "model":
+        return "final", f"{note['park']} park — no model retry is owed"
+    best = max(ranks[a["model"]] for a in note["solvers"])
+    strongest = max(note["solvers"], key=lambda a: ranks[a["model"]])["model"]
+    stronger = sorted(model for model, rank in ranks.items() if rank > best)
+    if stronger:
+        return "owed", f"owed a retry on {', '.join(stronger)}"
+    return "final", f"no ranked model outranks {strongest}"
+
+
+def load_notes(attempts_dir: Path) -> list[tuple[str, ParkNote | None, str | None]]:
+    loaded: list[tuple[str, ParkNote | None, str | None]] = []
+    for path in sorted(attempts_dir.glob("*.md")):
+        problem = path.stem
+        try:
+            loaded.append((problem, parse_note(path.read_text(), problem), None))
+        except ParkNoteError as error:
+            loaded.append((problem, None, str(error)))
+    return loaded
+
+
+def repository_root() -> Path:
+    return Path(__file__).resolve().parents[4]
+
+
+def add_shared_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--attempts-dir", type=Path, default=None)
+    parser.add_argument("--ranks", type=Path, default=None)
+
+
+def resolve_paths(options: argparse.Namespace) -> tuple[Path, dict[str, int]]:
+    attempts_dir = options.attempts_dir or repository_root() / "attempts"
+    ranks_path = options.ranks or (
+        repository_root() / ".agents/skills/backlog-loop/references/model-ranks.txt"
+    )
+    return attempts_dir, parse_ranks(ranks_path.read_text())
+
+
+def run_list(options: argparse.Namespace) -> int:
+    attempts_dir, ranks = resolve_paths(options)
+    if options.for_model and options.for_model not in ranks:
+        print(
+            f"park-notes: {options.for_model} is not in the model ranks file, so"
+            f" nothing can be owed to it — rank it there first. The notes are not"
+            f" the problem.",
+            file=sys.stderr,
+        )
+        return 2
+    loaded = load_notes(attempts_dir)
+
+    records: list[dict[str, object]] = []
+    for problem, note, error in loaded:
+        if note is None:
+            records.append(
+                {"problem": problem, "state": "triage", "reason": error, "note": None}
+            )
+            continue
+        if options.for_model:
+            state, reason = eligibility(note, ranks, options.for_model)
+        else:
+            state, reason = park_status(note, ranks)
+        records.append(
+            {"problem": problem, "state": state, "reason": reason, "note": note}
+        )
+
+    records.sort(
+        key=lambda r: (
+            (r["note"] or {}).get("parked", ""),  # type: ignore[union-attr]
+            int(r["problem"]),  # type: ignore[arg-type]
+        )
+    )
+
+    if options.json:
+        json.dump(records, sys.stdout, separators=(",", ":"))
+        sys.stdout.write("\n")
+    elif options.for_model:
+        for record in records:
+            if record["state"] == "retry":
+                print(record["problem"])
+    else:
+        for record in records:
+            note = record["note"]
+            last = note["solvers"][-1]["model"] if note else "-"
+            print(f"{record['problem']}\t{record['state']}\t{last}\t{record['reason']}")
+
+    triage = [str(r["problem"]) for r in records if r["state"] == "triage"]
+    if triage:
+        print(
+            f"park-notes: {len(triage)} note(s) need triage before they can be"
+            f" classified: {', '.join(triage)}",
+            file=sys.stderr,
+        )
+        return 4
+    return 0
+
+
+def run_check(options: argparse.Namespace) -> int:
+    attempts_dir, ranks = resolve_paths(options)
+    failures = 0
+    for problem, note, error in load_notes(attempts_dir):
+        if note is None:
+            print(f"attempts/{problem}.md: {error}", file=sys.stderr)
+            failures += 1
+            continue
+        for attempt in note["solvers"]:
+            if attempt["model"] not in ranks:
+                print(
+                    f"attempts/{problem}.md: {attempt['model']} is not in the model"
+                    f" ranks file",
+                    file=sys.stderr,
+                )
+                failures += 1
+    return 1 if failures else 0
+
+
+def run_record(options: argparse.Namespace) -> int:
+    attempts_dir, ranks = resolve_paths(options)
+    if options.model not in ranks:
+        print(
+            f"park-notes: {options.model} is not in the model ranks file — add it"
+            f" there before parking anything with it",
+            file=sys.stderr,
+        )
+        return 2
+    if not DATE_PATTERN.match(options.date):
+        print(f"park-notes: --date must be YYYY-MM-DD, not {options.date!r}", file=sys.stderr)
+        return 2
+
+    path = attempts_dir / f"{options.problem_id}.md"
+    if not path.exists():
+        print(
+            f"park-notes: {path} does not exist — write the write-up first, then"
+            f" record the park record over it",
+            file=sys.stderr,
+        )
+        return 2
+
+    text = path.read_text()
+    try:
+        lines, body = split_front_matter(text)
+        attempt: Attempt = {
+            "model": options.model,
+            "date": options.date,
+            "submissions": options.submissions,
+            "verdict": options.verdict,
+        }
+        if lines is None:
+            body = "\n" + body
+            note: ParkNote = {
+                "problem": options.problem_id,
+                "park": options.kind,
+                "parked": options.date,
+                "solvers": [attempt],
+                "recheck": options.recheck,
+            }
+        else:
+            note = parse_note(text, options.problem_id)
+            note["park"] = options.kind
+            note["solvers"] = note["solvers"] + [attempt]
+            if options.recheck:
+                note["recheck"] = options.recheck
+        if note["park"] == "judge" and not note["recheck"]:
+            print(
+                "park-notes: a judge park needs --recheck <status URL>, the check"
+                " that would retire it",
+                file=sys.stderr,
+            )
+            return 2
+    except ParkNoteError as error:
+        print(f"park-notes: attempts/{options.problem_id}.md: {error}", file=sys.stderr)
+        return 3
+
+    path.write_text(render_front_matter(note) + body)
+    state, reason = park_status(note, ranks)
+    print(f"{options.problem_id}\t{note['park']}\t{state}\t{reason}")
+    return 0
+
+
+def main(arguments: list[str]) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    lister = subparsers.add_parser(
+        "list", help="show parked problems, or just the ids a model is owed"
+    )
+    lister.add_argument(
+        "--for-model",
+        help="print only ids parked by a strictly weaker model than this one",
+    )
+    lister.add_argument("--json", action="store_true")
+    add_shared_arguments(lister)
+    lister.set_defaults(handler=run_list)
+
+    checker = subparsers.add_parser("check", help="validate every park record")
+    add_shared_arguments(checker)
+    checker.set_defaults(handler=run_check)
+
+    recorder = subparsers.add_parser(
+        "record", help="write or extend a note's park record"
+    )
+    recorder.add_argument("problem_id")
+    recorder.add_argument("--model", required=True)
+    recorder.add_argument("--kind", required=True, choices=PARK_KINDS)
+    recorder.add_argument("--submissions", type=int, required=True)
+    recorder.add_argument("--verdict", required=True)
+    recorder.add_argument("--date", default=datetime.date.today().isoformat())
+    recorder.add_argument("--recheck")
+    add_shared_arguments(recorder)
+    recorder.set_defaults(handler=run_record)
+
+    options = parser.parse_args(arguments[1:])
+    try:
+        return int(options.handler(options))
+    except ParkNoteError as error:
+        print(f"park-notes: {error}", file=sys.stderr)
+        return 3
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

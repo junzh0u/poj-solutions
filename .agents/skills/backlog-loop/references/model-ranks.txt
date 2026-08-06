@@ -1,0 +1,35 @@
+# Model strength ranks used to decide whether a parked problem is owed a retry.
+#
+# `park-notes` compares the rank of every model that has already attempted a
+# problem against the rank of the model about to run. A parked problem is
+# re-picked only when the new model ranks strictly higher, so this file is the
+# whole definition of "stronger" in this repo — there is no inference from
+# model names anywhere in the tooling.
+#
+# These ranks are a judgment call, recorded once here rather than re-derived
+# per run. Edit them when the fleet changes; a model absent from this file
+# cannot park a problem (`park-notes record` refuses it) and any note it
+# already appears in is reported as needing triage rather than silently
+# skipped.
+#
+# Equal ranks mean "no claim that either is stronger", which reads as no
+# escalation in either direction. That is the honest encoding for two models
+# whose relative strength has not been established here — notably across
+# vendors. gpt-5.6-terra sits level with claude-sonnet-5 for that reason: both
+# have a strong record on this backlog (57 accepts and 35 of 37 respectively)
+# and they worked disjoint slices of it, so there is no head-to-head to rank
+# them by. Tying them claims nothing about the pair while still letting the
+# stronger Claude models pick up either one's parks.
+#
+# Add a model when it first needs to park something, not before — a rank
+# guessed for a model that has never solved here is a number nobody can
+# defend. gpt-5.6-sol is deliberately absent on those grounds: one tooling
+# commit in this repo and no solves.
+#
+# rank  model-id
+
+10      claude-haiku-4-5-20251001
+20      claude-sonnet-5
+20      gpt-5.6-terra
+30      claude-opus-5
+40      claude-fable-5
