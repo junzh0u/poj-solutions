@@ -8,11 +8,13 @@ An archive of accepted [POJ](http://poj.org) submissions, one directory per prob
 - `solutions/<id>/test_data/<id>.in` / `.out` — sample data, only where it was worth keeping.
 - `solutions/<id>/tags/<tag>` — empty marker files used as tags; manage them with `./tag.sh` (`tag.sh` lists all tags, `tag.sh <id>` lists a problem's, `tag.sh <id> <tag>` adds one).
 - `TODO` — the backlog, nothing but problem ids one per line: those POJ says user `150014` has not solved and that are not parked, ranked by global solve count, most-solved first.
-- `attempts/<id>.md` — the write-up left behind by a problem that was tried and not accepted: what was understood, what was submitted, the verdicts, and where it stalled. Parking also strikes the id from `TODO` (same commit); the file is the record and the retry starting point. It must be self-contained: never refer to scratchpad, temporary, private, or other uncommitted local files; preserve any detail needed for a retry in the write-up itself.
+- `attempts/<id>.md` — the write-up left behind by a problem that was tried and not accepted: what was understood, what was submitted, the verdicts, and where it stalled, over a machine-readable park record in front matter (see "Parking a problem"). Parking also strikes the id from `TODO` (same commit); the file is the record and the retry starting point. It must be self-contained: never refer to scratchpad, temporary, private, or other uncommitted local files; preserve any detail needed for a retry in the write-up itself.
 
 ## Picking what to solve
 
-"Solve N problems" means: take the **top N ids of `TODO`** — the list is already ordered so the most-solved (roughly easiest and best-documented) come first — and work them. A specific problem id the user names overrides the ordering, and is the one way a parked problem comes back: hand its `attempts/<id>.md` to the agent so it starts where the last run stopped.
+"Solve N problems" means: take the **top N ids of `TODO`** — the list is already ordered so the most-solved (roughly easiest and best-documented) come first — and work them. A specific problem id the user names overrides the ordering; hand its `attempts/<id>.md` to the agent if it has one, so it starts where the last run stopped.
+
+Parked ids are not in `TODO` and come back exactly two ways: the user naming one, or `park-notes list --for-model <model-id>` reporting one as owed a retry on a model stronger than every model that has already tried it. See "Parking a problem".
 
 To rebuild `TODO`, submit the form at `http://poj.org/moreproblem`: it lists exactly the problems the logged-in user has not solved, each with its global solve count. This is the one step besides submitting that must run in the browser — the form posts no user field, so identity comes only from the session cookie, and the curl detour around it is closed too (`userstatus` returns 403 to non-browser requests). Only the `ID` and `Solved` columns are wanted, and the page as served runs to ~150 KB — more than text extraction returns whole — so re-render the table in the page as `<id> <solved>` lines inside a `<pre>` and replace the body with it before extracting the text. Then sort by solve count descending, subtract every id that has an `attempts/<id>.md` — POJ still lists parked problems as unsolved, and without the subtraction every rebuild would silently un-park them — and write out the ids alone.
 
@@ -112,7 +114,7 @@ Report each verdict as it arrives rather than silently resubmitting.
 - **Runtime Error** — usually an out-of-bounds index or recursion depth, both reproducible locally under `-fsanitize=address,undefined`.
 - **System Error** — POJ's judge-crash verdict, and the one result that says nothing whatever about the submitted program. Do not debug against it; go straight to the general status page below.
 
-Sometimes the judge is the bug. When an independently-derived known-good solution (a canonical reference implementation submitted as a control) fails the same way as yours, check the problem's **general** status page — `status-via-curl <id> --all-users`: every recent submission from unrelated users failing identically, against the same account accepting other problems the same hour, means the problem's judge or data is broken — this has happened, to a problem that had been accepting solutions of the same shape weeks earlier. That is a park with the evidence recorded, revisited only if the judge recovers — and not a model park, so no stronger-model retry is owed.
+Sometimes the judge is the bug. When an independently-derived known-good solution (a canonical reference implementation submitted as a control) fails the same way as yours, check the problem's **general** status page — `status-via-curl <id> --all-users`: every recent submission from unrelated users failing identically, against the same account accepting other problems the same hour, means the problem's judge or data is broken — this has happened, to a problem that had been accepting solutions of the same shape weeks earlier. That is a park with the evidence recorded, revisited only if the judge recovers — `--kind judge`, so no stronger-model retry is owed and the `recheck` URL carries what would retire it.
 
 A judge park is the one hand-back the parent should **verify rather than take on trust**, and the only one it can: every other park rests on the agent's own reasoning, which the parent cannot re-derive without redoing the solve, but this one rests on a public page one command away. Re-run `status-via-curl <id> --all-users` yourself and confirm three things before writing the notes — unrelated accounts failing the same way, no Accepted anywhere in the window, and this account accepting other problems the same hour. All three held for 1112 (13 `System Error` of the last 20 rows, five unrelated accounts, June–August 2026, four accepts by this account inside the same hour). Record those counts in `attempts/<id>.md`: a later reader deciding whether the judge recovered needs the numbers, not the conclusion.
 
@@ -125,6 +127,45 @@ The agent's part ends with the file: only after **Accepted**, copy the exact sub
 The commit itself is the parent's, one problem per commit. Subject is `<id> <Title>` — plain, no Conventional Commits prefix; the body explains the algorithm and the decisions behind it, not the code, and ends with `Model: <model-id>` matching the source comment. Once the commit lands, the parent strikes the id from `TODO`.
 
 Do not push unless asked.
+
+## Parking a problem
+
+A hand-back — cap hit, or stuck before submitting — becomes `attempts/<id>.md`, written by the **parent**: the reading of the statement, the algorithm tried, the verdict of each submission, and the failing case if one was found. Over that prose the file carries a machine-readable park record, because "is this problem owed a retry?" used to be answered by a sentence in the body that a later run had to notice and interpret — and a note that simply never mentioned a model was indistinguishable from one with nothing left to try. Two of the five notes standing on 2026-08-06 were in exactly that state, and recovering which model had parked them meant tracing their commits back to the session that wrote them.
+
+Write the prose first, then stamp the record over it:
+
+```sh
+.agents/skills/backlog-loop/scripts/park-notes record <id> \
+  --model <model-id> --kind model --submissions 5 --verdict 'Wrong Answer'
+```
+
+which prepends (or updates) front matter, leaving the body untouched:
+
+```yaml
+---
+problem: 2125
+park: model
+parked: 2026-08-06
+solvers:
+  - claude-sonnet-5 2026-08-06 5 Wrong Answer
+---
+```
+
+`park` is the whole classification, and only `model` is ever re-picked automatically:
+
+- `model` — the solve failed on reasoning or implementation, and a stronger model plausibly does better. 2125 is the worked example: five Wrong Answers on a statement ambiguity that a second reading resolved on the first retry submission.
+- `judge` — POJ's judge or data is broken, on the evidence §5 requires. No model helps, so the retry is gated on the judge recovering instead: `--recheck <status url>` is mandatory and the tool refuses a judge park without it.
+- `infeasible` — neither. Nothing about the model or the judge will change the outcome.
+
+Then strike the id from `TODO` and commit both as `<id> attempt notes`.
+
+### What comes back, and when
+
+`park-notes list --for-model <model-id>` prints the ids parked by a strictly weaker model, one per line — that is the whole re-pickup rule, and `.agents/skills/backlog-loop/references/model-ranks.txt` is the whole definition of "weaker". Nothing anywhere infers strength from a model name. A model missing from that file cannot park anything (`record` refuses it), and a note naming one is reported as **needing triage** on stderr with exit 4 rather than skipped — the ids on stdout are still valid, but a silent skip is exactly how an owed retry gets lost, so it is never silent. Equal ranks mean no escalation in either direction, which is the honest encoding for two models whose relative strength has not been established here, notably across vendors.
+
+When the stronger model fails too it does **not** write a second note: it records its own attempt over the existing one with the same command, appending a solver line and leaving `parked` at the original date. The id is then owed nothing until a model outranking *it* exists. If that retry is what uncovers a broken judge, pass `--kind judge --recheck <url>` and the park reclassifies in place.
+
+`park-notes list` with no model shows every park as `owed` or `final` — whether any ranked model could still be owed it. That is a claim about future runs, not about the current one: a run's own no-accept counter advances unless *that run* will actually retry the id, because a run with nothing stronger to escalate to has genuinely resolved the problem for its own purposes, however `owed` the note is for later. `park-notes check` validates every record; run it before trusting a listing, and in the same commit as any note you hand-edit.
 
 ## Solving several at once
 
@@ -154,6 +195,8 @@ The parent commits each accept as its agent reports, one problem per commit — 
 
 An agent that dies to a usage or rate limit has not attempted anything — no write-up, no park, and the id keeps its place at the top of `TODO`. Wait for the reset and rerun it.
 
-A hand-back report — cap hit, or stuck before submitting — becomes `attempts/<id>.md`: the reading of the statement, the algorithm tried, the verdict of each submission, and the failing case if one was found. The parent writes it, strikes the id from `TODO`, and commits both as `<id> attempt notes`. From then on the problem is solved only when the user asks for it by id; a model park's stronger-model retry is unaffected, because that id is carried by the run's own state, not by `TODO`.
+A hand-back report — cap hit, or stuck before submitting — becomes `attempts/<id>.md` per "Parking a problem", written and committed by the parent with the id struck from `TODO`. The agent reports the verdicts; the parent decides the `park` kind, since that is a judgment about the whole run and the judge's public record, not about one solve.
 
-Solve agents may run on a cheaper model than the parent to stretch the budget — most backlog problems don't need the strongest model. But **a model park is not a problem park**: a problem the cheap model could not finish still deserves one run on the default (stronger) model, handed its `attempts/<id>.md` as the starting point, before the park is final. That retry is just the next agent the parent spawns into a free slot. Once the cheap model produces its first park, stop trialling it — every agent spawned after that runs on the default model.
+Solve agents may run on a cheaper model than the parent to stretch the budget — most backlog problems don't need the strongest model. But **a model park is not a problem park**: a problem the cheap model could not finish still deserves one run on a stronger model, handed its `attempts/<id>.md` as the starting point, before the park is final. Inside a run that retry is just the next agent the parent spawns into a free slot; across runs it is whatever `park-notes list --for-model` reports as owed. Both read the same park record, so the retry survives the run ending, a compaction, or a switch to a different model weeks later. Once the cheap model produces its first park, stop trialling it — every agent spawned after that runs on the default model.
+
+The record is what makes this independent of whether anyone declared a trial. A park by a model that is not the strongest ranked one is provisional whether or not the run knew it was running a cheap model — which is the failure the record exists to close, since a run whose *session* model was the cheap one used to write a final-looking park that no stronger model ever reconsidered.
