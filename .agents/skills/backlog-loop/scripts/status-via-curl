@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+"""Fetch and parse a POJ status page without ad hoc row extraction."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+import time
+from html.parser import HTMLParser
+from pathlib import Path
+from typing import TypedDict
+from urllib.parse import urlencode
+
+
+class StatusRow(TypedDict):
+    run_id: str
+    user: str
+    problem: str
+    result: str
+    memory: str
+    time: str
+    language: str
+    code_length: str
+    submit_time: str
+
+
+class StatusTableParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.rows: list[list[str]] = []
+        self._depth = 0
+        self._row_stack: list[tuple[int, list[str], int | None, list[str]]] = []
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        self._depth += 1
+        lowered = tag.lower()
+        align = dict(attrs).get("align")
+        if lowered == "tr" and align is not None and align.lower() == "center":
+            self._row_stack.append((self._depth, [], None, []))
+        elif lowered == "td" and self._row_stack:
+            row_depth, cells, cell_depth, _ = self._row_stack[-1]
+            if self._depth == row_depth + 1 and cell_depth is None:
+                self._row_stack[-1] = (row_depth, cells, self._depth, [])
+
+    def handle_data(self, data: str) -> None:
+        if self._row_stack and self._row_stack[-1][2] is not None:
+            self._row_stack[-1][3].append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        lowered = tag.lower()
+        if self._row_stack:
+            row_depth, cells, cell_depth, cell_parts = self._row_stack[-1]
+            if lowered == "td" and self._depth == cell_depth:
+                cells.append(" ".join("".join(cell_parts).split()))
+                self._row_stack[-1] = (row_depth, cells, None, [])
+            elif lowered == "tr" and self._depth == row_depth:
+                self.rows.append(cells)
+                self._row_stack.pop()
+        self._depth -= 1
+
+
+def parse_status_html(data: bytes) -> list[StatusRow]:
+    text = data.decode("utf-8", errors="replace")
+    if "Problem Status List" not in text:
+        raise ValueError("response is not a POJ Problem Status List page")
+
+    parser = StatusTableParser()
+    parser.feed(text)
+    rows: list[StatusRow] = []
+    for cells in parser.rows:
+        if not cells or not cells[0].isdigit():
+            continue
+        if len(cells) != 9:
+            raise ValueError(f"malformed POJ status row with {len(cells)} cells")
+        rows.append(
+            {
+                "run_id": cells[0],
+                "user": cells[1],
+                "problem": cells[2],
+                "result": cells[3],
+                "memory": cells[4],
+                "time": cells[5],
+                "language": cells[6],
+                "code_length": cells[7],
+                "submit_time": cells[8],
+            }
+        )
+    return rows
+
+
+def positive_number(value: str) -> str:
+    if not value.isdigit() or int(value) <= 0:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return value
+
+
+def main(arguments: list[str]) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("problem_id", type=positive_number)
+    user_group = parser.add_mutually_exclusive_group()
+    user_group.add_argument("--user-id", type=positive_number, default="150014")
+    user_group.add_argument("--all-users", action="store_true")
+    parser.add_argument("--html-out", type=Path)
+    options = parser.parse_args(arguments[1:])
+
+    query = [("problem_id", options.problem_id)]
+    if not options.all_users:
+        query.append(("user_id", options.user_id))
+    query.append(("_codex", f"{time.time_ns()}-{os.getpid()}"))
+    url = "http://poj.org/status?" + urlencode(query)
+
+    completed = subprocess.run(["curl", "-fsS", url], check=False, capture_output=True)
+    if completed.returncode != 0:
+        sys.stderr.buffer.write(completed.stderr)
+        return completed.returncode
+
+    try:
+        rows = parse_status_html(completed.stdout)
+    except ValueError as error:
+        print(f"status-via-curl: {error}", file=sys.stderr)
+        return 3
+
+    if options.html_out is not None:
+        options.html_out.write_bytes(completed.stdout)
+    json.dump(
+        {
+            "problem_id": options.problem_id,
+            "user_id": None if options.all_users else options.user_id,
+            "rows": rows,
+        },
+        sys.stdout,
+        separators=(",", ":"),
+    )
+    sys.stdout.write("\n")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

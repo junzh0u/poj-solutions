@@ -10,7 +10,7 @@
 - Validate the assigned model identifier against the finalized source comment before building any submission payload. Provenance errors discovered after Accepted cannot be repaired without either falsifying the archive or spending another submission.
 - Serialize every actual submit click, including retries, with a process-scoped shared lock and a last-attempt timestamp. Fixed delays from independently reached readiness points are not submission coordination.
 - Keep the exact retained tab alive until the submit transport confirms that its navigation finished on POJ's status page. A synchronous click return or the first URL change to `/submit` is not a completed POST handoff.
-- Make status checks fail visibly and confirm the expected page before interpreting rows. A transport failure or empty response is unknown state, not evidence that no submission landed.
+- Make status checks fail visibly, use the shared status helper instead of ad hoc HTML parsing, and confirm the expected page before interpreting rows. A transport or parser failure is unknown state, not evidence that no submission landed.
 - Confirm external state before retrying after any interruption. A submit click, browser error, or lost agent response can hide a submission that already landed.
 - Capture a fail-visible status baseline before every click and preserve distinct before/after evidence for each attempt so a rowless click or ambiguous browser result can be diagnosed without inference.
 - Report every verdict when it arrives instead of batching updates at the end of a cycle.
