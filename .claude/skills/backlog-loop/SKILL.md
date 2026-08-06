@@ -23,7 +23,16 @@ Preflight the submit path yourself before spawning, per `AGENTS.md`. It is the o
 
 Preflight is also where the browser gets chosen. With several connected Chromes, probe them for the logged-in form and record the `deviceId` of the one that has it, per `CLAUDE.md`; that id is cycle-scoped state the agents cannot rediscover for themselves, so it goes in every task prompt and stays fixed for the whole batch.
 
-`sonnet` is the right default for the top of the backlog — those problems are the most-solved ones and are textbook by construction. Escalate on a park, not on a hunch. Two five-problem batches off the top of the backlog have now gone five for five, every problem Accepted on its first submission and none reaching a second.
+`sonnet` is the right default for the top of the backlog — those problems are the most-solved ones and are textbook by construction. Escalate on a park, not on a hunch. Three five-problem batches off the top of the backlog have now produced 14 Accepted out of 15, every one of them on its first submission and none reaching a second; the miss was 1112, parked because POJ's judge for it is broken, which no model would have solved. So there is still no observed case of `sonnet` failing a top-of-backlog problem on the merits, and no basis yet for escalating before a park.
+
+## Re-pin a browser that dies mid-batch
+
+`AGENTS.md` makes this a recoverable path rather than a stop; the Claude-side mechanics are:
+
+- Re-run `list_connected_browsers`, `select_browser`, then navigate and read the form exactly as in preflight. A crashed-and-restarted Chrome comes back under a **new `deviceId`**, so the old id is gone even though it is the same browser and the same profile — do not read its absence as the session being lost. On 2026-08-06 the pinned id vanished and the replacement was still logged in, with the parent's keepalive tab and its tab group both intact across the crash.
+- Push the new id to **every** agent with `SendMessage`, including the ones that have already finished. An agent that stopped and reported the loss is resumed from its transcript with its finished solve still in context and needs only the new id to continue at step 3; an agent still working gets the message queued to its next tool round and picks the id up before it reaches submit. Both paths were exercised in that batch — two resumed, three queued, all five submitted normally.
+- Say in the message that the loss was infrastructure and that no attempt was consumed, so the agent does not spend its own reasoning re-deriving whether its cap or its solve is intact.
+- Re-state the keepalive tab id and that it must not be closed. A resumed agent re-reads the tab group and will otherwise see a tab it did not create.
 
 ## What every solve-agent task must carry
 
@@ -33,6 +42,7 @@ Preflight is also where the browser gets chosen. With several connected Chromes,
 - The claude-in-chrome transport rules in `CLAUDE.md` — in particular that every click, first attempt and retry alike, is reserved through `.agents/skills/backlog-loop/scripts/with-submit-lock` as the tool call immediately preceding it. Agents that space their clicks by their own finishing times are not coordinating.
 - The **preflighted `deviceId`**, with the requirement to `select_browser` it before opening any tab and to keep it for every retry. An agent handed no device picks one, and a batch spread across two Chromes submits half its solutions from a logged-out one.
 - The requirement to report **every tab id it created and every one it closed**, not just the tab that carried the successful click. Agents that recover from tab-group churn create replacement tabs, and only their own report distinguishes a tab they closed from one the group teardown stranded.
+- The requirement to pass **`--html-out <path>`** on every `status-via-curl` baseline and poll, writing each to a distinct path. Relaying §4's "take a baseline" without this satisfies only half of what the shared policy asks for: it requires *preserved, distinct before/after evidence per attempt*, and the parsed JSON an agent keeps in context is neither preserved across compaction nor sufficient to re-diagnose an ambiguous click. The raw response is the only artifact that survives to tell a dropped click apart from a parser miss after the fact. This was under-relayed in the 2026-08-06 batch and cost nothing only because no click was ambiguous.
 
 ## Own the tab group's lifetime
 
