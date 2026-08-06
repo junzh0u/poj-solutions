@@ -11,11 +11,15 @@ Read `../../../.agents/skills/backlog-loop/references/policy.md` completely befo
 
 Invoke `/loop` with no interval so agent completions re-invoke the parent. The prompt must carry the complete run state because it is passed back verbatim on every firing and survives context compaction.
 
-Default to a pool of five kept full by refill, and stop after ten consecutive resolutions with no accept, unless the user specifies otherwise. Baseline:
+Default to a pool of five kept full by refill, and stop after ten consecutive resolutions with no accept, unless the user specifies otherwise.
+
+Keep run-specific state **out** of this baseline. A model name or a particular problem id baked into copy-paste text goes stale without anyone noticing, and the prompt beats the prose every time, because the prompt is what actually runs. The previous baseline hardcoded a `sonnet` trial and kept spawning `sonnet` for a whole commit after the paragraph below had declared that trial over. Say what the run should *do*; let it read what is currently *true* from the repo.
 
 ```text
-/loop keep 5 solve agents in flight, refilling each slot from the top of TODO as soon as an agent reports rather than waiting for its siblings. Stop when 10 consecutive resolved problems produce no accept. Spawn subagents with model "sonnet" until the first model park; after that every newly spawned agent uses the default model (opus), and the parked id gets rerun with its `attempts/<id>.md` notes in the next free slot. A usage or rate limit is not a park: do not create attempt notes or advance the no-accept counter; wait for the reset and retry the same ids. Report each verdict as it arrives and commit each accept in the same turn. Do not push.
+/loop keep 5 solve agents in flight, refilling each slot from the top of TODO as soon as an agent reports rather than waiting for its siblings. Stop when 10 consecutive resolved problems produce no accept. Spawn subagents with no model override so they inherit the session model. Before the first spawn, check `attempts/` for ids owed a stronger-model retry and put those in the earliest free slots. A usage or rate limit is not a park: do not create attempt notes or advance the no-accept counter; wait for the reset and retry the same ids. Report each verdict as it arrives and commit each accept in the same turn. Do not push.
 ```
+
+Inheriting the session model rather than naming one is what makes that prompt durable: switch the session to a different model and the agents follow, with nothing to update here.
 
 The refill needs no scheduling machinery: a finishing agent already re-invokes the parent, so the turn that reads a verdict is the turn that commits it, strikes the id, and spawns its replacement. Do that in the same turn — a slot left empty until the next wakeup is the idleness this design exists to remove. Spawn nothing when `TODO` is empty or the stop condition has been met, and let the remaining agents drain.
 
@@ -25,7 +29,18 @@ Preflight the submit path yourself before spawning, per `AGENTS.md`. It is the o
 
 Preflight is also where the browser gets chosen. With several connected Chromes, probe them for the logged-in form and record the `deviceId` of the one that has it, per `CLAUDE.md`; that id is run-scoped state the agents cannot rediscover for themselves, so it goes in every task prompt — including every agent spawned into a refilled slot — and stays fixed for the whole run.
 
-`sonnet` is the right default for the top of the backlog — those problems are the most-solved ones and are textbook by construction. Escalate on a park, not on a hunch. Three five-problem batches off the top of the backlog have now produced 14 Accepted out of 15, every one of them on its first submission and none reaching a second; the miss was 1112, parked because POJ's judge for it is broken, which no model would have solved. So there is still no observed case of `sonnet` failing a top-of-backlog problem on the merits, and no basis yet for escalating before a park.
+## Cheaper models and owed retries
+
+Agents inherit the session model. `sonnet`'s trial ended on 2026-08-06 with its first genuine model park — 2125, five Wrong Answers on a min-weight vertex cover — which is where the shared policy retires a cheap-model trial.
+
+It ended on a strong record rather than a weak one: 37 problems off the top of the backlog produced 35 Accepted, and no accept ever needed a second submission — every one landed on its first click that reached the judge. The other miss was 1112, where POJ's own judge is broken and no model would have helped. So nothing observed says `sonnet` was struggling; the trial ended because one park ends it. That is worth knowing before treating the retirement as a verdict on the model.
+
+To trial a cheap model again, add to the loop prompt: `Spawn subagents with model "<name>" until the first model park; after that spawn with no model override.` Keep a trial in the prompt, where it expires with the run — not here, where it outlives its evidence.
+
+Two consequences of running with no override:
+
+- **Every park counts immediately.** A model park only exists when there is a stronger model left to escalate to. With agents on the session model there is none, so a park is a problem park the moment it lands and advances the no-accept counter straight away. Under a cheap-model trial that counter moves more slowly, because parks are provisional until the retry.
+- **An owed retry is ordinary work.** An `attempts/<id>.md` recording a model park is owed one run on the default model before the park is final, and that run is just a normal spawn into a free slot — which is why the baseline prompt checks `attempts/` before its first spawn rather than carrying ids itself. Those notes are the source of truth for what is outstanding; 2125 was the only one as of 2026-08-06.
 
 ## Re-pin a browser that dies mid-run
 
