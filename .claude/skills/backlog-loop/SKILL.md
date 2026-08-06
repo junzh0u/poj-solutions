@@ -23,7 +23,7 @@ Inheriting the session model rather than naming one is what makes that prompt du
 
 The refill needs no scheduling machinery: a finishing agent already re-invokes the parent, so the turn that reads a verdict is the turn that commits it, strikes the id, and spawns its replacement. Do that in the same turn — a slot left empty until the next wakeup is the idleness this design exists to remove. Spawn nothing when `TODO` is empty or the stop condition has been met, and let the remaining agents drain.
 
-Adapt the pool size, stop condition, and model policy to the user's request without dropping the safety rules in the shared policy.
+Adapt the pool size, stop condition, and model policy to the user's request without dropping the safety rules in the shared policy. A user who asks for a number of *solves* rather than a barren-stretch stop ("stop after 10 solved") is setting a target, so keep the barren-stretch condition as a safety net underneath it and follow `AGENTS.md` for the endgame: keep the pool full until committed accepts reach the target, then drain rather than kill. Put both conditions and the drain rule in the loop prompt, since that is what survives compaction — this run's amendments to its own stop condition were made by re-arming `ScheduleWakeup` with an updated prompt, which is the mechanism for changing run state mid-run.
 
 Preflight the submit path yourself before spawning, per `AGENTS.md`. It is the one failure that would otherwise hit every agent in the batch at once, and it costs one tab — keep that tab rather than closing it as `AGENTS.md` says, since on this harness it becomes the keepalive tab below. Loaded browser tools with no connected Chrome are not a submission path either — check that a browser is actually attached before reading the form. A failed preflight is an infrastructure stop: no attempt notes, no movement of the no-accept counter, the ids stay eligible.
 
@@ -40,7 +40,11 @@ To trial a cheap model again, add to the loop prompt: `Spawn subagents with mode
 Two consequences of running with no override:
 
 - **Every park counts immediately.** A model park only exists when there is a stronger model left to escalate to. With agents on the session model there is none, so a park is a problem park the moment it lands and advances the no-accept counter straight away. Under a cheap-model trial that counter moves more slowly, because parks are provisional until the retry.
-- **An owed retry is ordinary work.** An `attempts/<id>.md` recording a model park is owed one run on the default model before the park is final, and that run is just a normal spawn into a free slot — which is why the baseline prompt checks `attempts/` before its first spawn rather than carrying ids itself. Those notes are the source of truth for what is outstanding; 2125 was the only one as of 2026-08-06.
+- **An owed retry is ordinary work.** An `attempts/<id>.md` recording a model park is owed one run on the default model before the park is final, and that run is just a normal spawn into a free slot — which is why the baseline prompt checks `attempts/` before its first spawn rather than carrying ids itself. Those notes are the source of truth for what is outstanding.
+
+The escalation earned its keep the first time it was exercised. 2125, the only owed retry as of 2026-08-06, was Accepted on the retry's first submission, and the park was retired the same day it came due. The defect was a swapped pair of statement lines that the official sample cannot distinguish — see `AGENTS.md` §1 — so this is evidence for the escalation rule specifically: a second reading of the statement is worth more than a sixth submission of the first one. When a retry does clear a park, delete `attempts/<id>.md` in the same commit as the solution.
+
+That run is also the default model's own baseline: 13 problems off the top of the backlog, 13 Accepted, every one on its first submission, no park and no dropped click.
 
 ## Re-pin a browser that dies mid-run
 
@@ -64,6 +68,10 @@ Two consequences of running with no override:
 ## Own the tab group's lifetime
 
 The parent holds a **keepalive tab** in the MCP tab group: open it before spawning the first agent, keep it for the whole run, close it only after the pool has drained and the last agent has reported. A refilling pool makes this more load-bearing, not less — slots turn over continuously, so there are far more moments where an agent's close would otherwise be the group's last. Everything in the run shares that one group, and the moment any agent closes what the extension counts as its last tab the group is auto-removed — which ungroups every sibling tab still inside rather than closing it, stranding each one beyond the reach of `tabs_close_mcp` and leaving the user to close it by hand. The keepalive tab is the whole fix: the group never reaches zero, so it is never removed. See `CLAUDE.md` for the mechanism and the measurement.
+
+A refilling run of 13 agents confirmed it end to end: 13 tabs created, 13 closed, and the group auto-removed exactly once — on the parent's own final close, where the removal is harmless because nothing is left inside. A last `tabs_context_mcp` before that close is the cheap confirmation, and it should show the keepalive tab alone.
+
+Agents will report tabs they did not create. Sibling churn means a `navigate` can spawn a tab another agent then adopts, and stale tabs disappear from the group on their own — both were reported this run and both were benign, reconciling against the sibling's own created/closed pair. Treat such a report as an observation to match up in the final ledger, not as a leak.
 
 Do not audit agent tabs from the parent by id while the pool is running. Membership of the shared group flickers as agents create and close tabs, and a parent reading it mid-run can see the full set, a stale subset, or no group at all — none of which is evidence about any particular agent. Audit at the end of the run instead: require every agent to report the tab ids it created and closed, accumulate those reports as they arrive, and treat created-minus-closed as the leak count. Report any leak to the user with the ids, since only they can clear it.
 
