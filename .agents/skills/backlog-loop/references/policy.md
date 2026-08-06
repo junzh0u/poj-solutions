@@ -1,7 +1,7 @@
 # Unattended backlog policy
 
 - Keep a fixed number of solve agents in flight and refill each slot as soon as it frees, rather than waiting for a whole batch to finish. Follow `AGENTS.md` for selection, concurrent ownership, submission limits, attempt notes, commits, and `TODO` edits.
-- Require a finite stop condition. Because a refilling pool has no batch boundary to count, count resolved problems: default to stopping after **ten consecutive resolutions with no Accepted solution**, which is the same reach as two barren batches of five. Reset the counter on any accept.
+- Require a finite stop condition. Because a refilling pool has no batch boundary to count, count resolved problems: default to stopping after **five consecutive resolutions with no Accepted solution**, one barren pool's worth. Reset the counter on any accept.
 - Count a park toward that counter unless this run will itself retry the id on a stronger model. A run holding a stronger model back for escalation has not resolved the problem yet; a run with nothing stronger to spawn has, whatever a later run may still be owed.
 - Record every park in the note's park record — the parking model, the park kind, the submissions and last verdict — with `park-notes record`, and re-record over the same note when a stronger model fails too. Prose alone does not survive: a later run must be able to decide what is owed without re-reading and interpreting a write-up.
 - Scan `park-notes list --for-model <model-id>` before the first spawn and put anything it reports in the earliest free slots. Never infer model strength from a name; `model-ranks.txt` is the only definition, and a note the tool cannot classify is triage work, not a skip.
