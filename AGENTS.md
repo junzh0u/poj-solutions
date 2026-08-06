@@ -38,6 +38,8 @@ Read the HTML itself, not a text extraction — two documented misreadings here 
 
 Skim the problem's discuss board too — `curl -s 'http://poj.org/bbs?problem_id=<id>'`, the Discuss link on the problem page, no login needed. It usually holds the problem's known pitfalls, often with a concrete failing case, and reading it costs seconds where rediscovering the pitfall costs a submission.
 
+The board is also where a statement ambiguity gets settled when the sample cannot settle it. 3629 leaves open what "move the next P cards" means once fewer than P cards remain, and the official sample `3 9 2` produces `3 7 8` under *both* readings — reproducing it proves nothing about which one the judge wants. The board's `5 10 4` does discriminate: wrapping the move around a short deque gives `5 9`, capping it at the remaining count gives `3 5`. So a sample that both readings reproduce is not evidence for either, exactly as a differential test against a reference built from your own reading is not. When a reading is genuinely open, go find the case that separates the candidates — the board usually has it — instead of letting a submission be the experiment.
+
 ### 2. Write and test locally
 
 Work in the scratchpad, not the repo — only the accepted source gets committed. Use a `<id>/` subdirectory (or prefix every filename with the id): the scratchpad is shared with concurrent sibling agents, and a generic `brute.cpp` has silently collided with a sibling's before.

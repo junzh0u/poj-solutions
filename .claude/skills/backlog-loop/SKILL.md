@@ -23,7 +23,7 @@ Preflight the submit path yourself before spawning, per `AGENTS.md`. It is the o
 
 Preflight is also where the browser gets chosen. With several connected Chromes, probe them for the logged-in form and record the `deviceId` of the one that has it, per `CLAUDE.md`; that id is cycle-scoped state the agents cannot rediscover for themselves, so it goes in every task prompt and stays fixed for the whole batch.
 
-`sonnet` is the right default for the top of the backlog — those problems are the most-solved ones and are textbook by construction. Escalate on a park, not on a hunch. A five-problem batch off the top of the backlog has gone five for five, every one Accepted on its first submission.
+`sonnet` is the right default for the top of the backlog — those problems are the most-solved ones and are textbook by construction. Escalate on a park, not on a hunch. Two five-problem batches off the top of the backlog have now gone five for five, every problem Accepted on its first submission and none reaching a second.
 
 ## What every solve-agent task must carry
 
