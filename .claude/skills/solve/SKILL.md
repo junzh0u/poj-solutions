@@ -19,7 +19,7 @@ Keep run-specific state **out** of this baseline. A model name or a particular p
 /loop keep 5 solve agents in flight, refilling each slot from the top of TODO as soon as an agent reports rather than waiting for its siblings. Stop when 5 consecutive resolved problems produce no accept. Spawn subagents with <the model the user named, or with no model override so they inherit the session model if they named none> and keep that model for the whole run. Before the first spawn, run `.agents/skills/solve/scripts/park-notes list --for-model <the model id the solve agents will run>` and put every id it prints in the earliest free slots, triaging anything it reports on stderr instead of ignoring it. Park with `park-notes record` so the parking model and park kind are recorded. A usage or rate limit is not a park: do not create attempt notes or advance the no-accept counter; wait for the reset and retry the same ids. Report each verdict as it arrives and commit each accept in the same turn. Do not push.
 ```
 
-The model is the user's call, and defaulting to the session model rather than a named one is what makes the prompt durable when they don't make it: switch the session model and the agents follow, with nothing to update here. Whichever way it is resolved, resolve it **once**, at compose time, and pin it — it goes in the pre-spawn `--for-model` scan, in every task prompt, and in each commit's `Model:` trailer, so a run that silently changed model midway would leave an archive that misattributes its own solutions. Nothing retires a model mid-run; `AGENTS.md` §"Solving several at once" explains why the park record makes that unnecessary.
+The model is the user's call, and defaulting to the session model rather than a named one is what makes the prompt durable when they don't make it: switch the session model and the agents follow, with nothing to update here. Whichever way it is resolved, resolve it **once**, at compose time, and pin it — it goes in the pre-spawn `--for-model` scan, in every task prompt, and in each commit's `Model:` trailer, so a run that silently changed model midway would leave an archive that misattributes its own solutions. Nothing retires a model mid-run; `AGENTS.md` §"The parent's job" explains why the park record makes that unnecessary.
 
 The refill needs no scheduling machinery: a finishing agent already re-invokes the parent, so the turn that reads a verdict is the turn that commits it, strikes the id, and spawns its replacement. Do that in the same turn — a slot left empty until the next wakeup is the idleness this design exists to remove. Spawn nothing when `TODO` is empty or the stop condition has been met, and let the remaining agents drain.
 
@@ -40,13 +40,13 @@ Preflight is also where the browser gets chosen. With several connected Chromes,
 
 ## What every solve-agent task must carry
 
-Spawn solve agents with `subagent_type: poj-solver`. The agent definition (`.claude/agents/poj-solver.md`) carries every run-independent invariant by **pointing** at the canonical copies — `AGENTS.md` §3–4 for the guarded snippet, form facts, and dropped-click rule; `CLAUDE.md` for the transport and payload-fidelity rule — which every subagent already receives as project context, so the task prompt no longer restates them and there is no second copy to go stale. The definition also owns the tab-report, foreground-wait, `--html-out`-per-status-call, and final-report-format requirements; edit conventions there (or in the canonical files), not in a prompt template.
+Spawn solve agents with `subagent_type: poj-solver`. Every run-independent invariant — the procedure, hand-off and commit-body format (`AGENTS.md` § "The solve agent's job"), and the transport (`CLAUDE.md`) — reaches the agent as project context; the definition (`.claude/agents/poj-solver.md`) adds only the Claude-harness glue and the refuse-if-missing contract for the parameters below. Edit conventions in the canonical files, never in a prompt template.
 
-What remains for each task prompt is exactly the run-scoped state the agent cannot discover, and the definition tells it to refuse to proceed without:
+The task prompt carries exactly the run-scoped state the agent cannot discover:
 
 - The **problem id**, plus its `attempts/<id>.md` path when the spawn is a parked-problem retry.
-- The **exact model identifier** assigned to that agent, for the `// Model:` line. The transport refuses to build a payload from a source that does not declare it exactly once, and a provenance error found after Accepted cannot be fixed without either another submission or a falsified archive.
-- The **preflighted `deviceId`** and the parent's **keepalive tab id**. An agent handed no device picks one, and a run spread across two Chromes submits half its solutions from a logged-out one.
+- The **exact model identifier** assigned to that agent, for the `// Model:` line.
+- The **preflighted `deviceId`** and the parent's **keepalive tab id**.
 - The agent's **scratchpad subdirectory** (the shared scratchpad plus the problem id).
 - The **submission cap** for this spawn (5 for a fresh solve; the higher retry cap per `AGENTS.md` §5 when it is a stronger-model retry).
 - Any run-specific directive in force (e.g. a mid-run user amendment), since the definition cannot know it.
