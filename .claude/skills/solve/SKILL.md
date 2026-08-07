@@ -40,13 +40,16 @@ Preflight is also where the browser gets chosen. With several connected Chromes,
 
 ## What every solve-agent task must carry
 
-`AGENTS.md` is the canonical copy of the guarded snippet, the form facts, and the dropped-click rule; relay its §3–4 text **verbatim** in the task prompt rather than paraphrasing it here. On top of that, each task prompt must carry:
+Spawn solve agents with `subagent_type: poj-solver`. The agent definition (`.claude/agents/poj-solver.md`) carries every run-independent invariant by **pointing** at the canonical copies — `AGENTS.md` §3–4 for the guarded snippet, form facts, and dropped-click rule; `CLAUDE.md` for the transport and payload-fidelity rule — which every subagent already receives as project context, so the task prompt no longer restates them and there is no second copy to go stale. The definition also owns the tab-report, foreground-wait, `--html-out`-per-status-call, and final-report-format requirements; edit conventions there (or in the canonical files), not in a prompt template.
 
-- The **exact model identifier** assigned to that agent, and the requirement to report its finalized `// Model:` line alongside the verdict. The transport refuses to build a payload from a source that does not declare it exactly once, and a provenance error found after Accepted cannot be fixed without either another submission or a falsified archive.
-- The claude-in-chrome transport rules in `CLAUDE.md` — in particular that every click, first attempt and retry alike, is reserved through `.agents/skills/solve/scripts/with-submit-lock` as the tool call immediately preceding it. Agents that space their clicks by their own finishing times are not coordinating.
-- The **preflighted `deviceId`**, with the requirement to `select_browser` it before opening any tab and to keep it for every retry. An agent handed no device picks one, and a run spread across two Chromes submits half its solutions from a logged-out one.
-- The requirement to report **every tab id it created and every one it closed**, not just the tab that carried the successful click. Agents that recover from tab-group churn create replacement tabs, and only their own report distinguishes a tab they closed from one the group teardown stranded.
-- The requirement to pass **`--html-out <path>`** on every `status-via-curl` baseline and poll, writing each to a distinct path. Relaying §4's "take a baseline" without this satisfies only half of what the shared policy asks for: it requires *preserved, distinct before/after evidence per attempt*, and the parsed JSON an agent keeps in context is neither preserved across compaction nor sufficient to re-diagnose an ambiguous click. The raw response is the only artifact that survives to tell a dropped click apart from a parser miss after the fact. This was under-relayed in the 2026-08-06 batch and cost nothing only because no click was ambiguous.
+What remains for each task prompt is exactly the run-scoped state the agent cannot discover, and the definition tells it to refuse to proceed without:
+
+- The **problem id**, plus its `attempts/<id>.md` path when the spawn is a parked-problem retry.
+- The **exact model identifier** assigned to that agent, for the `// Model:` line. The transport refuses to build a payload from a source that does not declare it exactly once, and a provenance error found after Accepted cannot be fixed without either another submission or a falsified archive.
+- The **preflighted `deviceId`** and the parent's **keepalive tab id**. An agent handed no device picks one, and a run spread across two Chromes submits half its solutions from a logged-out one.
+- The agent's **scratchpad subdirectory** (the shared scratchpad plus the problem id).
+- The **submission cap** for this spawn (5 for a fresh solve; the higher retry cap per `AGENTS.md` §5 when it is a stronger-model retry).
+- Any run-specific directive in force (e.g. a mid-run user amendment), since the definition cannot know it.
 
 ## Own the tab group's lifetime
 
