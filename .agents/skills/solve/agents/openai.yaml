@@ -1,0 +1,4 @@
+interface:
+  display_name: "POJ Backlog Loop"
+  short_description: "Work the POJ backlog unattended"
+  default_prompt: "/goal Use $solve to solve the POJ backlog in batches of three until two consecutive cycles produce no accept, preflighting the logged-in Chrome AppleScript path before spawning."

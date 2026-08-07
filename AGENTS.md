@@ -102,7 +102,7 @@ Check `f.source.value.length` before clicking — against the **LF-normalized** 
 
 ### 4. Check the verdict
 
-`.agents/skills/backlog-loop/scripts/status-via-curl <id>` — no login, no browser. It makes a fail-visible `curl -fsS` request with a unique query nonce, requires `Problem Status List`, parses every `<tr align=center>` into named JSON fields, and returns `rows` newest first; pass `--html-out <path>` to preserve the raw response for each baseline and poll. Use this helper instead of hand-written row extraction: a parser failure is unknown state, not zero submissions, and a false empty result can trigger a duplicate submission. For a general problem status read, add `--all-users`. Wait **10 seconds** in the foreground after the click before the first poll — usually enough for the judge to settle, and deliberately not 15, so it is never confused with the submit-lock's inter-click interval — then poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
+`.agents/skills/solve/scripts/status-via-curl <id>` — no login, no browser. It makes a fail-visible `curl -fsS` request with a unique query nonce, requires `Problem Status List`, parses every `<tr align=center>` into named JSON fields, and returns `rows` newest first; pass `--html-out <path>` to preserve the raw response for each baseline and poll. Use this helper instead of hand-written row extraction: a parser failure is unknown state, not zero submissions, and a false empty result can trigger a duplicate submission. For a general problem status read, add `--all-users`. Wait **10 seconds** in the foreground after the click before the first poll — usually enough for the judge to settle, and deliberately not 15, so it is never confused with the submit-lock's inter-click interval — then poll until the result leaves `Waiting` / `Compiling` / `Running & Judging`.
 
 A clean click is not evidence the submission landed, either. POJ drops a submission arriving within ~10s of any other — from a sibling agent as much as from you — and says nothing: the guard passes, the source length checks out, and no status row ever appears. So confirm a **new** Run ID from `status-via-curl` before believing anything. No new row in a valid parsed response 30 seconds after the click — three times the window — means the click was dropped: it is not an attempt and does not count against the cap. Wait out the window and make **one** clean retry; a second genuinely rowless click means the problem is structural — an infrastructure interruption to report, not permission to keep clicking.
 
@@ -151,7 +151,7 @@ A hand-back — cap hit, or stuck before submitting — becomes `attempts/<id>.m
 Write the prose first, then stamp the record over it:
 
 ```sh
-.agents/skills/backlog-loop/scripts/park-notes record <id> \
+.agents/skills/solve/scripts/park-notes record <id> \
   --model <model-id> --kind model --submissions 5 --verdict 'Wrong Answer'
 ```
 
@@ -177,7 +177,7 @@ Then strike the id from `TODO` and commit both as `<id> attempt notes`.
 
 ### What comes back, and when
 
-`park-notes list --for-model <model-id>` prints the ids parked by a strictly weaker model, one per line — that is the whole re-pickup rule, and `.agents/skills/backlog-loop/references/model-ranks.txt` is the whole definition of "weaker". Nothing anywhere infers strength from a model name. A model missing from that file cannot park anything (`record` refuses it), and a note naming one is reported as **needing triage** on stderr with exit 4 rather than skipped — the ids on stdout are still valid, but a silent skip is exactly how an owed retry gets lost, so it is never silent. Equal ranks mean no escalation in either direction, which is the honest encoding for two models whose relative strength has not been established here, notably across vendors.
+`park-notes list --for-model <model-id>` prints the ids parked by a strictly weaker model, one per line — that is the whole re-pickup rule, and `.agents/skills/solve/references/model-ranks.txt` is the whole definition of "weaker". Nothing anywhere infers strength from a model name. A model missing from that file cannot park anything (`record` refuses it), and a note naming one is reported as **needing triage** on stderr with exit 4 rather than skipped — the ids on stdout are still valid, but a silent skip is exactly how an owed retry gets lost, so it is never silent. Equal ranks mean no escalation in either direction, which is the honest encoding for two models whose relative strength has not been established here, notably across vendors.
 
 When the stronger model fails too it does **not** write a second note: it records its own attempt over the existing one with the same command, appending a solver line and leaving `parked` at the original date. The id is then owed nothing until a model outranking *it* exists. If that retry is what uncovers a broken judge, pass `--kind judge --recheck <url>` and the park reclassifies in place.
 

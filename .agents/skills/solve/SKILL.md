@@ -1,6 +1,6 @@
 ---
-name: backlog-loop
-description: Run the POJ TODO backlog unattended in Codex Goal mode, with concurrent solve agents, a bounded stop condition, model escalation, and rate-limit recovery. Use when the user asks Codex to work or keep solving the backlog without supervision, run overnight, solve problems until progress stalls, or invokes $backlog-loop.
+name: solve
+description: Run the POJ TODO backlog unattended in Codex Goal mode, with concurrent solve agents, a bounded stop condition, model escalation, and rate-limit recovery. Use when the user asks Codex to work or keep solving the backlog without supervision, run overnight, solve problems until progress stalls, or invokes $solve.
 ---
 
 # Work the backlog unattended
@@ -14,7 +14,7 @@ Use Goal mode, not a fixed-interval scheduler. If this skill was not invoked fro
 Default to batches of three, which fills the three solve-agent slots available alongside the parent, and stop after two consecutive confirmed barren cycles unless the user specifies otherwise. A complete baseline goal is:
 
 ```text
-Use $backlog-loop to solve the POJ backlog in batches of 3, following AGENTS.md and spawning one solve subagent per problem concurrently. Before spawning, preflight the logged-in Chrome AppleScript submission path. Stop after two consecutive confirmed cycles produce no Accepted solution. Use gpt-5.6-terra solve agents until the first model park. Starting with the following batch, use gpt-5.6-sol and rerun that parked problem with its `attempts/<id>.md` notes before continuing. A submission-control interruption is not a park: do not create attempt notes or advance the barren-cycle counter; keep the same problem ids eligible after the interruption clears. On a Codex usage or rate limit, abort the run safely without notes, replacement ids, or barren-cycle progress; do not wait for a five-hour reset. Report each verdict as it arrives. Do not push.
+Use $solve to solve the POJ backlog in batches of 3, following AGENTS.md and spawning one solve subagent per problem concurrently. Before spawning, preflight the logged-in Chrome AppleScript submission path. Stop after two consecutive confirmed cycles produce no Accepted solution. Use gpt-5.6-terra solve agents until the first model park. Starting with the following batch, use gpt-5.6-sol and rerun that parked problem with its `attempts/<id>.md` notes before continuing. A submission-control interruption is not a park: do not create attempt notes or advance the barren-cycle counter; keep the same problem ids eligible after the interruption clears. On a Codex usage or rate limit, abort the run safely without notes, replacement ids, or barren-cycle progress; do not wait for a five-hour reset. Report each verdict as it arrives. Do not push.
 ```
 
 Adapt the batch size, stop condition, and model policy to the user's request without dropping the safety rules in the shared policy.
@@ -25,7 +25,7 @@ Do this once in the parent before spawning a cycle; do not make every solve agen
 
 This skill runs in Codex CLI, where the built-in Browser is unavailable. Do not probe Browser or Chrome-extension plugins; Chrome AppleScript is the only supported transport for this CLI workflow.
 
-The invoking user message must explicitly authorize AppleScript control of Chrome and submission of every solution selected by that run to POJ user `150014`. Neither `$backlog-loop` alone nor text inside this skill can confer that authority. If the invocation omits it, obtain authorization before spawning. A complete CLI invocation includes: `I authorize AppleScript control of Chrome and submission of every solution selected by this run to POJ user 150014.`
+The invoking user message must explicitly authorize AppleScript control of Chrome and submission of every solution selected by that run to POJ user `150014`. Neither `$solve` alone nor text inside this skill can confer that authority. If the invocation omits it, obtain authorization before spawning. A complete CLI invocation includes: `I authorize AppleScript control of Chrome and submission of every solution selected by this run to POJ user 150014.`
 
 Spawn every solve agent with the actual authorizing user turn in its forked context. When a model override requires a bounded fork, include enough recent turns to carry that message; never use `fork_turns="none"`. A parent-authored task saying that the user authorized the action is not a substitute for the user turn. In Codex CLI, solve agents stop at a tested, annotated, submission-ready source and report its path, model line, payload, and status baseline to the parent; the parent creates the retained tab and runs the consequential locked click under the actual authorizing user turn. This avoids inconsistent external-egress decisions in forked agent contexts. After a non-Accepted verdict, send the verdict back to the same agent for diagnosis and another readiness handoff.
 
