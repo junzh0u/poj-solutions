@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 from typing import TypedDict
 
-PARK_KINDS = ("model", "judge", "infeasible")
-FIELD_ORDER = ("problem", "park", "parked", "solvers", "recheck")
+PARK_KINDS = ("model", "judge", "infeasible", "gated")
+FIELD_ORDER = ("problem", "park", "parked", "gate", "solvers", "recheck")
 DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SOLVER_PATTERN = re.compile(
     r"^(?P<model>\S+)"
@@ -37,6 +37,7 @@ class ParkNote(TypedDict):
     problem: str
     park: str
     parked: str
+    gate: str | None
     solvers: list[Attempt]
     recheck: str | None
 
@@ -118,8 +119,23 @@ def parse_note(text: str, problem: str) -> ParkNote:
         )
     if not DATE_PATTERN.match(fields["parked"]):
         raise ParkNoteError(f"parked must be YYYY-MM-DD, not {fields['parked']!r}")
-    if not raw_solvers:
-        raise ParkNoteError("solvers lists no attempt")
+    if fields["park"] == "gated":
+        # A gate is a policy hold applied before anyone tries, so it is the one
+        # park with no attempt behind it. It must name the gate instead, or
+        # nobody can tell which ids to restore when that gate is lifted.
+        if raw_solvers:
+            raise ParkNoteError(
+                "a gated park records no attempt — it is applied before the"
+                " problem is tried; use --kind model/judge/infeasible once a"
+                " model has actually spent submissions on it"
+            )
+        if not fields.get("gate"):
+            raise ParkNoteError("a gated park must name the gate holding it, e.g. 'gate: special-judge'")
+    else:
+        if not raw_solvers:
+            raise ParkNoteError("solvers lists no attempt")
+        if fields.get("gate"):
+            raise ParkNoteError(f"only a gated park carries a gate, not a {fields['park']} park")
     if fields["park"] == "judge" and not fields.get("recheck"):
         raise ParkNoteError("a judge park must carry the recheck URL that would retire it")
 
@@ -144,6 +160,7 @@ def parse_note(text: str, problem: str) -> ParkNote:
         "problem": fields["problem"],
         "park": fields["park"],
         "parked": fields["parked"],
+        "gate": fields.get("gate") or None,
         "solvers": solvers,
         "recheck": fields.get("recheck") or None,
     }
@@ -155,8 +172,10 @@ def render_front_matter(note: ParkNote) -> str:
         f"problem: {note['problem']}",
         f"park: {note['park']}",
         f"parked: {note['parked']}",
-        "solvers:",
     ]
+    if note.get("gate"):
+        lines.append(f"gate: {note['gate']}")
+    lines.append("solvers:")
     for attempt in note["solvers"]:
         lines.append(
             f"  - {attempt['model']} {attempt['date']}"
@@ -177,6 +196,8 @@ def eligibility(
         return "triage", f"unranked model(s): {', '.join(unranked)}"
     if for_model not in ranks:
         return "triage", f"unranked model: {for_model}"
+    if note["park"] == "gated":
+        return "final", f"held by the {note['gate']} gate — never attempted; lift the gate to release it"
     if note["park"] != "model":
         return "final", f"{note['park']} park — no model retry is owed"
     best = max(ranks[a["model"]] for a in note["solvers"])
@@ -196,6 +217,8 @@ def park_status(note: ParkNote, ranks: dict[str, int]) -> tuple[str, str]:
     unranked = sorted({a["model"] for a in note["solvers"] if a["model"] not in ranks})
     if unranked:
         return "triage", f"unranked model(s): {', '.join(unranked)}"
+    if note["park"] == "gated":
+        return "gated", f"held by the {note['gate']} gate — never attempted; lift the gate to release it"
     if note["park"] != "model":
         return "final", f"{note['park']} park — no model retry is owed"
     best = max(ranks[a["model"]] for a in note["solvers"])
@@ -278,7 +301,7 @@ def run_list(options: argparse.Namespace) -> int:
     else:
         for record in records:
             note = record["note"]
-            last = note["solvers"][-1]["model"] if note else "-"
+            last = note["solvers"][-1]["model"] if note and note["solvers"] else "-"
             print(f"{record['problem']}\t{record['state']}\t{last}\t{record['reason']}")
 
     triage = [str(r["problem"]) for r in records if r["state"] == "triage"]
@@ -311,8 +334,93 @@ def run_check(options: argparse.Namespace) -> int:
     return 1 if failures else 0
 
 
+GATE_BODY = """
+# {problem} — held by the {gate} gate
+
+Parked without being attempted: the {gate} gate is in force, so no model has
+spent a submission on this problem and nothing here is a judgement about it.
+Lifting the gate releases it unchanged — `park-notes ungate --gate {gate}`
+prints every id it holds, and deleting these notes puts them back in play at
+the next `TODO` rebuild.
+
+{detail}
+""".lstrip()
+
+
+def run_gate(options: argparse.Namespace) -> int:
+    attempts_dir, _ = resolve_paths(options)
+    attempts_dir.mkdir(parents=True, exist_ok=True)
+    if not DATE_PATTERN.match(options.date):
+        print(f"park-notes: --date must be YYYY-MM-DD, not {options.date!r}", file=sys.stderr)
+        return 2
+
+    path = attempts_dir / f"{options.problem_id}.md"
+    if path.exists():
+        # Never overwrite a real attempt with a gate — a note with submissions
+        # behind it is evidence, and a gate is the absence of evidence.
+        try:
+            existing = parse_note(path.read_text(), options.problem_id)
+        except ParkNoteError as error:
+            print(f"park-notes: attempts/{options.problem_id}.md: {error}", file=sys.stderr)
+            return 3
+        if existing["park"] == "gated":
+            print(f"{options.problem_id}\tgated\talready\t{existing['gate']}")
+            return 0
+        print(
+            f"park-notes: attempts/{options.problem_id}.md is already a"
+            f" {existing['park']} park with {len(existing['solvers'])} attempt(s)"
+            f" — a gate must not overwrite that record",
+            file=sys.stderr,
+        )
+        return 2
+
+    note: ParkNote = {
+        "problem": options.problem_id,
+        "park": "gated",
+        "parked": options.date,
+        "gate": options.gate,
+        "solvers": [],
+        "recheck": None,
+    }
+    body = GATE_BODY.format(
+        problem=options.problem_id, gate=options.gate, detail=options.detail or ""
+    )
+    path.write_text(render_front_matter(note) + "\n" + body.rstrip() + "\n")
+    print(f"{options.problem_id}\tgated\tnew\t{options.gate}")
+    return 0
+
+
+def run_ungate(options: argparse.Namespace) -> int:
+    attempts_dir, _ = resolve_paths(options)
+    released: list[str] = []
+    for problem, note, error in load_notes(attempts_dir):
+        if note is None or note["park"] != "gated":
+            continue
+        if options.gate and note["gate"] != options.gate:
+            continue
+        released.append(problem)
+        if options.delete:
+            (attempts_dir / f"{problem}.md").unlink()
+    for problem in released:
+        print(problem)
+    if not options.delete and released:
+        print(
+            f"park-notes: {len(released)} id(s) held; re-run with --delete to"
+            f" release them, then rebuild TODO",
+            file=sys.stderr,
+        )
+    return 0
+
+
 def run_record(options: argparse.Namespace) -> int:
     attempts_dir, ranks = resolve_paths(options)
+    if options.kind == "gated":
+        print(
+            "park-notes: a gated park is not an attempt — use"
+            " `park-notes gate <id> --gate <name>` instead",
+            file=sys.stderr,
+        )
+        return 2
     if options.model not in ranks:
         print(
             f"park-notes: {options.model} is not in the model ranks file — add it"
@@ -348,12 +456,16 @@ def run_record(options: argparse.Namespace) -> int:
                 "problem": options.problem_id,
                 "park": options.kind,
                 "parked": options.date,
+                "gate": None,
                 "solvers": [attempt],
                 "recheck": options.recheck,
             }
         else:
             note = parse_note(text, options.problem_id)
             note["park"] = options.kind
+            # An id that was gate-held and has now actually been attempted stops
+            # being a gate: the record becomes the attempt, not the hold.
+            note["gate"] = None
             note["solvers"] = note["solvers"] + [attempt]
             if options.recheck:
                 note["recheck"] = options.recheck
@@ -405,6 +517,24 @@ def main(arguments: list[str]) -> int:
     recorder.add_argument("--recheck")
     add_shared_arguments(recorder)
     recorder.set_defaults(handler=run_record)
+
+    gater = subparsers.add_parser(
+        "gate", help="hold a problem without attempting it, under a named gate"
+    )
+    gater.add_argument("problem_id")
+    gater.add_argument("--gate", required=True, help="gate name, e.g. special-judge")
+    gater.add_argument("--detail", default="", help="one line on why this id matched")
+    gater.add_argument("--date", default=datetime.date.today().isoformat())
+    add_shared_arguments(gater)
+    gater.set_defaults(handler=run_gate)
+
+    ungater = subparsers.add_parser(
+        "ungate", help="list (or with --delete, release) the ids a gate holds"
+    )
+    ungater.add_argument("--gate", help="only this gate; omit for every gate")
+    ungater.add_argument("--delete", action="store_true")
+    add_shared_arguments(ungater)
+    ungater.set_defaults(handler=run_ungate)
 
     options = parser.parse_args(arguments[1:])
     try:
