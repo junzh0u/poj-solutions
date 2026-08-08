@@ -1,0 +1,11 @@
+2
+3
+C "Arrived at LSU for the contest" 2 3
+E "Was devoured by sidewalk ants" GRISLY
+E "Won the contest. Received glory and nachos." HAPPY
+5
+C "Saw a peanut" 3 5
+E "Made peanut butter sandwich" HAPPY
+C "Found a hammer" 4 2
+E "Hit self on head with hammer, ouch!" GRISLY
+E "Ate the peanut, choked on it, and died" GRISLY

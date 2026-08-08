@@ -1,0 +1,13 @@
+2
+6
+C "P1" 2 4
+C "P2" 3 3
+C "P3" 2 2
+C "P4" 5 6
+E "P5" HAPPY
+E "P6" GRISLY
+4
+C "  spaced text with 2 3 HAPPY inside  " 3 2
+E "grisly one" GRISLY
+C "second choice" 4 2
+E "" HAPPY
