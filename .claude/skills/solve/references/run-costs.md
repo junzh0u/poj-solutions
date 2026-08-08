@@ -2,10 +2,11 @@
 
 Dollar accounting of /solve runs, one section per run, measured identically so runs stay comparable across models. The measurement is `scripts/run-cost`: it reads the parent session transcript and the solve agents' task transcripts, dedupes assistant messages by id, and prices input / output / cache-write (5m and 1h) / cache-read tokens at the model's list rates. Billed tokens are dominated by cache traffic, so harness-reported `subagent_tokens` figures (which ignore it) are not comparable to anything here.
 
-To measure the next batch, run it as its parent reports the last verdict (or later — the transcripts persist):
+Two rules keep runs comparable. **Start the run from a clean session** (`/clear`, then `/solve`): the parent window filters which messages count, but every counted turn's cache read re-bills the entire conversation prefix, so pre-run work inflates the parent tally on every verdict (run 2 paid ≈$7.7 for a prefix it never used). **Measure as the parent reports the last verdict** (or later — the transcripts persist):
 
 ```sh
 .claude/skills/solve/scripts/run-cost --session <session-id> --model <opus-5|fable-5|sonnet-5> \
+  --parent-model <the session model, when it differs from the agents'> \
   --solved <accepts> --agents <solver-agent-ids, comma-separated>
 ```
 
@@ -55,19 +56,49 @@ Per-agent (problem, cost, messages): 1677 $3.05/20 · 2795 $3.24/25 · 3710 $3.3
 - Throughput: ~21 accepts/hour, double run 1.
 - The one two-submission solve (2836) again cost roughly double a clean solve ($6.12 vs ~$3.3 median) — a Wrong Answer iteration is the single biggest per-problem cost driver in both runs.
 - Scope note: parent window includes two mid-run user Q&A exchanges (about `with-submit-lock`) and the post-run doc-improvement commit; solver transcripts are exactly the nine `poj-solver` agents.
+- **Dirty-context caveat** (found after run 3): this session had 110 assistant messages of docs-refactor work before the `/solve` invocation, so the parent entered the run on a 159k-token context — a clean start reads ~22k (run 3) or 0 (run 1, fresh session). Window filtering picks which *messages* count, but every counted turn's cache read re-bills the whole prefix, so the 56 parent turns carried ≈7.7M pre-run tokens ≈ **$7.68 that belongs to the earlier conversation**. Corrected: **≈$49.6 total, ≈$5.51 per accept, ≈2.5M billed tokens per accept**. The block above is the raw measurement; the corrected figures are the comparable ones.
 
-## Run 1 vs run 2
+## Run 3 — claude-sonnet-5 agents, claude-fable-5 parent, 2026-08-08 (session `d467ba35-01ca-4c8a-9bc4-42fa534e3d5d`)
 
-| | Run 1 (opus-5) | Run 2 (fable-5) |
-|---|---|---|
-| Accepts | 12 (of 13 attempted) | 9 (of 9) |
-| First-submission rate | 12/12 accepts (1 problem failed outright) | 8/9 |
-| Total cost | $67.09 | $57.28 |
-| **Per accept** | **$5.59** | **$6.36 (+14%)** |
-| Billed tokens per accept | 7.38M | 3.34M (−55%) |
-| Wall clock per accept | ~6.0 min | ~2.9 min |
-| Agents : parent split | 52 : 48 | 57 : 43 |
+Pool of five, refilling, target 10 with drain overshoot. 15 problems attempted over ~37 minutes (21:38–22:15 UTC), 16 judged submissions: **14 accepts, all first-submission**, plus 3801 (two System Errors across two compilers, verified and parked as `judge` — POJ's judge for that problem has accepted nobody since 2025-11-27). 2568 gated by `spawn-precheck` at no agent cost. Second run under the post-refactor docs — same docs as run 2, different model, which is the comparison run 2 asked for.
 
-Reading: at 2× the per-token price, fable landed within 14% of opus per accept because it billed 2.2× fewer tokens per accept, and it ran twice as fast with a cleaner record (no failed problem; opus's one failure alone cost $6.27). **Confound:** run 2 is also the first run on the refactored docs, which shrank every context (solver manual no longer duplicated in shared context; parent no longer carries solve-procedure text), so the token drop is model + docs together — not attributable to the model alone. Run 3 on a different model under the same docs will separate the two. Problem sets also differ (consecutive slices of `TODO`, so roughly comparable difficulty, run 2's marginally less-solved).
+**Mixed-model run**: agents on sonnet-5, parent on fable-5 (the session model). Measured before `run-cost` grew its `--parent-model` flag, so the parent below was re-priced at fable rates by hand; mixed runs are now the norm — always pass `--parent-model` with the session model when it differs from the agents'.
+
+```
+SOLVE AGENTS (15 transcripts, sonnet-5)       PARENT (run window only, fable-5 rates)
+  input               1,120   $  0.00          input                 114   $  0.00
+  output             98,084   $  1.47          output             32,581   $  1.63
+  cache write     2,189,845   $  8.21          cache w(1h)       130,915   $  2.62
+  cache read     44,244,419   $ 13.27          cache read      5,081,881   $  5.08
+  TOTAL          46,533,468   $ 22.96          TOTAL           5,245,491   $  9.33
+                 (560 assistant msgs)                          (58 assistant msgs)
+
+RUN TOTAL: $32.29 at list rates   (agents 71%, parent 29%)   PER ACCEPT (14): $2.31
+INTRO-PRICED (agents ×2/3 through 2026-08-31; fable parent unchanged): $24.64 total, $1.76 per accept
+```
+
+Per-agent at list rates (problem, cost, messages): 2951 $1.04/31 · 2400 $2.39/48 · 3801 $2.70/73 (park) · 3484 $1.43/39 · 3654 $1.05/30 · 2464 $1.95/41 · 2705 $1.11/27 · 1838 $0.99/33 · 3645 $0.84/25 · 3283 $0.98/28 · 2463 $1.01/23 · 2003 $2.43/50 · 1987 $1.80/42 · 3339 $1.71/39 · 3328 $1.53/31.
+
+- 51.8M tokens billed; **3.70M billed tokens per accept** — apparently matching run 2's 3.34M, but that match is an artifact of run 2's dirty-context inflation (see its caveat). The clean comparison is agents-only, which pre-run context cannot touch: under identical docs, fable agents billed **1.97M tokens per accept** to sonnet's **3.32M** (1.7×). So the run 1→2 token drop was docs *and* model — fable is genuinely more token-frugal, and sonnet wins on price, not frugality.
+- Throughput: ~23 accepts/hour, the fastest run yet, with the cleanest record (14/14 first-submission; the only non-accept was a broken judge, not a failed solve).
+- The parent's token count dropped to 5.2M (vs 48.7M run 1, 12.3M run 2) — shorter run, leaner reports — but at fable rates it still carried 29% of spend. A cheaper parent model is the obvious next lever: the same 5.2M parent tokens at sonnet rates would have been $2.80, saving $6.53 (~20% of the run).
+- The expensive agents were the ones that iterated on context, not verdicts: 3801 ($2.70, judge park with two submissions), 2003 ($2.43, deep discuss-board archaeology), 2400 ($2.39, statement-swap investigation). No Wrong Answer iterations at all this run.
+
+## Cross-run comparison
+
+| | Run 1 (opus-5) | Run 2 (fable-5) | Run 3 (sonnet-5) |
+|---|---|---|---|
+| Docs | pre-refactor | post-refactor | post-refactor |
+| Clean parent context | yes (fresh session) | **no — 110 prior msgs, see caveat** | yes (right after /clear) |
+| Accepts | 12 (of 13 attempted) | 9 (of 9) | 14 (of 15; the 15th was a broken judge) |
+| First-submission rate | 12/12 accepts (1 problem failed outright) | 8/9 | 14/14 |
+| Total cost | $67.09 | $57.28 raw / ≈$49.6 corrected | $32.29 list / $24.64 intro (fable parent) |
+| **Per accept** | **$5.59** | **$6.36 raw / ≈$5.51 corrected** | **$2.31 list / $1.76 intro** |
+| Billed tokens per accept | 7.38M | 3.34M raw / ≈2.5M corrected | 3.70M |
+| Agents-only tokens per accept | 3.33M | 1.97M | 3.32M |
+| Wall clock per accept | ~6.0 min | ~2.9 min | ~2.6 min |
+| Agents : parent split (of spend) | 52 : 48 | 57 : 43 | 71 : 29 (by tokens 90 : 10 — the fable parent is 10% of tokens, 29% of cost) |
+
+Reading: with run 2's dirty-context carriage removed (≈$7.7 of parent cache reads re-billing the pre-run conversation), fable lands at ≈$5.51 per accept — **parity with opus at 2× the per-token price** — and it ran twice as fast with a cleaner record (no failed problem; opus's one failure alone cost $6.27). **Confound:** run 2 is also the first run on the refactored docs, which shrank every context, so its token drop vs run 1 is model + docs together. Run 3's clean head-to-head on the agents side (identical docs, and pre-run context can't touch agent transcripts): fable 1.97M tokens per accept vs sonnet 3.32M — so the drop was docs *and* model, fable being the most token-frugal of the three. Sonnet's advantage is price, not frugality: 1.7× fable's agent tokens at 30% of fable's rates still lands 58% cheaper per accept. Problem sets also differ (consecutive slices of `TODO`, so roughly comparable difficulty).
 
 Prices used (list, $/MTok in/out): opus-5 $5/$25, fable-5 $10/$50, sonnet-5 $3/$15.
