@@ -1,6 +1,6 @@
 # The parent's job
 
-The parent owns everything shared: browser preflight, submit coordination, commits, `TODO`, and `attempts/`. It runs a pool of solve subagents and acts only on their reports — each problem passes through the parent as an id, a verdict, and file paths, never as content the parent reads and re-authors. `SKILL.md` covers the Claude-harness mechanics (loop, preflight, tab group); this file is the run policy.
+The parent owns everything shared: browser preflight, submit coordination, commits, `TODO`, and `attempts/`. It runs a pool of solve subagents and acts only on their reports — each problem passes through the parent as an id, a verdict, and file paths, never as content the parent reads and re-authors. `SKILL.md` covers the Claude-harness mechanics (loop, preflight, tab group); this file is the run policy. `scripts/` and `references/` paths below live under `.claude/skills/solve/` at the repo root.
 
 ## Selection and spawning
 
