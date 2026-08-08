@@ -262,7 +262,7 @@ def add_shared_arguments(parser: argparse.ArgumentParser) -> None:
 def resolve_paths(options: argparse.Namespace) -> tuple[Path, dict[str, int]]:
     attempts_dir = options.attempts_dir or repository_root() / "attempts"
     ranks_path = options.ranks or (
-        repository_root() / ".agents/skills/solve/references/model-ranks.txt"
+        repository_root() / ".claude/skills/solve/references/model-ranks.txt"
     )
     return attempts_dir, parse_ranks(ranks_path.read_text())
 
