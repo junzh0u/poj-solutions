@@ -1,0 +1,5 @@
+Case 1: 4 lines with exactly 3 crossings can cut the plane into 8 pieces at most.
+Case 2: 4 lines with exactly 6 crossings can cut the plane into 11 pieces at most.
+Case 3: 4 lines cannot make exactly 2 crossings.
+Case 4: 5 lines cannot make exactly 11 crossings.
+Case 5: 17 lines with exactly 101 crossings can cut the plane into 119 pieces at most.
