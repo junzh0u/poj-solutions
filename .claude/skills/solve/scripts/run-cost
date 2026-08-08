@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+"""Price a /solve run from its session transcripts.
+
+Usage: run-cost --session <session-id> --model <preset> [--solved N]
+                [--agents id1,id2,...] [--no-window]
+
+Reads the parent session transcript
+(~/.claude/projects/-Users-junz-Workspace-poj-solutions/<session>.jsonl) and
+the solve-agent task transcripts
+(/private/tmp/claude-501/-Users-junz-Workspace-poj-solutions/<session>/tasks/*.output),
+dedupes assistant messages by id, and prices token usage at the model's list
+rates. This is the measurement behind references/run-costs.md — run it the
+same way after each batch so the numbers stay comparable.
+
+By default the parent transcript is filtered to the run window (the /solve
+invocation through the ScheduleWakeup loop stop) so unrelated work in the
+same session is not billed to the run; --no-window counts the whole
+transcript. Pass --agents with the solver agent ids (comma-separated) when
+the tasks directory also holds non-solver transcripts; default is every
+tasks/*.output file.
+"""
+import argparse
+import glob
+import json
+import os
+import sys
+
+# $ per 1M tokens: input, output, cache write 5m (1.25x), 1h (2x), read (0.1x)
+PRESETS = {
+    "opus-5":   {"in": 5.00,  "out": 25.00, "cw5m": 6.25,  "cw1h": 10.00, "cr": 0.50},
+    "fable-5":  {"in": 10.00, "out": 50.00, "cw5m": 12.50, "cw1h": 20.00, "cr": 1.00},
+    "sonnet-5": {"in": 3.00,  "out": 15.00, "cw5m": 3.75,  "cw1h": 6.00,  "cr": 0.30},
+}
+
+PROJECT = "-Users-junz-Workspace-poj-solutions"
+
+
+def window(path):
+    start = end = None
+    with open(path) as fh:
+        for line in fh:
+            if start is None and "<command-name>/solve</command-name>" in line:
+                try:
+                    start = json.loads(line).get("timestamp")
+                except Exception:
+                    pass
+            if "Loop stopped" in line and "cancelled" in line:
+                try:
+                    end = json.loads(line).get("timestamp")
+                except Exception:
+                    pass
+    return start, end
+
+
+def tally(paths, seen, t0=None, t1=None):
+    agg = {"in": 0, "out": 0, "cw5m": 0, "cw1h": 0, "cr": 0, "msgs": 0}
+    for p in paths:
+        try:
+            fh = open(p)
+        except OSError:
+            continue
+        with fh:
+            for line in fh:
+                try:
+                    d = json.loads(line)
+                except Exception:
+                    continue
+                ts = d.get("timestamp")
+                if t0 and ts and ts < t0:
+                    continue
+                if t1 and ts and ts > t1:
+                    continue
+                m = d.get("message")
+                if not isinstance(m, dict):
+                    continue
+                u = m.get("usage")
+                if not isinstance(u, dict):
+                    continue
+                mid = m.get("id")
+                if mid is not None:
+                    if mid in seen:
+                        continue
+                    seen.add(mid)
+                cc = u.get("cache_creation") or {}
+                agg["in"] += u.get("input_tokens", 0) or 0
+                agg["out"] += u.get("output_tokens", 0) or 0
+                agg["cr"] += u.get("cache_read_input_tokens", 0) or 0
+                w5 = cc.get("ephemeral_5m_input_tokens")
+                w1 = cc.get("ephemeral_1h_input_tokens")
+                if w5 is None and w1 is None:
+                    agg["cw5m"] += u.get("cache_creation_input_tokens", 0) or 0
+                else:
+                    agg["cw5m"] += w5 or 0
+                    agg["cw1h"] += w1 or 0
+                agg["msgs"] += 1
+    return agg
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--session", required=True)
+    ap.add_argument("--model", required=True, choices=sorted(PRESETS))
+    ap.add_argument("--solved", type=int, default=0)
+    ap.add_argument("--agents", default=None,
+                    help="comma-separated agent ids; default: all tasks/*.output")
+    ap.add_argument("--no-window", action="store_true",
+                    help="count the whole parent transcript, not just the run window")
+    args = ap.parse_args()
+
+    price = PRESETS[args.model]
+
+    def cost(a):
+        return sum(a[k] / 1_000_000 * price[k] for k in price)
+
+    def show(label, a):
+        c = cost(a)
+        print(label)
+        print(f"  input        {a['in']:>12,}   ${a['in']/1e6*price['in']:>9.2f}")
+        print(f"  output       {a['out']:>12,}   ${a['out']/1e6*price['out']:>9.2f}")
+        print(f"  cache write  {a['cw5m']:>12,}   ${a['cw5m']/1e6*price['cw5m']:>9.2f}")
+        if a["cw1h"]:
+            print(f"  cache w(1h)  {a['cw1h']:>12,}   ${a['cw1h']/1e6*price['cw1h']:>9.2f}")
+        print(f"  cache read   {a['cr']:>12,}   ${a['cr']/1e6*price['cr']:>9.2f}")
+        tot = a["in"] + a["out"] + a["cw5m"] + a["cw1h"] + a["cr"]
+        print(f"  TOTAL        {tot:>12,}   ${c:>9.2f}   ({a['msgs']} assistant msgs)")
+        return c
+
+    parent = os.path.expanduser(
+        f"~/.claude/projects/{PROJECT}/{args.session}.jsonl")
+    tasks_dir = f"/private/tmp/claude-501/{PROJECT}/{args.session}/tasks"
+    if args.agents:
+        agent_files = [f"{tasks_dir}/{a.strip()}.output"
+                       for a in args.agents.split(",")]
+        missing = [f for f in agent_files if not os.path.exists(f)]
+        for f in missing:
+            print(f"warning: missing agent transcript {f}", file=sys.stderr)
+        agent_files = [f for f in agent_files if os.path.exists(f)]
+    else:
+        agent_files = sorted(glob.glob(f"{tasks_dir}/*.output"))
+
+    t0 = t1 = None
+    if not args.no_window:
+        t0, t1 = window(parent)
+        print(f"parent window: {t0} .. {t1}")
+
+    seen = set()
+    agents = tally(agent_files, seen)
+    par = tally([parent], seen, t0, t1)
+
+    print("=" * 58)
+    ac = show(f"SOLVE AGENTS ({len(agent_files)} transcripts)", agents)
+    print()
+    pc = show("PARENT (orchestration)", par)
+    print("=" * 58)
+    total = ac + pc
+    print(f"RUN TOTAL: ${total:.2f}   (agents {ac/total*100:.0f}%, parent {pc/total*100:.0f}%)")
+    if args.solved:
+        print(f"PER PROBLEM ({args.solved} accepted): ${total/args.solved:.2f}")
+    print("=" * 58)
+
+    print("\nPer-agent:")
+    for f in agent_files:
+        s2 = set()
+        a = tally([f], s2)
+        print(f"  {os.path.basename(f)[:17]}  ${cost(a):>6.2f}  {a['msgs']:>3} msgs")
+
+
+if __name__ == "__main__":
+    main()
