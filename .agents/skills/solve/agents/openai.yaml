@@ -1,0 +1,4 @@
+interface:
+  display_name: "POJ Solve"
+  short_description: "Solve POJ problems through a bounded agent pool"
+  default_prompt: "Use $solve to work the POJ backlog with three refilling solve agents until three consecutive resolutions produce no accept."

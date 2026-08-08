@@ -1,0 +1,1 @@
+../../../../.claude/skills/solve/scripts/test_status_via_curl.py
