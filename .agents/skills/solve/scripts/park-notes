@@ -120,15 +120,13 @@ def parse_note(text: str, problem: str) -> ParkNote:
     if not DATE_PATTERN.match(fields["parked"]):
         raise ParkNoteError(f"parked must be YYYY-MM-DD, not {fields['parked']!r}")
     if fields["park"] == "gated":
-        # A gate is a policy hold applied before anyone tries, so it is the one
-        # park with no attempt behind it. It must name the gate instead, or
-        # nobody can tell which ids to restore when that gate is lifted.
-        if raw_solvers:
-            raise ParkNoteError(
-                "a gated park records no attempt — it is applied before the"
-                " problem is tried; use --kind model/judge/infeasible once a"
-                " model has actually spent submissions on it"
-            )
+        # A gate is a policy hold, so unlike every other kind it does not need an
+        # attempt behind it — usually there is none, because the gate is applied
+        # before the problem is spawned. It may still carry solvers when a gate
+        # lands on a run already in flight, and then recording what was spent is
+        # the honest thing: the submissions happened whether or not the hold did.
+        # What a gate always needs is its name, or nothing identifies which ids
+        # to restore when that gate is lifted.
         if not fields.get("gate"):
             raise ParkNoteError("a gated park must name the gate holding it, e.g. 'gate: special-judge'")
     else:
@@ -187,6 +185,18 @@ def render_front_matter(note: ParkNote) -> str:
     return "\n".join(lines) + "\n"
 
 
+def gate_reason(note: ParkNote) -> str:
+    """Say what a gate holds, and whether anything was spent before it landed."""
+    if not note["solvers"]:
+        return f"held by the {note['gate']} gate — never attempted; lift the gate to release it"
+    spent = sum(a["submissions"] for a in note["solvers"])
+    last = note["solvers"][-1]
+    return (
+        f"held by the {note['gate']} gate — {spent} submission(s) spent before it"
+        f" landed, last {last['verdict']}; lift the gate to release it"
+    )
+
+
 def eligibility(
     note: ParkNote, ranks: dict[str, int], for_model: str
 ) -> tuple[str, str]:
@@ -197,7 +207,7 @@ def eligibility(
     if for_model not in ranks:
         return "triage", f"unranked model: {for_model}"
     if note["park"] == "gated":
-        return "final", f"held by the {note['gate']} gate — never attempted; lift the gate to release it"
+        return "final", gate_reason(note)
     if note["park"] != "model":
         return "final", f"{note['park']} park — no model retry is owed"
     best = max(ranks[a["model"]] for a in note["solvers"])
@@ -218,7 +228,7 @@ def park_status(note: ParkNote, ranks: dict[str, int]) -> tuple[str, str]:
     if unranked:
         return "triage", f"unranked model(s): {', '.join(unranked)}"
     if note["park"] == "gated":
-        return "gated", f"held by the {note['gate']} gate — never attempted; lift the gate to release it"
+        return "gated", gate_reason(note)
     if note["park"] != "model":
         return "final", f"{note['park']} park — no model retry is owed"
     best = max(ranks[a["model"]] for a in note["solvers"])
@@ -346,6 +356,23 @@ the next `TODO` rebuild.
 {detail}
 """.lstrip()
 
+GATE_BODY_SPENT = """
+# {problem} — held by the {gate} gate
+
+Held by the {gate} gate, which landed while this problem was already being
+solved, so the submissions in the front matter were genuinely spent before the
+hold applied. They are recorded because they happened; the gate is a policy
+decision about whether to keep trying, not a verdict on the problem or its
+judge, and nothing here says the approach was wrong.
+
+Lifting the gate releases it — `park-notes ungate --gate {gate}` prints every
+id it holds, and deleting these notes puts them back in play at the next
+`TODO` rebuild. A run that picks this up again should read the detail below
+first rather than starting from nothing.
+
+{detail}
+""".lstrip()
+
 
 def run_gate(options: argparse.Namespace) -> int:
     attempts_dir, _ = resolve_paths(options)
@@ -374,15 +401,44 @@ def run_gate(options: argparse.Namespace) -> int:
         )
         return 2
 
+    spent = [options.model, options.submissions, options.verdict]
+    if any(v is not None for v in spent) and not all(v is not None for v in spent):
+        print(
+            "park-notes: recording spend on a gate needs all of --model,"
+            " --submissions and --verdict, or none of them",
+            file=sys.stderr,
+        )
+        return 2
+
+    solvers: list[Attempt] = []
+    if options.model is not None:
+        _, ranks = resolve_paths(options)
+        if options.model not in ranks:
+            print(
+                f"park-notes: {options.model} is not in the model ranks file — add"
+                f" it there before recording spend against it",
+                file=sys.stderr,
+            )
+            return 2
+        solvers.append(
+            {
+                "model": options.model,
+                "date": options.date,
+                "submissions": options.submissions,
+                "verdict": options.verdict,
+            }
+        )
+
     note: ParkNote = {
         "problem": options.problem_id,
         "park": "gated",
         "parked": options.date,
         "gate": options.gate,
-        "solvers": [],
+        "solvers": solvers,
         "recheck": None,
     }
-    body = GATE_BODY.format(
+    template = GATE_BODY_SPENT if solvers else GATE_BODY
+    body = template.format(
         problem=options.problem_id, gate=options.gate, detail=options.detail or ""
     )
     path.write_text(render_front_matter(note) + "\n" + body.rstrip() + "\n")
@@ -525,6 +581,9 @@ def main(arguments: list[str]) -> int:
     gater.add_argument("--gate", required=True, help="gate name, e.g. special-judge")
     gater.add_argument("--detail", default="", help="one line on why this id matched")
     gater.add_argument("--date", default=datetime.date.today().isoformat())
+    gater.add_argument("--model", help="only when the gate landed mid-solve: the model that had already spent submissions")
+    gater.add_argument("--submissions", type=int, help="submissions spent before the gate applied")
+    gater.add_argument("--verdict", help="last verdict before the gate applied")
     add_shared_arguments(gater)
     gater.set_defaults(handler=run_gate)
 
