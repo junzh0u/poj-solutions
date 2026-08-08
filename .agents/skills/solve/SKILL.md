@@ -7,11 +7,15 @@ description: Run one POJ problem or the TODO backlog end to end in Codex with de
 
 Read [references/orchestration.md](references/orchestration.md) completely before starting. It is the parent policy: selection, spawning, refill, reports, parking, and stop conditions. Do not read or paraphrase the solver manual; `.codex/agents/poj-solver.toml` loads [references/solver.md](references/solver.md) only into solve agents. The parent↔solver contract is `AGENTS.md` § "The interface".
 
+Run every live POJ read through sandbox escalation from the outset. This Codex sandbox does not resolve `poj.org`; a preliminary sandboxed `curl`, `spawn-precheck`, `status-via-curl`, or `verify-judge-park` attempt is guaranteed noise, not a useful probe. Keep this execution detail in the Codex adapter rather than the shared orchestration policy.
+
+Run parent-owned `commit-accept` and `commit-park` through filesystem escalation from the outset too. The restricted sandbox cannot create `.git/index.lock`; do not invoke a shared commit helper sandboxed first or change the canonical shared script to compensate for a Codex caller constraint.
+
 ## Choose the run shape
 
-Use the same path for a named problem and the backlog. A named problem is a pool of one. For backlog work, default to three agents kept in flight by immediate refill because this Codex runtime has three child slots alongside the parent; reduce the pool if fewer slots are available.
+Use the same path for a named problem and the backlog. A named problem is a pool of one. For backlog work, default to three agents kept in flight by immediate refill because this Codex runtime has three child slots alongside the parent; reduce the pool if fewer slots are available or the acceptance target is smaller.
 
-Require a finite stop condition. Unless the user gives one, stop after three consecutive resolved problems produce no accept, one Codex pool's worth. If the user requests a target number of accepts, retain that barren-stretch safety net, keep the pool full until the committed-accept target is met, then drain live agents without killing them.
+Require a finite stop condition. Treat "solve N problems" as a target of N committed Accepted solutions: retain the barren-stretch safety net, keep the pool at its initial width until the target is met, then drain live agents without killing them. Only an explicit "one batch", "exactly N attempted ids", or "no refill" request creates a closed pool. Unless the user gives a target, stop after three consecutive resolved problems produce no accept, one Codex pool's worth.
 
 Use Goal mode only for an explicitly unattended or multi-turn request. If no goal exists, create one from the user's request plus the durable run state below. A single named solve or other bounded normal-turn request does not need a goal. Keep the goal text complete enough to survive compaction:
 
@@ -30,9 +34,8 @@ An explicit `$solve` invocation or request to solve under this repository's docu
 Preflight once before spawning. Read-only AppleScript must:
 
 1. List existing Chrome windows and select a normal window without creating or activating a window.
-2. Save that window's active-tab index, create `http://poj.org/submit?problem_id=<first-id>` as a tab at the end, retain its tab id, and immediately restore the saved active-tab index.
-3. Wait on that exact retained tab until loading is false, then require its URL, `document.forms.length === 3`, and `document.forms[2].problem_id.value === '<first-id>'`.
-4. Close only the retained preflight tab and pass the pinned Chrome window id to every solve agent as the run's submission target.
+2. Run `scripts/open-submit-tab <window-id> <first-id>`. It creates the tab at the end of the pinned window, immediately restores and verifies the previously active tab without activating the new one, validates the loaded form in the background, and prints the retained tab id; on any validation error it closes the exact tab before failing.
+3. Run `scripts/close-submit-tab <window-id> <tab-id> <first-id>` and pass the pinned Chrome window id to every solve agent as the run's submission target.
 
 User authorization does not bypass macOS Automation permission or Chrome's View > Developer > Allow JavaScript from Apple Events. If Chrome, either permission, or the logged-in POJ form is unavailable, stop as infrastructure before spawning. Do not create notes or move the barren counter.
 

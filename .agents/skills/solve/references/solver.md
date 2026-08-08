@@ -13,6 +13,8 @@ You never touch git, `TODO`, or any file another agent could be working on. What
 
 Only the submit itself needs the user's Chrome session (logged in as user `150014`). Everything else — the statement, the samples, the verdict — is plain `curl` with no login, so Chrome is touched exactly once per submission: open a fresh retained-ID background tab when ready, close it as soon as the transport has confirmed the POST handoff, and do every status read with `curl`. Never create or activate a window, never address the frontmost tab, and never touch a tab you did not create.
 
+Run every live POJ read through sandbox escalation from the outset. This Codex sandbox never resolves `poj.org`; do not spend a known-doomed sandboxed attempt before rerunning `curl`, `status-via-curl`, or another network helper with access.
+
 ## 1. Read the statement
 
 `curl -s 'http://poj.org/problem?id=<id>'` — the raw HTML carries the whole statement, samples, and limits, and needs no login. Note the time and memory limits; they decide how much the algorithm can afford.
@@ -92,14 +94,13 @@ Run `.agents/skills/solve/scripts/build-submit-js <id> <source-file> <model-id> 
 For every attempt:
 
 1. Take a distinct fail-visible status baseline with `scripts/status-via-curl <id> --html-out <scratch>/<id>/<attempt>-before.html` and record the newest Run ID or the explicitly empty `rows` array.
-2. Save the pinned window's active-tab index, create the problem submit URL as a tab at the end of that exact window, retain the new tab's unique id, and immediately restore the saved active-tab index. Never activate the new tab.
-3. Wait for that exact retained tab's `loading` property to become false. Run read-only JavaScript against that exact window/tab id and require the expected URL, `document.forms.length === 3`, and matching `document.forms[2].problem_id.value`. Close only that tab and report infrastructure if the check fails.
-4. Build the guarded payload. Run `.agents/skills/solve/scripts/with-submit-lock .agents/skills/solve/scripts/submit-via-applescript <window-id> <tab-id> <payload>`. Keep the AppleScript execution inside the coordinator so the lock covers the actual click and completed POST handoff; tab creation, cleanup, and status polling stay outside it. Do this for first attempts and retries.
-5. When the helper returns exactly `http://poj.org/status`, close that exact retained tab in the immediately following AppleScript call. Record the tab id in both the created and closed ledgers. No foreground landing window is needed.
+2. Run `.agents/skills/solve/scripts/open-submit-tab <window-id> <id>` and record the returned tab id immediately. The helper creates the tab at the end of the pinned window, immediately restores and verifies the previously active tab without activating the new one, then waits for the exact background tab and validates its URL and form. It closes the exact tab before reporting a readiness error, so an error cannot discard the only handle to a leaked tab. Never combine ad-hoc creation and validation in one AppleScript call whose error prevents the tab id from returning.
+3. Build the guarded payload. Run `.agents/skills/solve/scripts/with-submit-lock .agents/skills/solve/scripts/submit-via-applescript <window-id> <tab-id> <payload>`. Keep the AppleScript execution inside the coordinator so the lock covers the actual click and completed POST handoff; tab creation, cleanup, and status polling stay outside it. Do this for first attempts and retries.
+4. When the helper returns exactly `http://poj.org/status`, immediately run `.agents/skills/solve/scripts/close-submit-tab <window-id> <tab-id> <id>`. Record the tab id in both the created and closed ledgers. No foreground landing window is needed.
 
 The readiness check is not atomic with the click, so the generated in-call problem-id and source-length guards remain mandatory. The textarea normalizes CRLF to LF; the guard accounts for it. After a new status row appears, its `Code Length` must match the planted LF-normalized source length before the source can be archived.
 
-Treat a helper error after the click as ambiguous external state, not proof that a submission landed or failed. Close the exact retained tab if it still exists, then recheck authoritative status before retrying. A successful helper result proves completed browser handoff; the new status row and code length remain authoritative. Every retry uses a fresh retained-ID background tab in the same pinned window and goes through the same lock.
+Treat a helper error after the click as ambiguous external state, not proof that a submission landed or failed. Run `close-submit-tab` for the exact retained id if it still exists, then recheck authoritative status before retrying. A successful helper result proves completed browser handoff; the new status row and code length remain authoritative. Every retry uses a fresh retained-ID background tab in the same pinned window and goes through the same lock.
 
 ## 4. Check the verdict
 

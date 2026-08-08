@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 3 || ! $1 =~ ^[0-9]+$ || ! $2 =~ ^[0-9]+$ || ! $3 =~ ^[0-9]+$ ]]; then
+  echo "usage: close-submit-tab <window-id> <tab-id> <problem-id>" >&2
+  exit 2
+fi
+
+exec osascript \
+  -e 'on run argv' \
+  -e 'set targetWindowId to item 1 of argv as integer' \
+  -e 'set targetTabIdText to item 2 of argv' \
+  -e 'set targetTabId to targetTabIdText as integer' \
+  -e 'set problemId to item 3 of argv' \
+  -e 'set submitUrl to "http://poj.org/submit?problem_id=" & problemId' \
+  -e 'tell application "Google Chrome"' \
+  -e 'set targetWindow to first window whose id is targetWindowId' \
+  -e 'set targetTab to first tab of targetWindow whose id is targetTabId' \
+  -e 'set targetUrl to URL of targetTab' \
+  -e 'if targetUrl is not submitUrl and targetUrl is not "http://poj.org/submit" and targetUrl is not "http://poj.org/status" then error "refusing to close unexpected URL: " & targetUrl' \
+  -e 'close targetTab' \
+  -e 'return targetTabIdText' \
+  -e 'end tell' \
+  -e 'end run' \
+  "$1" "$2" "$3"

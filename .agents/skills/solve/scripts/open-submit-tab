@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 2 || ! $1 =~ ^[0-9]+$ || ! $2 =~ ^[0-9]+$ ]]; then
+  echo "usage: open-submit-tab <window-id> <problem-id>" >&2
+  exit 2
+fi
+
+exec osascript \
+  -e 'on run argv' \
+  -e 'set targetWindowId to item 1 of argv as integer' \
+  -e 'set problemId to item 2 of argv' \
+  -e 'set submitUrl to "http://poj.org/submit?problem_id=" & problemId' \
+  -e 'tell application "Google Chrome"' \
+  -e 'set targetWindow to first window whose id is targetWindowId' \
+  -e 'set savedIndex to active tab index of targetWindow' \
+  -e 'set savedTabId to id of active tab of targetWindow' \
+  -e 'set targetTab to make new tab at end of tabs of targetWindow with properties {URL:submitUrl}' \
+  -e 'set targetTabId to id of targetTab' \
+  -e 'try' \
+  -e 'set active tab index of targetWindow to savedIndex' \
+  -e 'if id of active tab of targetWindow is not savedTabId then error "could not preserve the active tab"' \
+  -e 'repeat 400 times' \
+  -e 'if loading of targetTab is false then exit repeat' \
+  -e 'delay 0.05' \
+  -e 'end repeat' \
+  -e 'if loading of targetTab is true then error "submit tab did not finish loading"' \
+  -e 'set completedUrl to URL of targetTab' \
+  -e 'set formState to execute targetTab javascript "document.forms.length + \"|\" + (document.forms[2] ? document.forms[2].problem_id.value : \"missing\")"' \
+  -e 'if completedUrl is not submitUrl then error "unexpected submit URL: " & completedUrl' \
+  -e 'if formState is not "3|" & problemId then error "submit readiness failed: " & formState' \
+  -e 'return targetTabId as text' \
+  -e 'on error errText number errNum' \
+  -e 'try' \
+  -e 'close targetTab' \
+  -e 'end try' \
+  -e 'error errText number errNum' \
+  -e 'end try' \
+  -e 'end tell' \
+  -e 'end run' \
+  "$1" "$2"
