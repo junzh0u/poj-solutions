@@ -2,6 +2,8 @@
 
 The parent owns everything shared: browser preflight, submit coordination, commits, `TODO`, and `attempts/`. It runs a pool of solve subagents and acts only on their reports — each problem passes through the parent as an id, a verdict, and file paths, never as content the parent reads and re-authors. `SKILL.md` covers the Claude-harness mechanics (loop, preflight, tab group); this file is the run policy. `scripts/` and `references/` paths below live under `.claude/skills/solve/` at the repo root.
 
+This flow's first full run (2026-08-08, pool of five, target 5): 9 accepts committed — 8 problems on their first submission, one on its second — 10 clicks with none dropped, 2 ids gated by `spawn-precheck`, 10 tabs created and 10 closed with the group auto-removed once on the parent's final close. Every commit message and park-note body was solver-authored; the parent's per-problem context was the report plus two commands.
+
 ## Selection and spawning
 
 "Solve N problems" means: take the **top N ids of `TODO`** — the list is already ordered so the most-solved (roughly easiest and best-documented) come first — and work them. A specific problem id the user names overrides the ordering; hand its `attempts/<id>.md` to the agent if it has one, so it starts where the last run stopped. A single named problem is simply a pool of one with the same preflight, pinned browser, and commit path, not a different procedure.
