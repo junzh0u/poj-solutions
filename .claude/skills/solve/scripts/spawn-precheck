@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""Answer the one question the parent asks before spawning: is this id gated?
+
+Fetches the problem page and prints a single token, so the parent never holds
+problem content in its own context: `ok` (exit 0) or `special-judge` (exit 3).
+A fetch or validation failure is unknown state, not `ok` — it exits 1 with the
+error on stderr, because spawning into an unfetchable problem and skipping a
+gated one are different mistakes and neither should happen silently.
+"""
+
+from __future__ import annotations
+
+import argparse
+import subprocess
+import sys
+
+
+def positive_number(value: str) -> str:
+    if not value.isdigit() or int(value) <= 0:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return value
+
+
+def main(arguments: list[str]) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("problem_id", type=positive_number)
+    options = parser.parse_args(arguments[1:])
+
+    url = f"http://poj.org/problem?id={options.problem_id}"
+    completed = subprocess.run(["curl", "-fsS", url], check=False, capture_output=True)
+    if completed.returncode != 0:
+        sys.stderr.buffer.write(completed.stderr)
+        print(f"spawn-precheck: fetch failed for {url}", file=sys.stderr)
+        return 1
+
+    html = completed.stdout.decode("utf-8", errors="replace")
+    # POJ serves error pages with HTTP 200; every real problem page carries its
+    # limits block, so its absence means this is not a problem statement.
+    if "Time Limit:" not in html:
+        print(
+            f"spawn-precheck: {url} returned a page without a limits block —"
+            " not a problem statement, treating as unknown state",
+            file=sys.stderr,
+        )
+        return 1
+
+    if "Special Judge" in html:
+        print("special-judge")
+        return 3
+    print("ok")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+"""Commit one accepted problem as the whole state change it is.
+
+Usage: commit-accept <id> <commit-msg-file>
+
+The solver authored the commit message (subject `<id> <Title>`, body ending
+with its `Model:` trailer) and archived the source under `solutions/<id>/`;
+the parent runs this instead of reading either. In one commit this stages
+everything under `solutions/<id>/`, strikes the id from `TODO` (a fresh
+solve), or deletes `attempts/<id>.md` (a retry clearing a park), and commits
+with the message file — pathspec-limited, so unrelated staged work is never
+swept in. Striking after the commit is the documented slip this makes
+impossible.
+"""
+
+from __future__ import annotations
+
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+
+def run_git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(root), *args], check=False, capture_output=True, text=True
+    )
+
+
+def fail(message: str) -> int:
+    print(f"commit-accept: {message}", file=sys.stderr)
+    return 1
+
+
+def main(arguments: list[str]) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("problem_id")
+    parser.add_argument("msg_file", type=Path)
+    options = parser.parse_args(arguments[1:])
+    problem_id = options.problem_id
+    if not problem_id.isdigit():
+        return fail("problem id must be numeric")
+
+    top = run_git(Path.cwd(), "rev-parse", "--show-toplevel")
+    if top.returncode != 0:
+        return fail("not inside a git repository")
+    root = Path(top.stdout.strip())
+
+    if not options.msg_file.is_file():
+        return fail(f"no commit message file at {options.msg_file}")
+    message = options.msg_file.read_text()
+    first_line = message.splitlines()[0] if message.splitlines() else ""
+    if not first_line.startswith(f"{problem_id} "):
+        return fail(
+            f"commit message subject {first_line!r} does not start with"
+            f" '{problem_id} ' — wrong file or wrong problem"
+        )
+    if "Model:" not in message:
+        return fail("commit message carries no 'Model:' trailer")
+
+    solution_dir = root / "solutions" / problem_id
+    if not solution_dir.is_dir():
+        return fail(f"no directory at {solution_dir}")
+    pending = run_git(root, "status", "--porcelain", "--", f"solutions/{problem_id}")
+    if pending.returncode != 0 or not pending.stdout.strip():
+        return fail(f"nothing new under solutions/{problem_id} — no archive to commit")
+
+    pathspecs = [f"solutions/{problem_id}"]
+
+    todo_path = root / "TODO"
+    todo_lines = todo_path.read_text().splitlines()
+    struck = [line for line in todo_lines if line.strip() != problem_id]
+    if len(struck) != len(todo_lines):
+        todo_path.write_text("\n".join(struck) + ("\n" if struck else ""))
+        pathspecs.append("TODO")
+
+    note_path = root / "attempts" / f"{problem_id}.md"
+    cleared_park = note_path.is_file()
+    if cleared_park:
+        removed = run_git(root, "rm", "-q", "--", f"attempts/{problem_id}.md")
+        if removed.returncode != 0:
+            sys.stderr.write(removed.stderr)
+            return fail("could not remove the cleared park note")
+        pathspecs.append(f"attempts/{problem_id}.md")
+
+    if len(pathspecs) == 1:
+        print(
+            f"commit-accept: {problem_id} was neither in TODO nor parked —"
+            " committing the archive alone",
+            file=sys.stderr,
+        )
+
+    added = run_git(root, "add", "--", f"solutions/{problem_id}")
+    if added.returncode != 0:
+        sys.stderr.write(added.stderr)
+        return fail("git add failed")
+    committed = run_git(
+        root, "commit", "-F", str(options.msg_file.resolve()), "--", *pathspecs
+    )
+    if committed.returncode != 0:
+        sys.stderr.write(committed.stderr)
+        return fail("git commit failed")
+    sys.stdout.write(committed.stdout)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""Commit one park as the whole state change it is.
+
+Usage: commit-park <id> [--subject <text>]
+
+Run after the note exists and carries its park record (`park-notes record`,
+or `park-notes gate` for a policy hold). Stages `attempts/<id>.md`, strikes
+the id from `TODO` when it is there (a re-record over an existing park has no
+line left to strike), and commits both — pathspec-limited, so unrelated
+staged work is never swept in. The subject defaults to `<id> attempt notes`;
+gates conventionally pass e.g. `--subject '<id> gated under special-judge'`.
+"""
+
+from __future__ import annotations
+
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+
+def run_git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(root), *args], check=False, capture_output=True, text=True
+    )
+
+
+def fail(message: str) -> int:
+    print(f"commit-park: {message}", file=sys.stderr)
+    return 1
+
+
+def main(arguments: list[str]) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("problem_id")
+    parser.add_argument("--subject", default=None)
+    options = parser.parse_args(arguments[1:])
+    problem_id = options.problem_id
+    if not problem_id.isdigit():
+        return fail("problem id must be numeric")
+
+    top = run_git(Path.cwd(), "rev-parse", "--show-toplevel")
+    if top.returncode != 0:
+        return fail("not inside a git repository")
+    root = Path(top.stdout.strip())
+
+    note_path = root / "attempts" / f"{problem_id}.md"
+    if not note_path.is_file():
+        return fail(f"no note at {note_path} — write and stamp it first")
+    note = note_path.read_text()
+    if not note.startswith("---\n") or f"problem: {problem_id}" not in note:
+        return fail(
+            f"{note_path} carries no park record for {problem_id} — stamp it"
+            " with park-notes before committing"
+        )
+
+    pathspecs = [f"attempts/{problem_id}.md"]
+
+    todo_path = root / "TODO"
+    todo_lines = todo_path.read_text().splitlines()
+    struck = [line for line in todo_lines if line.strip() != problem_id]
+    if len(struck) != len(todo_lines):
+        todo_path.write_text("\n".join(struck) + ("\n" if struck else ""))
+        pathspecs.append("TODO")
+
+    added = run_git(root, "add", "--", f"attempts/{problem_id}.md")
+    if added.returncode != 0:
+        sys.stderr.write(added.stderr)
+        return fail("git add failed")
+    subject = options.subject or f"{problem_id} attempt notes"
+    committed = run_git(root, "commit", "-m", subject, "--", *pathspecs)
+    if committed.returncode != 0:
+        sys.stderr.write(committed.stderr)
+        return fail("git commit failed")
+    sys.stdout.write(committed.stdout)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))
