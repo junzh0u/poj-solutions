@@ -34,6 +34,6 @@ The **solver writes**, besides its scratchpad: `solutions/<id>/` (archived sourc
 
 The **report** is everything the parent acts on without redoing any part of the solve, around a dozen lines: the outcome; the `// Model:` line verbatim; one line per submission (run id, verdict, code length, what changed); the files written (archive path with time and memory, `test_data/` files, commit-msg path or park note); the park-kind suggestion with its evidence counts when parking; and the tab ledger (every tab id created and closed). All prose stays in the files.
 
-The **parent acts** with the helpers in its solve skill's `scripts/`: `spawn-precheck` before every spawn, `commit-accept` / `commit-park` for the commits (each commit is the whole state change for one problem — the solution or note plus its `TODO` strike), `verify-judge-park` before believing a judge park.
+The **parent acts** with the helpers in its solve skill's `scripts/`: `spawn-precheck` before every spawn, `commit-accept` / `commit-park` for the commits (each commit is the whole state change for one problem — the solution or note plus its `TODO` strike), `verify-judge-park` before believing a judge park. While agents are live, a solver may write its Accepted archive before its report, so a dirty `git status` is not automatically unrelated user work: the parent leaves in-flight paths alone and only stages or commits the paths named by a completed report through those helpers.
 
 Do not push unless asked.

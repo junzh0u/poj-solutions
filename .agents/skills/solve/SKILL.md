@@ -15,12 +15,12 @@ Run parent-owned `commit-accept` and `commit-park` through filesystem escalation
 
 Use the same path for a named problem and the backlog. A named problem is a pool of one. For backlog work, default to three agents kept in flight by immediate refill because this Codex runtime has three child slots alongside the parent; reduce the pool if fewer slots are available or the acceptance target is smaller.
 
-Require a finite stop condition. Treat "solve N problems" as a target of N committed Accepted solutions: retain the barren-stretch safety net, keep the pool at its initial width until the target is met, then drain live agents without killing them. Only an explicit "one batch", "exactly N attempted ids", or "no refill" request creates a closed pool. Unless the user gives a target, stop after three consecutive resolved problems produce no accept, one Codex pool's worth.
+Require a finite stop condition. Treat "solve N problems" as a target of N committed Accepted solutions: retain the barren-stretch safety net, keep the pool at its initial width until the target is met, then drain live agents without killing them. This can finish with up to `pool width - 1` extra accepts, so surface that bounded overshoot rather than reporting the target as an exact final count. Only an explicit "one batch", "exactly N attempted ids", or "no refill" request creates a closed pool. Unless the user gives a target, stop after three consecutive resolved problems produce no accept, one Codex pool's worth.
 
-Use Goal mode only for an explicitly unattended or multi-turn request. If no goal exists, create one from the user's request plus the durable run state below. A single named solve or other bounded normal-turn request does not need a goal. Keep the goal text complete enough to survive compaction:
+Use Goal mode only for an explicitly unattended or multi-turn request. Before creating the goal, allocate one run-scoped scratch root with `mktemp -d /tmp/poj-solve-XXXXXX`; include its exact path in the goal and keep it until the pool has drained and every report has been committed. If no goal exists, create one from the user's request plus the durable run state below. A single named solve or other bounded normal-turn request does not need a goal, but it still gets a fresh run-scoped scratch root. Keep the goal text complete enough to survive compaction:
 
 ```text
-Use $solve to run a three-agent refilling POJ solve pool. Resolve and pin one exact solve-agent model for the entire run. Before the first spawn, preflight the retained-ID Chrome AppleScript submission path and run `park-notes list --for-model <model-id>`; retry every owed park in the earliest slots. Run `spawn-precheck` before every spawn and gate Special Judge problems. Give every solve agent exactly the run-scoped state required by AGENTS.md and have it read the Codex solver manual. Act on every report immediately: commit accepts with `commit-accept`, stamp and commit parks with `park-notes` plus `commit-park`, report the verdict, and refill the free slot in the same turn. Stop after three consecutive resolved problems produce no accept unless the user's target or stop condition says otherwise. Infrastructure, usage, and rate-limit interruptions do not create notes, advance the barren counter, or select replacement ids. Confirm external status before any retry. Do not push.
+Use $solve to run a three-agent refilling POJ solve pool using scratch root <exact-run-scratch-path>. Resolve and pin one exact solve-agent model for the entire run. Before the first spawn, preflight the retained-ID Chrome AppleScript submission path and run `park-notes list --for-model <model-id>`; retry every owed park in the earliest slots. Run `spawn-precheck` before every spawn and gate Special Judge problems. Give every solve agent exactly the run-scoped state required by AGENTS.md and have it read the Codex solver manual. Act on every report immediately: commit accepts with `commit-accept`, stamp and commit parks with `park-notes` plus `commit-park`, report the verdict, and refill the free slot in the same turn. Stop after three consecutive resolved problems produce no accept unless the user's target or stop condition says otherwise. Infrastructure, usage, and rate-limit interruptions do not create notes, advance the barren counter, or select replacement ids. Confirm external status before any retry. Do not push.
 ```
 
 Resolve the model exactly once. Use the model the user names; otherwise use `gpt-5.6-terra`, whose rank and backlog record are already encoded in `references/model-ranks.txt`. Pass the exact identifier to `park-notes`, every agent task, and the source/commit attribution. Do not silently switch models mid-run. If the requested model is absent from the ranks file, surface that policy decision before a run that may need to park.
@@ -45,13 +45,15 @@ The window id is run-scoped and fixed. If it disappears, re-preflight in the par
 
 Prefer the project custom agent `poj-solver` when the runtime exposes custom-agent selection. Otherwise spawn a normal child whose first task instruction is: `Read .agents/skills/solve/references/solver.md completely before taking any action and follow it as your whole procedure.` Do not paste, summarize, or leak the solver manual into the parent.
 
+Use the fresh run-scoped scratch root allocated above and give each problem its own `<run-scratch>/<id>` subdirectory. Never reuse a scratch root from an earlier run.
+
 Every task supplies exactly:
 
 - problem id and `attempts/<id>.md` when retrying a park;
 - exact model identifier;
 - pinned Chrome window id as the submission target;
 - keepalive marker `not-applicable: retained-id AppleScript`;
-- scratchpad subdirectory `<shared-scratch>/<id>`;
+- scratchpad subdirectory `<run-scratch>/<id>`;
 - submission cap: 5 fresh, 10 on a stronger-model retry, extendable to 20 only under the contract;
 - any run-specific directive.
 
