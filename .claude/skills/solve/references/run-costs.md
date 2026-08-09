@@ -109,23 +109,47 @@ Per-thread at list rates (problems, cost): 3761/1231/2323/3715 $1.10 · 1174/344
 - The parent was 30% of tokens but 47% of spend because Sol cost 2.5× Terra across every token category.
 - Goal mode reported 99,799 execution tokens over 14m17s. That counter is retained as an operational metric but not used for pricing because it does not expose the cache split; the cache-aware transcript total is the comparable number.
 
+## Run 5 — gpt-5.6-terra agents, gpt-5.6-sol parent, 2026-08-08 (session `019fe426-396c-7350-9d1b-8bba19938995`)
+
+Pool of three, refilling, target 20 with the full two-accept drain overshoot. 22 problems attempted over 34m06s, 25 judged submissions: **22 accepts**, 20 on the first submission, with 2587 taking three and 1234 taking two. There were no parks or gates. A post-verdict archival interruption on 2846 and a pre-click Chrome interruption on 1566 both recovered without a duplicate submission, and every retained tab was closed.
+
+Seven Terra solver transcripts were used. The original three persistent threads handled most of the run, then exhausted their practical context and were replaced by four fresh threads for the remaining live work. The token counters in two compacted original threads reset once; their totals below sum the terminal pre-reset segment and the final segment rather than taking only the last event, which would undercount the run.
+
+```
+SOLVE AGENTS (7 transcripts, terra)           PARENT (sol)
+  uncached input      938,041   $ 1.88          uncached input      215,235   $ 1.08
+  cached input     27,794,688   $ 5.56          cached input      7,719,168   $ 3.86
+  output              137,904   $ 1.65          output               27,640   $ 0.83
+  TOTAL             28,870,633   $ 9.09          TOTAL              7,962,043   $ 5.76
+
+RUN TOTAL: $14.85 at list rates   (agents 61%, parent 39%)   PER ACCEPT (22): $0.68
+```
+
+Per-thread at list rates (problems or handoffs, cost): 1770/2564/2846/2359/3038/1241/2838 $1.69 · 2471/2132/1103/2587/3400 $2.17 · 1809/3337/1899/1234/3699 $2.13 · 2838/3145/1566 $1.01 · 3400/3590/2232 $0.85 · 3699/2977 $0.84 · 2232 $0.40. The final id in the first, second, third, and fifth lists was an unsubmitted handoff later completed by a fresh thread.
+
+- 36.83M tokens billed; **1.67M billed tokens per accept**, 37% more than run 4.
+- Agents billed **1.31M tokens per accept**, 53% more than run 4's 0.86M; parent tokens per accept were effectively unchanged at 0.36M in both runs.
+- Throughput: ~39 accepts/hour, 22% below run 4's ~50/hour.
+- First-submission rate was 20/22 (91%) versus run 4's 12/12. The three Wrong Answers and the longer/replaced solver contexts are the main visible differences, but the consecutive problem slices also differ, so this is not a controlled attribution.
+- Goal mode reported 205,548 execution tokens over 34m06s, or 9.34k per accept versus run 4's 8.32k. As above, that counter is operational rather than priceable.
+
 ## Cross-run comparison
 
-| | Run 1 (opus-5) | Run 2 (fable-5) | Run 3 (sonnet-5) | Run 4 (terra/sol) |
-|---|---|---|---|---|
-| Docs | pre-refactor | post-refactor | post-refactor | post-refactor |
-| Clean parent context | yes (fresh session) | **no — 110 prior msgs, see caveat** | yes (right after /clear) | yes (fresh session) |
-| Accepts | 12 (of 13 attempted) | 9 (of 9) | 14 (of 15; the 15th was a broken judge) | 12 (of 12; one additional id gated) |
-| First-submission rate | 12/12 accepts (1 problem failed outright) | 8/9 | 14/14 | 12/12 |
-| Total cost | $67.09 | $57.28 raw / ≈$49.6 corrected | $32.29 list / $24.64 intro (fable parent) | $6.43 list |
-| **Per accept** | **$5.59** | **$6.36 raw / ≈$5.51 corrected** | **$2.31 list / $1.76 intro** | **$0.54** |
-| Billed tokens per accept | 7.38M | 3.34M raw / ≈2.5M corrected | 3.70M | 1.22M |
-| Agents-only tokens per accept | 3.33M | 1.97M | 3.32M | 0.86M |
-| Wall clock per accept | ~6.0 min | ~2.9 min | ~2.6 min | ~1.2 min |
-| Agents : parent split (of spend) | 52 : 48 | 57 : 43 | 71 : 29 (by tokens 90 : 10 — the fable parent is 10% of tokens, 29% of cost) | 53 : 47 (by tokens 70 : 30) |
+| | Run 1 (opus-5) | Run 2 (fable-5) | Run 3 (sonnet-5) | Run 4 (terra/sol) | Run 5 (terra/sol) |
+|---|---|---|---|---|---|
+| Docs | pre-refactor | post-refactor | post-refactor | post-refactor | post-refactor |
+| Clean parent context | yes (fresh session) | **no — 110 prior msgs, see caveat** | yes (right after /clear) | yes (fresh session) | yes (fresh session) |
+| Accepts | 12 (of 13 attempted) | 9 (of 9) | 14 (of 15; the 15th was a broken judge) | 12 (of 12; one additional id gated) | 22 (of 22) |
+| First-submission rate | 12/12 accepts (1 problem failed outright) | 8/9 | 14/14 | 12/12 | 20/22 |
+| Total cost | $67.09 | $57.28 raw / ≈$49.6 corrected | $32.29 list / $24.64 intro (fable parent) | $6.43 list | $14.85 list |
+| **Per accept** | **$5.59** | **$6.36 raw / ≈$5.51 corrected** | **$2.31 list / $1.76 intro** | **$0.54** | **$0.68** |
+| Billed tokens per accept | 7.38M | 3.34M raw / ≈2.5M corrected | 3.70M | 1.22M | 1.67M |
+| Agents-only tokens per accept | 3.33M | 1.97M | 3.32M | 0.86M | 1.31M |
+| Wall clock per accept | ~6.0 min | ~2.9 min | ~2.6 min | ~1.2 min | ~1.6 min |
+| Agents : parent split (of spend) | 52 : 48 | 57 : 43 | 71 : 29 (by tokens 90 : 10 — the fable parent is 10% of tokens, 29% of cost) | 53 : 47 (by tokens 70 : 30) | 61 : 39 (by tokens 78 : 22) |
 
 Reading: with run 2's dirty-context carriage removed (≈$7.7 of parent cache reads re-billing the pre-run conversation), fable lands at ≈$5.51 per accept — **parity with opus at 2× the per-token price** — and it ran twice as fast with a cleaner record (no failed problem; opus's one failure alone cost $6.27). **Confound:** run 2 is also the first run on the refactored docs, which shrank every context, so its token drop vs run 1 is model + docs together. Run 3's clean head-to-head on the agents side (identical docs, and pre-run context can't touch agent transcripts): fable 1.97M tokens per accept vs sonnet 3.32M — so the drop was docs *and* model, fable being the most token-frugal of the three. Sonnet's advantage is price, not frugality: 1.7× fable's agent tokens at 30% of fable's rates still lands 58% cheaper per accept. Problem sets also differ (consecutive slices of `TODO`, so roughly comparable difficulty).
 
-Run 4 sets the new cost and throughput baseline: versus run 3 it used 67% fewer billed tokens and cost 77% less per accept while running about 2.2× faster. Its perfect first-submission record helped, but run 3's accepted problems were also all first-submission; the remaining confounds are model/provider accounting, a three-wide rather than five-wide pool, persistent multi-problem Codex solver threads, and the next consecutive slice of `TODO`.
+Run 4 sets the cost and throughput baseline: versus run 3 it used 67% fewer billed tokens and cost 77% less per accept while running about 2.2× faster. Run 5 tested the same Terra/Sol, three-wide setup at a larger target and did not improve the baseline: it cost 25% more and billed 37% more tokens per accept while running 22% slower. Parent tokens per accept were flat, so the regression was agent-side; the visible differences are three Wrong Answers, context exhaustion that expanded three persistent threads to seven transcripts, and the next consecutive slice of `TODO`.
 
 Prices used (list, $/MTok uncached input/output): opus-5 $5/$25, fable-5 $10/$50, sonnet-5 $3/$15, gpt-5.6-terra $2/$12, gpt-5.6-sol $5/$30. Terra cached input was $0.20/MTok; Sol cached input was $0.50/MTok.
