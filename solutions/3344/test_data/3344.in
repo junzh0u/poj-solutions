@@ -1,0 +1,972 @@
+.....c..
+.p..A..t
+D..>T.Pr
+....aP.P
+p.d.C...
+.....p.R
+........
+........
+move 2
+turn right
+move 3
+turn left
+turn left
+move 1
+#
+.....c..
+.p..A..t
+D..>T.Pr
+....aP.P
+p.d.C...
+.....p.R
+........
+........
+#
+........
+........
+........
+<.......
+........
+........
+........
+...pAT.p
+move 0
+turn left
+turn left
+turn left
+turn left
+move 0
+turn left
+move 4
+turn left
+move 5
+#
+CATDRTAC
+PPPPPPPP
+.....v..
+........
+........
+........
+pppppppp
+catrdtac
+move 4
+turn back
+move 5
+turn back
+move 2
+turn left
+#
+CATDRTAC
+PPPPPPPP
+........
+........
+....^...
+........
+pppppppp
+catrdtac
+move 5
+turn left
+move 1
+turn left
+move 3
+turn back
+move 10
+turn left
+move 1
+turn left
+move 2
+turn back
+move 10
+turn left
+move 1
+turn left
+move 1
+turn right
+turn back
+move 3
+turn left
+move 1
+turn right
+move 1
+turn right
+move 2
+turn back
+move 10
+turn right
+move 1
+turn right
+move 1
+#
+CATDRTAC
+PPPPPPPP
+........
+........
+....^...
+........
+pppppppp
+catrdtac
+move 1
+turn left
+move 1
+turn left
+move 2
+turn left
+move 2
+turn left
+move 3
+turn left
+move 3
+turn left
+move 4
+turn left
+move 4
+turn left
+move 5
+turn left
+move 5
+turn left
+move 6
+turn back
+move 3
+turn right
+turn right
+turn right
+turn right
+turn right
+move 1
+move 1
+move 1
+#
+aPpR..Ap
+..PP..p.
+.......p
+.....P.P
+.C.t.A..
+T..t..P.
+........
+...>....
+move 1
+turn left
+move 7
+turn right
+move 3
+turn right
+move 8
+turn back
+move 3
+turn left
+move 3
+turn back
+move 1
+turn left
+move 3
+turn right
+move 1
+turn left
+move 1
+turn left
+move 3
+turn right
+#
+CpTD.TA.
+PP.PCPpP
+........
+...p..a.
+d....pR.
+........
+..>ppc.A
+.Ptr.tPp
+move 3
+turn back
+move 10
+turn left
+move 1
+turn right
+turn back
+move 3
+turn left
+move 2
+turn right
+move 10
+turn left
+move 1
+turn left
+move 4
+turn back
+move 4
+turn left
+turn left
+move 1
+turn left
+move 5
+#
+........
+........
+.......>
+........
+........
+....P...
+........
+........
+turn left
+turn back
+move 3
+turn left
+turn back
+move 5
+turn right
+move 1
+turn left
+move 1
+turn left
+move 2
+turn right
+move 1
+turn left
+move 3
+turn left
+move 5
+move 1
+turn back
+#
+CATDR.A.
+PPcPtP.P
+....>...
+.P......
+..t.....
+.CP.....
+pppppppp
+ca.dr..P
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+move 7
+turn left
+move 2
+move 3
+turn right
+turn left
+turn left
+turn back
+move 3
+move 4
+turn back
+turn right
+turn back
+turn right
+turn right
+move 1
+move 6
+turn back
+turn back
+turn back
+#
+CATDRTAC
+PPPPPPPP
+........
+........
+........
+....>...
+pppppppp
+catrdtac
+turn left
+turn right
+turn left
+move 5
+move 2
+move 5
+move 5
+move 3
+turn left
+turn left
+turn right
+turn right
+turn left
+turn left
+move 6
+turn back
+turn right
+turn right
+turn right
+move 3
+turn back
+move 5
+move 4
+turn left
+move 1
+move 5
+move 3
+turn right
+turn back
+move 4
+turn back
+move 7
+move 8
+move 1
+turn left
+move 5
+turn left
+move 7
+move 8
+move 1
+turn back
+turn left
+move 2
+move 4
+turn right
+move 6
+turn left
+move 2
+move 8
+turn right
+turn right
+turn left
+move 4
+move 2
+move 4
+turn left
+move 1
+move 8
+turn back
+turn back
+move 5
+turn left
+move 6
+move 7
+turn left
+move 4
+turn right
+move 6
+move 3
+move 6
+move 7
+turn right
+move 8
+move 1
+turn back
+move 1
+turn right
+move 1
+turn left
+move 5
+turn back
+turn right
+move 4
+turn left
+turn left
+turn back
+move 6
+move 8
+move 8
+turn right
+turn left
+move 3
+turn left
+turn right
+move 7
+turn right
+turn right
+move 5
+turn right
+move 6
+#
+..P..A.P
+.T.t..P.
+.DP..a..
+.d......
+......>.
+R.a.....
+.p.C...t
+........
+turn back
+move 1
+turn left
+turn left
+turn back
+move 3
+turn right
+move 2
+move 6
+move 2
+move 3
+turn left
+turn right
+move 3
+turn right
+turn right
+move 4
+move 3
+move 2
+move 1
+move 2
+turn back
+move 7
+move 7
+turn right
+move 2
+move 2
+move 1
+turn left
+turn back
+turn back
+turn back
+turn left
+turn right
+turn left
+move 3
+move 5
+move 3
+move 8
+move 1
+turn right
+turn right
+turn right
+turn left
+turn back
+turn left
+move 7
+move 6
+move 3
+turn left
+move 6
+turn back
+move 5
+turn left
+turn back
+move 3
+turn left
+turn right
+turn right
+move 7
+move 4
+turn back
+turn right
+turn right
+turn right
+turn right
+move 6
+turn right
+move 4
+move 5
+turn left
+move 8
+turn back
+move 6
+turn right
+move 7
+move 7
+turn right
+turn back
+turn back
+move 5
+move 6
+move 8
+turn left
+turn back
+turn left
+move 2
+move 6
+turn right
+turn right
+turn back
+turn right
+turn left
+turn back
+turn right
+move 8
+move 1
+turn back
+turn right
+move 7
+move 2
+turn back
+move 6
+turn left
+turn back
+turn left
+turn back
+move 4
+turn back
+turn left
+move 1
+turn right
+move 7
+turn left
+turn back
+move 4
+turn back
+move 3
+move 4
+move 8
+turn back
+turn right
+move 6
+turn right
+move 3
+turn back
+turn back
+turn right
+turn back
+move 4
+move 5
+turn right
+turn left
+move 7
+move 5
+turn right
+move 8
+turn right
+move 2
+move 6
+move 6
+move 4
+move 7
+move 5
+turn right
+move 1
+move 1
+turn back
+turn right
+move 1
+turn right
+move 4
+turn back
+move 8
+turn back
+move 7
+turn right
+turn back
+move 7
+turn left
+turn back
+move 1
+move 1
+move 2
+move 7
+turn right
+turn left
+turn left
+turn right
+turn left
+turn left
+move 2
+turn left
+turn right
+turn left
+move 2
+move 5
+move 4
+move 4
+turn back
+move 3
+move 7
+turn back
+turn back
+turn back
+turn right
+move 3
+move 3
+move 7
+turn right
+turn right
+move 8
+move 1
+move 8
+turn right
+move 4
+move 4
+move 5
+move 2
+move 2
+#
+T.......
+..p.r...
+...t.a.^
+........
+......c.
+....T.p.
+ppaPPp..
+.PC.....
+turn back
+move 1
+turn left
+turn left
+turn back
+move 3
+turn right
+move 2
+move 6
+move 2
+move 3
+turn left
+turn right
+move 3
+turn right
+turn right
+move 4
+move 3
+move 2
+move 1
+move 2
+turn back
+move 7
+move 7
+turn right
+move 2
+move 2
+move 1
+turn left
+turn back
+turn back
+turn back
+turn left
+turn right
+turn left
+move 3
+move 5
+move 3
+move 8
+move 1
+turn right
+turn right
+turn right
+turn left
+turn back
+turn left
+move 7
+move 6
+move 3
+turn left
+move 6
+turn back
+move 5
+turn left
+turn back
+move 3
+turn left
+turn right
+turn right
+move 7
+move 4
+turn back
+turn right
+turn right
+turn right
+turn right
+move 6
+turn right
+move 4
+move 5
+turn left
+move 8
+turn back
+move 6
+turn right
+move 7
+move 7
+turn right
+turn back
+turn back
+move 5
+move 6
+move 8
+turn left
+turn back
+turn left
+move 2
+move 6
+turn right
+turn right
+turn back
+turn right
+turn left
+turn back
+turn right
+move 8
+move 1
+turn back
+turn right
+move 7
+move 2
+turn back
+move 6
+turn left
+turn back
+turn left
+turn back
+move 4
+turn back
+turn left
+move 1
+turn right
+move 7
+turn left
+turn back
+move 4
+turn back
+move 3
+move 4
+move 8
+turn back
+turn right
+move 6
+turn right
+move 3
+turn back
+turn back
+turn right
+turn back
+move 4
+move 5
+turn right
+turn left
+move 7
+move 5
+turn right
+move 8
+turn right
+move 2
+move 6
+move 6
+move 4
+move 7
+move 5
+turn right
+move 1
+move 1
+turn back
+turn right
+move 1
+turn right
+move 4
+turn back
+move 8
+turn back
+move 7
+turn right
+turn back
+move 7
+turn left
+turn back
+move 1
+move 1
+move 2
+move 7
+turn right
+turn left
+turn left
+turn right
+turn left
+turn left
+move 2
+turn left
+turn right
+turn left
+move 2
+move 5
+move 4
+move 4
+turn back
+move 3
+move 7
+turn back
+turn back
+turn back
+turn right
+move 3
+move 3
+move 7
+turn right
+turn right
+move 8
+move 1
+move 8
+turn right
+move 4
+move 4
+move 5
+move 2
+move 2
+turn left
+turn back
+move 6
+turn back
+#
+--
