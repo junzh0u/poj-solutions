@@ -119,7 +119,7 @@ The same churn also drops tabs *before* the click: the JS call fails with `could
 
 Report each verdict as it arrives rather than silently resubmitting.
 
-- **Compile Error** — a C++98 slip; check `Compile Error` on the status page for the message, or retry under language `0` (G++) which is a different compiler from `4` (C++).
+- **Compile Error** — read the message behind `Compile Error` on the status page before forming any theory, and suspect the payload before the judge: the source that compiled locally reached POJ corrupted far more often than POJ rejected valid C++. One run lost three submissions to a Compile Error diagnosed as `long long` and non-ASCII comments being unsupported, when the actual cause was a retyped payload; both claims are false, and one command each would have said so. **The archive settles any claim about what this judge accepts** — `grep -rl 'long long' solutions/` returns 233 accepted sources, `%lld` 123, and 790 of 1610 hold non-ASCII bytes. Check a language-feature suspicion that way before spending a submission on it, and only then consider a genuine C++98 slip or a retry under language `0` (G++), a different compiler from `4` (C++).
 - **Wrong Answer** — re-read the statement for the case that was missed and rebuild the differential reference from that re-reading (a reference sharing the old misreading passes every trial); mine the discuss board for the failing case; reproduce locally, then resubmit.
 - **Time Limit Exceeded** — profile the local stress case; POJ is slow, so an algorithmic fix usually beats micro-optimisation.
 - **Runtime Error** — usually an out-of-bounds index or recursion depth, both reproducible locally under `-fsanitize=address,undefined`.
