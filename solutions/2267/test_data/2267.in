@@ -1,0 +1,18 @@
+2
+3
+Ulm Muenchen 17 2
+Ulm Muenchen 19 12
+Ulm Muenchen 5 2
+Ulm Muenchen
+10
+Lugoj Sibiu 12 6
+Lugoj Sibiu 18 6
+Lugoj Sibiu 24 5
+Lugoj Medias 22 8
+Lugoj Medias 18 8
+Lugoj Reghin 17 4
+Sibiu Reghin 19 9
+Sibiu Medias 20 3
+Reghin Medias 20 4
+Reghin Bacau 24 6
+Lugoj Bacau
