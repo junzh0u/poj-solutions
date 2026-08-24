@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 || ! $1 =~ ^[0-9]+$ ]]; then
+  echo "usage: bootstrap-login <window-id>" >&2
+  exit 2
+fi
+
+exec osascript \
+  -e 'on run argv' \
+  -e 'set targetWindowId to item 1 of argv as integer' \
+  -e 'tell application "Google Chrome"' \
+  -e 'set targetWindow to first window whose id is targetWindowId' \
+  -e 'set savedIndex to active tab index of targetWindow' \
+  -e 'set savedTabId to id of active tab of targetWindow' \
+  -e 'set bootstrapTab to make new tab at end of tabs of targetWindow with properties {URL:"http://poj.org/"}' \
+  -e 'set bootstrapTabId to id of bootstrapTab' \
+  -e 'try' \
+  -e 'set active tab index of targetWindow to savedIndex' \
+  -e 'if id of active tab of targetWindow is not savedTabId then error "could not preserve the active tab"' \
+  -e 'repeat 400 times' \
+  -e 'if loading of bootstrapTab is false then exit repeat' \
+  -e 'delay 0.05' \
+  -e 'end repeat' \
+  -e 'if loading of bootstrapTab is true then error "homepage did not finish loading"' \
+  -e 'delay 6' \
+  -e 'set completedUrl to URL of bootstrapTab' \
+  -e 'if completedUrl does not start with "http://poj.org" then error "unexpected homepage URL: " & completedUrl' \
+  -e 'close bootstrapTab' \
+  -e 'return bootstrapTabId as text' \
+  -e 'on error errText number errNum' \
+  -e 'try' \
+  -e 'close bootstrapTab' \
+  -e 'end try' \
+  -e 'error errText number errNum' \
+  -e 'end try' \
+  -e 'end tell' \
+  -e 'end run' \
+  "$1"
