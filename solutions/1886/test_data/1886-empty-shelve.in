@@ -1,0 +1,15 @@
+"The Canterbury Tales" by Chaucer, G.
+"Algorithms" by Sedgewick, R.
+"The C Programming Language" by Kernighan, B. and Ritchie, D.
+END
+BORROW "Algorithms"
+BORROW "The C Programming Language"
+SHELVE
+RETURN "Algorithms"
+SHELVE
+BORROW "The Canterbury Tales"
+RETURN "The C Programming Language"
+SHELVE
+RETURN "The Canterbury Tales"
+SHELVE
+END
