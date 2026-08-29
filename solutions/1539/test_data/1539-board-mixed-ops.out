@@ -1,0 +1,7 @@
+Expression: -- c + b ++ - ++f - ++ d - a++
+    value = -9
+    a = 2
+    b = 3
+    c = 2
+    d = 5
+    f = 7
