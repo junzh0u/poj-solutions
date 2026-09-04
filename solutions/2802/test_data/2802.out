@@ -1,0 +1,9 @@
+data set #1
+A->A 2 paths, 37% chance
+A->E 0 paths, 0% chance
+C->B 4 paths, 25% chance
+data set #2
+C->C 1 paths, 1% chance
+C->D 1 paths, 4% chance
+C->E 1 paths, 80% chance
+
