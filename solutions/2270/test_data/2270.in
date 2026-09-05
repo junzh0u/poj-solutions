@@ -1,0 +1,20 @@
+#define quadtree_width 16
+#define quadtree_height 16
+static char quadtree_bits[] = {
+0xf0,0xf0,                       /* WWWWBBBB WWWWBBBB */
+0xf0,0xf0,                       /* WWWWBBBB WWWWBBBB */
+0xf0,0xf0,                       /* WWWWBBBB WWWWBBBB */
+0xf0,0xf0,                       /* WWWWBBBB WWWWBBBB */
+0x0f,0x0f,                       /* BBBBWWWW BBBBWWWW */
+0x0f,0x0f,                       /* BBBBWWWW BBBBWWWW */
+0x0f,0x0f,                       /* BBBBWWWW BBBBWWWW */
+0x0f,0x0f,                       /* BBBBWWWW BBBBWWWW */
+0xf0,0xf0,                       /* WWWWBBBB WWWWBBBB */
+0xf0,0xf0,                       /* WWWWBBBB WWWWBBBB */
+0xf0,0xf0,                       /* WWWWBBBB WWWWBBBB */
+0xf0,0xf0,                       /* WWWWBBBB WWWWBBBB */
+0x0f,0x0f,                       /* BBBBWWWW BBBBWWWW */
+0x0f,0x0f,                       /* BBBBWWWW BBBBWWWW */
+0x0f,0x0f,                       /* BBBBWWWW BBBBWWWW */
+0x0f,0x0f,                       /* BBBBWWWW BBBBWWWW */
+};
