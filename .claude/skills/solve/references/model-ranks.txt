@@ -26,6 +26,11 @@
 # defend. gpt-5.6-sol is deliberately absent on those grounds: one tooling
 # commit in this repo and no solves.
 #
+# claude-fable-5-1 is tied with claude-fable-5 rather than placed above it: it
+# is the same family's point release, so ranking it lower would be wrong, but
+# there is no head-to-head here to justify a new tier above its predecessor.
+# The tie still clears every model below, which is what the retries need.
+#
 # rank  model-id
 
 5       qwen3.6:latest
@@ -34,3 +39,4 @@
 20      gpt-5.6-terra
 30      claude-opus-5
 40      claude-fable-5
+40      claude-fable-5-1
