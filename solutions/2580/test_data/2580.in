@@ -1,0 +1,41 @@
+START 1 2
+1A
+
+
+A
+END
+START 1 5
+1F
+2A 2B 3CD 3E
+
+
+
+
+B
+C D
+F
+A E
+END
+START 1 10
+9I
+2A
+3B
+4C
+5D
+6E
+7F
+8G
+9H
+
+
+A
+B
+C
+D
+E
+F
+G
+H
+X
+END
+ENDOFINPUT
