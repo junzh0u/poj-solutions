@@ -1,0 +1,10 @@
+the quick brown fox.
+the <i><b>quick</b> brown</i> fox.
+<doc>fox &amp; socks.</doc>
+3x+5&gt;7
+Null: &x00;
+<doc>the quick brown fox.
+the <i>quick <b>brown</i></b> fox
+fox & socks.
+3x+5>7
+Null: &x0;
