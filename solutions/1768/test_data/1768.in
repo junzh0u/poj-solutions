@@ -1,0 +1,6 @@
+5
+SET 0 1
+JZ 4 0
+RANDOM 0
+JMP 1
+STOP
