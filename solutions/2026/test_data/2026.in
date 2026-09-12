@@ -1,0 +1,17 @@
+2
+6 5
+Northpole 90 N 87 E
+Southpole 90 S 180 W
+Equatorone 0 N 45 W
+Equatortwo 0 S 90 E
+Equatorthree 0 S 180 E
+Equatorfour 0 N 46 W
+Equatorone Equatortwo
+Equatortwo Equatorthree
+Equatorthree Equatorfour
+Northpole Equatortwo
+Southpole Equatorthree
+2 1
+Northpole 90 N 0 E
+Southpole 90 S 0 W
+Southpole Northpole
