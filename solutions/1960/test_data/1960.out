@@ -1,0 +1,10 @@
+Scenario #1:
+appointment possible from 01/01/1800 00:00:00 to 06/25/2002 13:30:00
+appointment possible from 06/25/2002 15:30:00 to 06/26/2002 13:30:00
+appointment possible from 06/26/2002 15:30:00 to 06/28/2002 15:00:00
+appointment possible from 06/28/2002 18:00:00 to 06/29/2002 10:00:00
+appointment possible from 06/29/2002 15:00:00 to 01/01/2200 00:00:00
+
+Scenario #2:
+no appointment possible
+
