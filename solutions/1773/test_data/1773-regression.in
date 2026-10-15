@@ -1,0 +1,31 @@
+4
+Self 0
+A 1
+B 2
+C 3
+#4
+TO:A
+TO:Missing
+DATA
+before\.
+#-1
+slash\\.
+TO:B
+TO:Self
+DATA
+local.
+TO:C
+QUIT
+#3
+TO:C
+DATA
+ignored.
+QUIT
+#-1
+1
+Self 0
+#32767
+TO:Self
+QUIT
+#-1
+0
