@@ -1,0 +1,1 @@
+Official IOI 2000 Building with Blocks cases from https://ioinformatics.org/files/ioi2000tests.zip (day2data/BLOCK). Inputs retain the original cases with normalized line endings. Outputs retain the minimum count from the first line of each official answer, matching POJ 1162; the original answer files also list block-type decompositions. All ten cases passed before submission.
