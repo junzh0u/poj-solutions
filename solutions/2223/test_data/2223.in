@@ -1,0 +1,37 @@
+START 3
+-10,-2,1
+300,14.5,-20
+350,-80,0
+400,28.75,26
+     @@@@      n
+     #^^#     oU
+      ##     o
+  ooooooooooo
+  o oooooo
+  o  oooo
+ o   DDDD
+oo   DDDD
+     D  D
+     D  D
+    TT  TT
+    TT  TT
+  <TTT  TTT>
+END
+START 2
+-10,-2,1
+300,14.5,-20
+350,-80,0
+     @@@@      n
+     #^^#     oU
+      ##     o
+  ooooooooooo
+  o oooooo
+  o  oooo
+ o   DDDD
+oo   DDDD
+     D  D
+     D  D
+    TT  TT
+    TT  TT
+  <TTT  TTT>
+END
