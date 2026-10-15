@@ -38,5 +38,6 @@
 20      claude-sonnet-5
 20      gpt-5.6-terra
 30      claude-opus-5
+30      gpt-6.1-sol
 40      claude-fable-5
 40      claude-fable-5-1
