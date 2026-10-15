@@ -1,0 +1,1222 @@
+2
+P1
+1
+i1
+P2
+1
+i2
+4
+least i1
+least i2
+most i1
+most i2
+1
+OnlyOneProduct
+5
+TheSingleIngredient
+DoesntContainThis 0%
+NeitherDoesItContainThis 0%
+NorThis 0%
+AndNotThisEither 0%
+2
+most TheSingleIngredient
+least TheSingleIngredient
+3
+Product_1
+3
+A
+B
+C
+Product_2
+3
+C
+B
+A
+Product_3
+2
+B
+C 35%
+4
+most A
+most B
+most C
+least A
+2
+Pripps
+6
+Water 95%
+Malt
+Hops
+Corn
+Yeast
+Fat 0%
+Spendrups
+4
+Water 95%
+Malt
+Hops
+Yeast
+2
+most Corn
+least Fat
+2
+Product_A
+100
+a00
+a01
+a02
+a03
+a04
+a05
+a06
+a07
+a08
+a09
+a10
+a11
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99
+Product_B
+100
+a00
+a01
+a02
+a03
+a04
+a05
+a06
+a07
+a08
+a09
+a10
+a11
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99
+2
+most a98
+least a98
+10
+Product_1
+4
+a5 80%
+a10 12%
+a12
+a13
+Product_2
+4
+a5 70%
+a10 10%
+a12
+a14
+Product_3
+90
+a10 2%
+a11
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99
+Product_4
+90
+a10
+a11 2%
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99
+Product_5
+90
+a10
+a11 3%
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99
+Product_6
+90
+a10
+a11
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56 1%
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99
+Product_7
+90
+a10
+a11
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99 1%
+Product_8
+90
+a10
+a11
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99 0%
+Product_9
+90
+a10
+a11
+a12
+a13
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98 0%
+a99 0%
+Product_10
+90
+a10
+a11
+a12
+a13 2%
+a14
+a15
+a16
+a17
+a18
+a19
+a20
+a21
+a22
+a23
+a24 1%
+a25
+a26
+a27
+a28
+a29
+a30
+a31
+a32
+a33
+a34
+a35
+a36
+a37
+a38
+a39
+a40
+a41
+a42
+a43
+a44
+a45
+a46
+a47
+a48
+a49
+a50
+a51
+a52
+a53
+a54
+a55
+a56
+a57
+a58
+a59
+a60
+a61
+a62
+a63
+a64
+a65
+a66
+a67
+a68
+a69
+a70
+a71
+a72
+a73
+a74
+a75
+a76
+a77
+a78
+a79
+a80
+a81
+a82
+a83
+a84
+a85
+a86
+a87
+a88
+a89
+a90
+a91
+a92
+a93
+a94
+a95
+a96
+a97
+a98
+a99
+100
+least a5
+most a5
+most a10
+least a10
+most a11
+most a12
+most a13
+most a14
+most a15
+most a16
+most a17
+most a18
+most a19
+most a20
+most a21
+most a22
+most a23
+most a24
+most a25
+most a26
+most a27
+most a28
+most a29
+most a30
+most a31
+most a32
+most a33
+most a34
+most a35
+most a36
+most a37
+most a38
+most a39
+most a40
+most a41
+most a42
+most a43
+most a44
+most a45
+most a46
+most a47
+most a48
+most a49
+most a50
+most a51
+most a52
+most a53
+most a54
+most a55
+most a56
+most a57
+most a58
+most a59
+most a60
+most a61
+most a62
+most a63
+most a64
+most a65
+most a66
+most a67
+most a68
+most a69
+most a70
+most a71
+most a72
+most a73
+most a74
+most a75
+most a76
+most a77
+most a78
+most a79
+most a80
+most a81
+most a82
+most a83
+most a84
+most a85
+most a86
+most a87
+most a88
+most a89
+most a90
+most a91
+most a92
+most a93
+most a94
+most a95
+most a96
+most a97
+most a98
+most a99
+least a12
+least a13
+least a14
+least a15
+least a16
+least a17
+least a18
+4
+A
+5
+ing1
+ing2
+ing3
+ing4 10%
+ing5
+B
+4
+ing3
+ing5
+ing2 2%
+ing1
+C
+6
+ing5
+ing4
+ing2 21%
+ing1
+ing6
+ing3
+D
+5
+ing3
+ing5 31%
+ing2
+ing4 9%
+ing1
+12
+most ing1
+most ing2
+most ing3
+most ing4
+most ing5
+most ing6
+least ing1
+least ing2
+least ing3
+least ing4
+least ing5
+least ing6
+4
+pesto_genovese
+12
+solrosolja
+basilika
+olivolja
+potatisstarkelse
+ost
+pinjefron
+salt
+vitlok
+mjolksocker
+socker
+smakamnen
+E330
+latt_och_lagom
+12
+vatten
+rapsolja
+smorolja
+skummjolk
+fiskolja
+gelatin
+koksalt 2%
+E471
+E202
+E310
+E385
+E330
+rarorda_lingon
+4
+lingon
+socker
+vatten
+pektin
+campbells_thaisoppa
+19
+vatten
+gradde
+E1422
+socker
+salt
+glukossirap
+kokosnotspulver
+skummjolkspulver
+jastextrakt
+olja
+natriumglutamat
+citronjuice
+arom
+tomat
+koriander
+E451
+riboflavin
+kryddor
+mjolkprotein
+3
+most vatten
+most tomat
+least socker
+0
