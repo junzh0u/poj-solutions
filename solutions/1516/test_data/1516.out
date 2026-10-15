@@ -1,0 +1,4 @@
+B finishes at t=4
+C never finishes because of P
+I never finishes because of B and C
+P finishes at t=5
