@@ -1,0 +1,12 @@
+11
+CreateProcess(1,1000000000,1000000000)
+GetMemory(1,1000000000)
+GetMemory(1,1000000000)
+AddMessage(1,1000000000)
+CreateProcess(2,1,1)
+CloseMaxMemory
+RunProcess(1)
+CreateProcess(1,0,1)
+AddMessage(1,2)
+CloseProcess(2)
+Run
