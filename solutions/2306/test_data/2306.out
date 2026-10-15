@@ -1,0 +1,108 @@
+DESCENDANTS of person 18
+  person 34 bdate 34 -
+  person 41 bdate 41 -
+    person 43 bdate 43 -
+      person 79 bdate 79 -
+    person 83 bdate 83 -
+    person 87 bdate 87 -
+  person 81 bdate 81 -
+
+ANCESTORS of person 81
+  person 11 bdate 11 -
+    person -1
+    person 9 bdate 9 - ddate 43
+      person 1 bdate 1 -
+        person -1
+        person 0 bdate 0 - ddate 39
+          person -1
+          person -2
+      person 5 bdate 5 - ddate 7
+        person 0 bdate 0 - ddate 39
+          person -1
+          person -2
+        person 2 bdate 2 - ddate 3
+          person -2
+          person 0 bdate 0 - ddate 39
+            person -1
+            person -2
+  person 18 bdate 18 - ddate 71
+    person 1 bdate 1 -
+      person -1
+      person 0 bdate 0 - ddate 39
+        person -1
+        person -2
+    person 3 bdate 3 -
+      person -2
+      person 2 bdate 2 - ddate 3
+        person -2
+        person 0 bdate 0 - ddate 39
+          person -1
+          person -2
+
+ANCESTORS of person Eighty BIRTH dot Four DEATH
+  person 3 bdate 3 -
+    person -2
+    person 2 bdate 2 - ddate 3
+      person -2
+      person 0 bdate 0 - ddate 39
+        person -1
+        person -2
+  person 33 bdate 33 -
+    person 15 bdate 15 -
+      person 7 bdate 7 -
+        person -1
+        person 2 bdate 2 - ddate 3
+          person -2
+          person 0 bdate 0 - ddate 39
+            person -1
+            person -2
+      person 9 bdate 9 - ddate 43
+        person 1 bdate 1 -
+          person -1
+          person 0 bdate 0 - ddate 39
+            person -1
+            person -2
+        person 5 bdate 5 - ddate 7
+          person 0 bdate 0 - ddate 39
+            person -1
+            person -2
+          person 2 bdate 2 - ddate 3
+            person -2
+            person 0 bdate 0 - ddate 39
+              person -1
+              person -2
+    person 5 bdate 5 - ddate 7
+      person 0 bdate 0 - ddate 39
+        person -1
+        person -2
+      person 2 bdate 2 - ddate 3
+        person -2
+        person 0 bdate 0 - ddate 39
+          person -1
+          person -2
+
+DESCENDANTS of person 17
+  person 28 bdate 28 -
+    person 121 bdate 121 -
+    person 37 bdate 37 -
+      person 134 bdate 134 -
+        person 144 bdate 144 -
+      person 44 bdate 44 -
+        person 92 bdate 92 -
+          person 108 bdate 108 -
+          person 124 bdate 124 -
+      person 54 bdate 54 - ddate 67
+        person 111 bdate 111 -
+          person 126 bdate 126 -
+            person 143 bdate 143 -
+        person 112 bdate 112 -
+          person 131 bdate 131 -
+        person 147 bdate 147 -
+        person 151 bdate 151 -
+      person 57 bdate 57 -
+        person 145 bdate 145 -
+      person 86 bdate 86 -
+    person 73 bdate 73 -
+      person 130 bdate 130 -
+    person 75 bdate 75 - ddate 95
+      person 121 bdate 121 -

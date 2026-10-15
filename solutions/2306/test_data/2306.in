@@ -1,0 +1,199 @@
+BIRTH person 0 : bdate 0 : person -2 : person -1
+BIRTH person 1 : bdate 1 : person 0 : person -1
+BIRTH person 2 : bdate 2 : person -2 : person 0
+DEATH person 2 : ddate 3
+BIRTH person 3 : bdate 3 : person 2 : person -2
+BIRTH person 4 : bdate 4 : person -2 : person 2
+BIRTH person 5 : bdate 5 : person 0 : person 2
+BIRTH person 6 : bdate 6 : person 5 : person -2
+DEATH person 5 : ddate 7
+BIRTH person 7 : bdate 7 : person -1 : person 2
+BIRTH person 8 : bdate 8 : person 0 : person 7
+BIRTH person 9 : bdate 9 : person 5 : person 1
+BIRTH person 10 : bdate 10 : person 2 : person -1
+BIRTH person 11 : bdate 11 : person -1 : person 9
+BIRTH person 12 : bdate 12 : person 5 : person 3
+BIRTH person 13 : bdate 13 : person 6 : person 5
+BIRTH person 14 : bdate 14 : person 0 : person 9
+BIRTH person 15 : bdate 15 : person 7 : person 9
+BIRTH person 16 : bdate 16 : person 7 : person 6
+BIRTH person 17 : bdate 17 : person 1 : person 2
+BIRTH person 18 : bdate 18 : person 3 : person 1
+BIRTH person 19 : bdate 19 : person 15 : person 10
+BIRTH person 20 : bdate 20 : person 11 : person 8
+BIRTH person 21 : bdate 21 : person 13 : person 9
+BIRTH person 22 : bdate 22 : person 7 : person 4
+BIRTH person 23 : bdate 23 : person 7 : person 15
+BIRTH person 24 : bdate 24 : person 12 : person 5
+BIRTH person 25 : bdate 25 : person 13 : person 22
+BIRTH person 26 : bdate 26 : person 2 : person 22
+BIRTH person twenty seven : bdate twenty seven : person 19 : person 22
+DEATH person 4 : ddate 28
+BIRTH person 28 : bdate 28 : person 17 : person 16
+BIRTH person 29 : bdate 29 : person 25 : person 16
+BIRTH person 30 : bdate 30 : person 25 : person 1
+BIRTH person 31 : bdate 31 : person 5 : person 6
+BIRTH person 32 : bdate 32 : person 13 : person 21
+BIRTH person 33 : bdate 33 : person 5 : person 15
+BIRTH person 34 : bdate 34 : person 23 : person 18
+BIRTH person 35 : bdate 35 : person 20 : person 4
+BIRTH person 36 : bdate 36 : person 0 : person 13
+BIRTH person 37 : bdate 37 : person 28 : person 2
+BIRTH person 38 : bdate 38 : person 33 : person -1
+DEATH person 0 : ddate 39
+BIRTH person 39 : bdate 39 : person twenty seven : person 1
+BIRTH person 40 : bdate 40 : person 20 : person 33
+BIRTH person 41 : bdate 41 : person -2 : person 18
+BIRTH person 42 : bdate 42 : person 26 : person 25
+DEATH person 9 : ddate 43
+BIRTH person 43 : bdate 43 : person 41 : person 16
+BIRTH person 44 : bdate 44 : person 37 : person 22
+BIRTH person 45 : bdate 45 : person 39 : person 6
+BIRTH person 46 : bdate 46 : person 25 : person 12
+BIRTH person 47 : bdate 47 : person 2 : person 40
+BIRTH person 48 : bdate 48 : person 26 : person 12
+BIRTH person 49 : bdate 49 : person 14 : person twenty seven
+BIRTH person 50 : bdate 50 : person -2 : person 0
+BIRTH person 51 : bdate 51 : person 19 : person 38
+BIRTH person 52 : bdate 52 : person 7 : person 13
+BIRTH person 53 : bdate 53 : person 7 : person 33
+BIRTH person 54 : bdate 54 : person 37 : person 14
+BIRTH person 55 : bdate 55 : person 48 : person 35
+BIRTH person 56 : bdate 56 : person 25 : person 38
+BIRTH person 57 : bdate 57 : person 37 : person 12
+BIRTH person 58 : bdate 58 : person 11 : person 13
+BIRTH person 59 : bdate 59 : person 10 : person 8
+BIRTH person 60 : bdate 60 : person 31 : person 40
+BIRTH person 61 : bdate 61 : person 23 : person 53
+BIRTH person 62 : bdate 62 : person 8 : person 51
+BIRTH person 63 : bdate 63 : person twenty seven : person 13
+BIRTH person 64 : bdate 64 : person -2 : person 10
+DEATH person 32 : ddate 65
+BIRTH person 65 : bdate 65 : person 32 : person 2
+BIRTH person 66 : bdate 66 : person 4 : person 13
+DEATH person 54 : ddate 67
+BIRTH person 67 : bdate 67 : person 63 : person 55
+DEATH person 66 : ddate 68
+DEATH person 30 : ddate 68
+BIRTH person 68 : bdate 68 : person 55 : person 45
+BIRTH person 69 : bdate 69 : person 53 : person 8
+BIRTH person 70 : bdate 70 : person 10 : person 60
+DEATH person 18 : ddate 71
+BIRTH person 71 : bdate 71 : person 3 : person 13
+BIRTH person 72 : bdate 72 : person 23 : person 66
+BIRTH person 73 : bdate 73 : person 28 : person 59
+BIRTH person 74 : bdate 74 : person 14 : person twenty seven
+BIRTH person 75 : bdate 75 : person 40 : person 28
+BIRTH person 76 : bdate 76 : person 66 : person 39
+BIRTH person 77 : bdate 77 : person 22 : person 42
+BIRTH person 78 : bdate 78 : person 60 : person 35
+BIRTH person 79 : bdate 79 : person 19 : person 43
+BIRTH person 80 : bdate 80 : person 71 : person 77
+BIRTH person 81 : bdate 81 : person 11 : person 18
+BIRTH person 82 : bdate 82 : person 31 : person 21
+BIRTH person 83 : bdate 83 : person 47 : person 41
+BIRTH person Eighty BIRTH dot Four DEATH : bdate Eighty BIRTH dot Four DEATH : person 33 : person 3
+BIRTH person 85 : bdate 85 : person 47 : person 33
+DEATH person 51 : ddate 86
+BIRTH person 86 : bdate 86 : person 37 : person 68
+BIRTH person 87 : bdate 87 : person 41 : person Eighty BIRTH dot Four DEATH
+BIRTH person 88 : bdate 88 : person 72 : person 68
+BIRTH person 89 : bdate 89 : person 65 : person 14
+BIRTH person 90 : bdate 90 : person -2 : person 59
+DEATH person Eighty BIRTH dot Four DEATH : ddate 91
+BIRTH person 91 : bdate 91 : person 2 : person 14
+DESCENDANTS person 18
+BIRTH person 92 : bdate 92 : person 44 : person 15
+BIRTH person 93 : bdate 93 : person 25 : person 91
+BIRTH person 94 : bdate 94 : person 81 : person 5
+DEATH person 89 : ddate 95
+DEATH person 75 : ddate 95
+BIRTH person 95 : bdate 95 : person 46 : person 85
+BIRTH person 96 : bdate 96 : person 2 : person 12
+BIRTH person 97 : bdate 97 : person 50 : person 61
+BIRTH person 98 : bdate 98 : person 94 : person 67
+BIRTH person 99 : bdate 99 : person 62 : person 32
+BIRTH person 100 : bdate 100 : person 72 : person 16
+BIRTH person 101 : bdate 101 : person 55 : person 97
+BIRTH person 102 : bdate 102 : person 70 : person 25
+BIRTH person 103 : bdate 103 : person 96 : person 6
+BIRTH person 104 : bdate 104 : person 20 : person 36
+BIRTH person 105 : bdate 105 : person 89 : person 11
+DEATH person 80 : ddate 106
+BIRTH person 106 : bdate 106 : person 26 : person 12
+ANCESTORS person 81
+BIRTH person 107 : bdate 107 : person 12 : person 12
+BIRTH person 108 : bdate 108 : person 92 : person 107
+BIRTH person 109 : bdate 109 : person 51 : person 59
+BIRTH person 110 : bdate 110 : person 3 : person 102
+BIRTH person 111 : bdate 111 : person 54 : person 59
+DEATH person 90 : ddate 112
+BIRTH person 112 : bdate 112 : person 54 : person 60
+BIRTH person 113 : bdate 113 : person 46 : person 100
+BIRTH person 114 : bdate 114 : person 50 : person 67
+BIRTH person 115 : bdate 115 : person 88 : person 58
+BIRTH person 116 : bdate 116 : person 91 : person 22
+BIRTH person 117 : bdate 117 : person 6 : person 2
+BIRTH person 118 : bdate 118 : person 88 : person 6
+BIRTH person 119 : bdate 119 : person 78 : person 99
+BIRTH person 120 : bdate 120 : person 4 : person 77
+BIRTH person 121 : bdate 121 : person 75 : person 28
+DEATH person 29 : ddate 122
+BIRTH person 122 : bdate 122 : person 3 : person 101
+BIRTH person 123 : bdate 123 : person 59 : person 15
+BIRTH person 124 : bdate 124 : person 92 : person 78
+BIRTH person 125 : bdate 125 : person 20 : person 107
+DEATH person 48 : ddate 126
+BIRTH person 126 : bdate 126 : person 122 : person 111
+BIRTH person 1twenty seven : bdate 1twenty seven : person 77 : person 72
+BIRTH person One . twenty . eight.. : bdate One . twenty . eight.. : person 64 : person 6
+BIRTH person 129 : bdate 129 : person 118 : person 1
+BIRTH person 130 : bdate 130 : person 73 : person 70
+BIRTH person 131 : bdate 131 : person 112 : person 10
+BIRTH person 132 : bdate 132 : person 61 : person 13
+BIRTH person 133 : bdate 133 : person 122 : person 12
+BIRTH person 134 : bdate 134 : person 61 : person 37
+BIRTH person 135 : bdate 135 : person 50 : person 34
+BIRTH person 136 : bdate 136 : person 23 : person 9
+BIRTH person 137 : bdate 137 : person -1 : person 47
+BIRTH person 138 : bdate 138 : person 129 : person 56
+ANCESTORS person Eighty BIRTH dot Four DEATH
+BIRTH person 139 : bdate 139 : person twenty seven : person 21
+BIRTH person 140 : bdate 140 : person 132 : person 61
+BIRTH person 141 : bdate 141 : person twenty seven : person 69
+DEATH person 6 : ddate 142
+BIRTH person 142 : bdate 142 : person 118 : person 88
+BIRTH person 143 : bdate 143 : person 19 : person 126
+BIRTH person 144 : bdate 144 : person 134 : person 7
+BIRTH person 145 : bdate 145 : person 106 : person 57
+BIRTH person 146 : bdate 146 : person 0 : person 76
+BIRTH person 147 : bdate 147 : person 12 : person 54
+BIRTH person 148 : bdate 148 : person 103 : person 66
+BIRTH person 149 : bdate 149 : person 89 : person 115
+BIRTH person 150 : bdate 150 : person 36 : person 120
+BIRTH person 151 : bdate 151 : person 54 : person 38
+BIRTH person 152 : bdate 152 : person 40 : person 7
+BIRTH person 153 : bdate 153 : person One . twenty . eight.. : person 60
+BIRTH person 154 : bdate 154 : person 117 : person 22
+BIRTH person 155 : bdate 155 : person 138 : person 116
+BIRTH person 156 : bdate 156 : person 68 : person 72
+BIRTH person 157 : bdate 157 : person 87 : person 135
+BIRTH person 158 : bdate 158 : person 8 : person 117
+DESCENDANTS person 17
+BIRTH person November 22, 1801 : bdate November 22, 1801 : person 119 : person 98
+BIRTH person 160 : bdate 160 : person 14 : person 68
+BIRTH person 161 : bdate 161 : person 17 : person 50
+BIRTH person 162 : bdate 162 : person 120 : person 83
+BIRTH person 163 : bdate 163 : person 105 : person 152
+BIRTH person 164 : bdate 164 : person 1twenty seven : person 11
+BIRTH person 165 : bdate 165 : person 17 : person 115
+BIRTH person 166 : bdate 166 : person 135 : person 48
+BIRTH person 167 : bdate 167 : person 36 : person 73
+BIRTH person 168 : bdate 168 : person 135 : person 26
+BIRTH person 169 : bdate 169 : person 49 : person 79
+BIRTH person 170 : bdate 170 : person 40 : person 141
+BIRTH person 171 : bdate 171 : person 40 : person 1
+BIRTH person 172 : bdate 172 : person 119 : person 9
+BIRTH person 173 : bdate 173 : person 56 : person 16
+BIRTH person 174 : bdate 174 : person 87 : person 137
+QUIT
