@@ -1,0 +1,1266 @@
+0 0 1
+5 6 G S
+
+10 9 3
+2 10 G G
+1 1 S G
+8 6 G S
+
+10 10 0
+
+0 0 4
+1 1 S S
+1 1 S G
+180 180 G S
+1 1 S S
+
+0 0 4
+10 10 G G
+10 10 G G
+7 7 G S
+7 7 G S
+
+0 0 180
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+1 2 G G
+2 1 G G
+
+3 6 9
+106 9 G S
+4 155 G S
+0 2 S G
+3 9 G G
+0 7 S S
+0 8 S S
+1 1 G S
+0 1 S S
+0 1 S G
+
+17 9 14
+3 7 S S
+5 1 S S
+71 4 S G
+8 7 G S
+6 22 G G
+9 0 G S
+8 0 S S
+0 2 S S
+2 0 S S
+0 2 G S
+0 1 S G
+1 0 G G
+0 1 G S
+1 0 G G
+
+16 3 9
+27 5 G S
+7 0 S S
+9 0 S S
+0 1 G G
+0 1 G S
+2 0 S S
+1 0 S G
+1 0 G G
+1 0 S G
+
+0 7 11
+8 1 S G
+22 9 S G
+6 1 G S
+9 8 S G
+1 64 S G
+2 28 S S
+51 1 S S
+7 3 G G
+1 5 G G
+4 8 G S
+1 5 S G
+
+17 17 12
+9 5 S S
+5 0 G G
+9 0 G G
+9 0 G G
+7 0 S S
+0 1 S S
+4 0 S G
+0 1 S G
+1 0 G S
+3 0 S G
+1 0 G S
+7 0 S G
+
+14 17 1
+4 4 G S
+
+10 0 10
+3 3 G S
+10 3 G G
+3 3 S S
+3 8 G G
+6 73 G G
+4 7 G S
+32 5 G G
+22 7 G S
+4 0 S G
+4 0 G G
+
+15 4 6
+7 5 S G
+5 9 S S
+8 64 G G
+46 7 S G
+0 5 G S
+0 9 G G
+
+18 5 15
+3 1 S S
+2 11 S S
+5 121 G S
+2 2 G S
+116 1 G S
+0 1 S G
+6 0 G G
+0 1 S S
+0 1 G G
+0 1 S S
+1 0 G S
+0 1 G G
+0 1 G S
+0 1 G S
+1 0 G S
+
+14 13 6
+1 8 S G
+7 2 S G
+2 2 S S
+9 2 G S
+3 91 S S
+0 9 G G
+
+12 11 13
+0 10 G S
+5 1 G G
+1 0 G S
+0 1 G G
+0 1 G S
+1 0 G G
+0 1 S G
+0 1 G G
+1 0 S G
+0 1 S G
+0 1 G G
+1 0 G S
+1 0 S G
+
+17 2 0
+
+14 18 1
+4 67 S S
+
+9 6 6
+6 1 S G
+5 1 G G
+7 2 S G
+1 0 G S
+3 0 S G
+2 0 S S
+
+9 12 11
+7 35 S S
+0 6 S S
+34 2 S S
+9 3 S G
+9 0 G S
+0 1 G G
+3 0 G G
+1 0 G S
+9 0 G S
+34 0 S G
+1 0 S S
+
+10 13 7
+4 21 S G
+0 2 G S
+8 2 G S
+5 1 S G
+1 1 S G
+2 0 G S
+5 0 S S
+
+2 12 13
+5 2 S S
+2 1 S G
+35 4 G G
+34 0 G S
+0 1 S G
+3 0 G G
+9 66 G S
+2 8 S G
+9 4 G G
+6 1 G G
+4 5 G G
+0 9 G G
+0 6 S G
+
+14 5 8
+0 8 G S
+4 6 S S
+8 0 S S
+4 0 S S
+0 4 S G
+2 39 G S
+3 2 G S
+0 8 G S
+
+12 19 14
+0 5 G G
+6 24 S S
+3 1 S S
+8 7 G S
+9 49 S G
+6 3 S G
+4 0 G G
+4 1 S G
+3 0 S S
+0 1 S S
+9 0 S S
+4 0 G G
+0 1 G S
+7 0 G G
+
+7 13 10
+8 6 G G
+1 3 G S
+9 7 S S
+30 6 G S
+9 7 S G
+2 1 G G
+6 7 S S
+6 104 S S
+1 8 S G
+6 44 S G
+
+5 12 4
+2 65 S S
+67 1 S S
+4 7 G S
+57 0 S G
+
+15 8 2
+18 2 S S
+5 8 S G
+
+2 17 8
+5 1 G G
+0 9 S G
+1 5 S S
+4 6 G G
+1 7 S S
+3 6 G G
+4 8 S S
+7 1 S G
+
+18 12 15
+2 6 G G
+1 0 S G
+1 4 S S
+6 7 S S
+44 7 G G
+7 7 G S
+8 3 G G
+0 6 G G
+0 8 S S
+1 8 S G
+0 5 G G
+0 9 G S
+0 4 S G
+1 2 S S
+0 8 G G
+
+0 8 13
+6 5 S G
+9 2 S G
+6 9 G S
+3 4 S S
+3 7 G S
+0 4 S S
+0 2 S S
+0 3 S S
+0 2 S S
+0 1 G S
+0 1 S G
+0 1 G G
+0 1 S S
+
+5 0 9
+67 6 S S
+4 9 S S
+35 5 S G
+2 2 S G
+2 26 S S
+0 1 S S
+0 3 S G
+0 7 S G
+0 9 G S
+
+8 3 14
+3 32 G G
+5 94 S G
+0 1 S S
+8 19 S S
+0 9 G S
+4 6 G S
+16 0 G G
+6 0 G S
+7 0 S G
+8 0 S S
+1 0 G S
+4 0 S S
+0 1 S G
+8 0 S G
+
+15 17 14
+9 9 G S
+5 0 G S
+97 3 S S
+7 3 S G
+3 2 S G
+1 9 S S
+4 7 S S
+2 3 S S
+9 9 G S
+0 6 G S
+0 7 S S
+1 2 G G
+0 3 G G
+0 2 S S
+
+8 18 9
+0 7 G G
+0 7 S S
+0 111 S G
+0 6 S G
+0 1 G G
+0 5 S G
+0 1 S S
+0 3 S G
+0 2 S G
+
+15 2 14
+1 8 S G
+100 2 G S
+6 4 G G
+1 108 G G
+3 5 G S
+9 8 S G
+2 4 G G
+1 0 S G
+1 4 G G
+8 0 S S
+8 0 G S
+2 0 G S
+1 0 S S
+0 1 S S
+
+10 4 1
+5 2 G G
+
+19 8 10
+6 1 S G
+9 5 G G
+9 4 S G
+4 1 S G
+130 8 G G
+8 6 S S
+0 9 G G
+1 5 S S
+0 5 S G
+0 5 S G
+
+6 7 8
+0 1 S G
+5 5 G S
+7 3 G G
+1 2 G S
+0 1 S G
+24 25 G G
+7 6 G G
+2 5 G S
+
+18 8 2
+8 9 G S
+2 28 G S
+
+16 19 8
+3 22 S S
+1 1 G G
+4 1 G G
+6 1 S G
+4 1 S S
+0 1 S G
+5 0 G G
+8 0 G G
+
+17 15 6
+13 7 S G
+7 2 G G
+7 6 S G
+0 3 G G
+1 22 S G
+2 7 G G
+
+18 5 12
+5 97 S S
+2 3 G S
+3 1 S S
+6 5 G S
+98 2 S S
+5 8 G G
+1 3 S S
+0 1 G G
+1 0 S S
+0 1 G S
+1 0 G G
+0 1 S G
+
+1 9 11
+2 3 G G
+1 1 G S
+9 8 S S
+4 4 G S
+86 1 S S
+6 5 G G
+5 1 G G
+0 7 S G
+4 7 G G
+9 5 G G
+7 5 S S
+
+15 2 11
+0 9 S S
+6 6 G G
+0 26 S G
+4 6 G G
+8 13 G S
+5 31 G G
+0 6 G G
+6 37 S S
+6 3 G S
+4 0 S G
+5 1 G S
+
+4 8 4
+2 7 S S
+1 9 G G
+7 2 G S
+1 4 G S
+
+11 1 10
+9 5 G S
+6 4 S G
+7 61 S G
+7 1 S S
+9 1 G S
+58 2 S G
+3 2 G S
+9 1 G S
+3 1 S S
+2 2 G S
+
+3 17 2
+126 2 S S
+5 9 G S
+
+18 19 15
+0 27 S G
+9 5 G G
+8 0 G S
+7 0 S G
+1 0 S S
+8 0 G G
+8 0 S G
+39 0 G S
+1 0 S G
+7 0 G S
+7 0 G G
+1 0 S S
+7 0 G G
+1 0 G S
+1 0 G S
+
+16 11 10
+5 11 S S
+0 4 S S
+0 4 S S
+9 0 S G
+9 0 G G
+1 0 G G
+1 0 G S
+1 0 G S
+0 1 S G
+1 0 S S
+
+4 0 2
+2 4 S G
+11 3 S S
+
+0 12 8
+1 6 G S
+9 1 G G
+8 3 G S
+0 6 S S
+8 0 S G
+78 1 G G
+3 6 G G
+6 9 S S
+
+2 13 6
+4 4 G S
+6 0 G S
+57 1 S G
+7 2 S G
+4 9 S S
+1 5 S S
+
+18 16 2
+1 0 G G
+3 3 S G
+
+17 15 12
+4 4 S S
+0 1 S S
+7 1 S G
+8 7 G S
+1 15 S S
+9 0 S S
+9 0 G S
+4 23 G S
+4 7 S G
+31 0 S S
+9 0 S G
+0 4 S S
+
+19 4 5
+8 17 G S
+7 1 G G
+2 0 S S
+8 1 G S
+5 1 G G
+
+19 5 14
+41 5 G G
+9 36 G G
+14 1 G G
+6 4 S S
+8 3 G S
+1 9 S G
+0 1 G S
+1 0 S G
+0 1 G S
+0 1 G G
+0 1 S S
+0 1 S G
+1 0 G S
+1 0 S G
+
+16 8 7
+1 0 S G
+107 2 S G
+2 22 G G
+0 2 G G
+4 4 G S
+4 28 S G
+4 5 G G
+
+3 19 5
+3 9 G S
+0 6 G G
+1 0 S S
+7 36 G S
+5 3 G G
+
+16 7 15
+5 9 S G
+76 1 S S
+34 1 S G
+1 2 G S
+1 49 G G
+0 2 S S
+2 9 G S
+0 3 G S
+1 0 G S
+1 0 S G
+0 1 G S
+0 8 G G
+0 8 S S
+0 1 S S
+0 1 S G
+
+7 19 12
+3 8 G S
+20 7 S S
+0 7 S G
+2 58 G G
+6 49 S G
+6 8 S S
+5 8 S G
+4 3 G S
+7 5 S S
+9 9 G S
+9 3 G S
+6 4 S G
+
+8 1 14
+0 3 G S
+0 6 G S
+92 3 S G
+4 1 G G
+4 6 G G
+1 4 S S
+3 9 G S
+0 5 G G
+0 49 G G
+0 1 S S
+0 1 G S
+1 0 S G
+0 1 G S
+1 0 G G
+
+2 5 7
+6 8 G G
+1 44 S G
+2 4 S S
+6 2 G S
+9 2 S G
+22 0 S S
+6 3 S S
+
+13 9 11
+7 1 S G
+4 122 G G
+4 45 S G
+0 1 G S
+1 8 G G
+0 3 G S
+1 0 G G
+0 1 G S
+0 1 S S
+1 0 S G
+1 0 G G
+
+6 4 4
+6 45 S S
+0 36 G G
+0 5 G G
+0 9 G G
+
+18 18 6
+6 3 S G
+7 9 G G
+8 76 G S
+3 5 G G
+0 7 S G
+1 2 S S
+
+9 12 11
+9 4 G S
+5 1 G S
+2 8 S S
+31 2 S S
+10 7 G S
+34 0 S S
+7 0 G S
+1 0 S S
+1 0 S S
+1 0 G S
+1 0 G G
+
+7 16 15
+5 1 G G
+1 1 S S
+1 6 S S
+2 6 S G
+4 0 S S
+1 6 G S
+8 13 G S
+4 2 S S
+1 6 G S
+0 1 S S
+0 8 G S
+0 5 G G
+0 29 G G
+0 8 G S
+0 35 S G
+
+4 18 5
+4 0 S S
+2 3 G S
+7 2 S S
+4 1 S S
+6 0 G G
+
+12 8 10
+4 9 S S
+8 2 G G
+1 8 S G
+2 8 S G
+7 4 S S
+37 7 G G
+5 4 S G
+2 0 G G
+2 0 G G
+5 0 S G
+
+19 7 14
+6 1 G G
+9 1 G G
+7 9 G S
+31 5 S S
+2 7 S G
+3 8 G G
+3 3 S G
+3 3 G G
+9 5 G G
+17 0 S G
+1 2 G S
+9 1 S S
+1 0 S G
+4 0 G G
+
+0 11 7
+7 3 S G
+1 0 S S
+2 0 S G
+94 0 S G
+2 0 G G
+9 0 S G
+14 0 S S
+
+18 1 10
+7 145 S G
+3 0 S S
+1 8 S S
+9 9 S G
+1 2 S G
+0 1 G S
+0 5 G G
+0 7 S S
+0 7 S S
+0 3 S S
+
+8 1 5
+6 2 S S
+1 2 G G
+3 3 G S
+5 77 S S
+1 11 G S
+
+5 12 13
+9 39 S S
+5 9 S G
+12 0 S G
+1 0 S G
+1 0 G S
+0 1 S S
+1 0 G G
+1 0 G G
+0 1 S G
+0 1 G G
+0 1 G G
+1 0 G S
+0 1 S G
+
+16 5 2
+6 1 S S
+3 1 G S
+
+16 18 12
+8 8 G S
+9 4 G G
+41 0 G S
+1 3 S G
+45 5 S S
+5 5 G G
+5 3 S S
+31 4 S G
+2 0 S S
+0 38 G S
+0 5 G S
+0 2 G G
+
+8 15 2
+1 5 S S
+25 5 G G
+
+8 11 7
+1 6 G G
+9 6 G S
+0 28 S G
+0 6 G S
+0 7 G S
+0 5 S G
+0 6 S G
+
+15 4 14
+7 6 G G
+9 7 S S
+23 1 S S
+3 8 G G
+5 3 S G
+0 5 S S
+0 4 S G
+0 2 S G
+1 0 G G
+1 0 G S
+0 1 S S
+1 0 G S
+1 0 G S
+0 1 G G
+
+3 18 13
+41 9 S S
+1 0 G S
+2 15 G S
+0 1 G S
+1 6 S G
+1 32 S G
+1 0 S S
+0 8 S S
+0 6 G S
+0 2 S S
+0 1 S S
+0 4 G G
+0 3 G G
+
+9 4 7
+15 7 G G
+1 4 G S
+1 1 S G
+9 6 S S
+2 9 G S
+6 3 G G
+84 9 G S
+
+2 13 6
+5 8 S G
+21 5 S S
+7 34 G S
+1 8 S S
+3 8 G S
+12 14 S S
+
+15 9 8
+8 55 S G
+31 1 G S
+0 60 S G
+0 1 G S
+27 9 S S
+55 12 G S
+2 0 S S
+6 0 S G
+
+8 19 0
+
+3 7 12
+6 4 G S
+2 4 S S
+7 6 S G
+15 3 G G
+2 7 S G
+5 8 G G
+8 7 G G
+93 9 S S
+2 1 S S
+6 14 G S
+14 4 S S
+2 5 S S
+
+18 15 5
+6 2 S G
+8 16 G G
+41 4 S G
+7 5 S S
+9 6 S G
+
+16 4 6
+6 4 G S
+3 1 S S
+1 3 G G
+59 5 G G
+0 8 S G
+3 6 S G
+
+17 9 11
+9 2 G G
+9 1 S G
+4 9 G S
+88 4 S S
+5 7 G G
+2 11 S S
+9 6 S G
+9 2 S S
+3 6 G S
+7 7 G G
+1 0 G G
+
+17 4 3
+6 2 G G
+5 6 G S
+3 19 G S
+
+16 11 15
+0 1 G S
+8 4 G G
+7 3 G S
+3 9 G S
+0 104 S S
+3 0 G G
+124 8 S S
+0 33 G S
+4 32 G S
+5 0 G S
+0 1 G G
+8 0 S S
+4 0 S S
+6 2 G G
+6 0 S S
+
+8 3 10
+8 3 S S
+9 7 G G
+123 7 G G
+1 5 S S
+2 0 S G
+4 7 S G
+8 4 G G
+2 8 S S
+3 0 S G
+2 4 G G
+
+9 1 12
+3 11 S S
+7 0 G S
+47 122 S S
+0 4 G S
+8 0 S S
+1 0 S G
+1 0 S G
+1 0 S G
+0 1 G S
+1 0 S G
+1 0 S S
+1 0 G S
+
+9 10 0
+
+0 7 2
+0 6 S S
+2 6 S G
+
+15 3 11
+0 6 S G
+59 14 G G
+61 1 S G
+5 1 S G
+5 0 G G
+5 0 G G
+16 0 G S
+3 0 S G
+1 0 S G
+2 0 S G
+1 0 G G
+
+14 16 12
+0 8 G G
+6 2 S G
+2 4 G G
+7 9 G S
+7 1 G G
+9 2 S G
+125 2 S S
+1 2 G G
+5 0 G S
+8 0 S G
+2 0 S S
+1 0 S S
+
+14 5 5
+2 6 S G
+8 8 S S
+7 7 S S
+3 7 S S
+4 2 S S
+
+3 13 8
+3 7 S S
+46 7 G G
+3 5 S S
+2 1 G G
+90 9 G S
+4 0 G S
+3 0 G S
+1 0 G G
+
+15 18 14
+1 1 G G
+0 9 G G
+0 4 S S
+0 4 G G
+0 2 S G
+0 6 G G
+0 4 G G
+0 3 G G
+0 9 G S
+0 3 S G
+0 1 G S
+0 4 S G
+0 1 G G
+0 9 G S
+
+1 0 2
+66 8 G G
+3 3 S S
+
+1 4 2
+141 0 G S
+0 9 S S
+
+14 2 13
+4 5 G G
+5 8 G S
+3 2 S G
+6 6 S G
+1 0 G S
+0 1 G S
+0 1 S S
+0 1 S S
+0 1 G G
+0 1 S G
+0 1 G G
+0 1 G G
+0 1 G G
+
+11 1 15
+2 8 S S
+1 5 G G
+5 5 G S
+0 9 S G
+0 8 G G
+0 3 G G
+0 5 G G
+0 5 S S
+0 6 G G
+0 4 S S
+0 2 S S
+0 1 S S
+1 0 G S
+0 1 S S
+1 0 G G
+
+17 17 11
+0 52 S S
+137 40 S G
+4 9 S S
+3 9 G G
+5 3 G S
+2 10 S G
+1 8 S G
+1 0 S S
+0 1 S G
+0 1 S S
+0 5 G G
+
+9 8 14
+0 1 G G
+0 41 S G
+3 1 G G
+4 2 S G
+23 1 G G
+4 0 G G
+8 0 G S
+3 0 G G
+3 0 S G
+15 0 S G
+7 0 S S
+2 0 G S
+3 0 S S
+2 0 S G
+
