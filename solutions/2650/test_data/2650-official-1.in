@@ -1,0 +1,20 @@
+      read 6, i,k,j
+   99 if(i .lt. j)goto 33
+      goto 55
+   33 i=j
+      goto 99
+   55 k=j+1
+   22 goto 222
+222   goto 333
+333   goto 22
+      stop
+
+      read6,i,k,j
+      if(i.lt.j)goto12345
+77    k=j+1
+  55  goto 55
+      goto5555
+12345 i=j
+      if(i.lt.j)goto12345
+      goto77
+5555  stop

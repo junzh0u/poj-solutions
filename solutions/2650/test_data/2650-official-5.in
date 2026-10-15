@@ -1,0 +1,9 @@
+      if(aaflkj)goto1 2 3
+      blah
+123   xxx
+      stop
+
+      if(aaflkj)goto123
+      blah
+123   xxx
+      stop

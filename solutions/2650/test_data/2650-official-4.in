@@ -1,0 +1,9 @@
+      goto123                               xxx
+      hello
+123   bye
+      stop
+
+      goto123
+      hello
+123   bye
+      stop

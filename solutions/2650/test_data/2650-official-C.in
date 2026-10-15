@@ -1,0 +1,7 @@
+111   goto 222
+222   goto 333
+333   goto 111
+      stop
+
+444   goto 444
+      stop
