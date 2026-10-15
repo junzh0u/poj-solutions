@@ -1,0 +1,14 @@
+>cd A
+>dir
+f 3000000000
+>dir
+f 3000000000
+>cd \
+>cd AA
+>dir
+f 7
+>cd \
+>deltree A
+>cd A
+>deltree X
+>exit

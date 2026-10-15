@@ -1,0 +1,56 @@
+>cd A
+>dir
+B
+C
+d 12
+e 62
+>cd B
+>cd ..
+>cd ..
+>deltree A
+
+>dir
+G
+s 2
+>cd G
+>dir
+>cd \
+>deltree G
+
+>dir
+A
+B
+x 3
+>cd A
+>dir
+AA
+AB
+ax 10
+ay 12
+>cd AA
+>dir
+d 32
+a 28
+>cd ..
+>cd AB
+>dir
+F
+x 100
+>cd F
+>dir
+G
+>cd \
+>deltree A
+>cd D1\D2
+>dir
+D3
+a 32
+>cd D3
+>dir
+b 31
+>cd \D1\D3
+>dir
+d 7
+>deltree \D1
+
+>exit
