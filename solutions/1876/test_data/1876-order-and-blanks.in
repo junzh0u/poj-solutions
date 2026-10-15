@@ -1,0 +1,8 @@
+MTA Z 2 a b
+MTA A 1 c
+MTA B 0
+*
+a@Z c@A b@Z b@Z a@Z a@Z b@Z bad@A a@Z bad@B bad@A a@Z c@A bad@B b@Z bad@B bad@B b@Z bad@A bad@B b@Z bad@A a@Z c@A b@Z b@Z a@Z bad@B bad@B bad@A c@A a@Z bad@A b@Z b@Z bad@B a@Z a@Z bad@A c@A bad@A bad@A bad@B bad@B a@Z b@Z c@A bad@A bad@B c@A
+*
+*
+*

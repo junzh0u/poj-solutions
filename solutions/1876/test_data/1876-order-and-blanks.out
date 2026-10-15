@@ -1,0 +1,39 @@
+Connection between Z and A
+     HELO Z
+     250
+     MAIL FROM:<a@Z>
+     250
+     RCPT TO:<c@A>
+     250
+     RCPT TO:<bad@A>
+     550
+     DATA
+     354
+     .
+     250
+     QUIT
+     221
+Connection between Z and Z
+     HELO Z
+     250
+     MAIL FROM:<a@Z>
+     250
+     RCPT TO:<b@Z>
+     250
+     RCPT TO:<a@Z>
+     250
+     DATA
+     354
+     .
+     250
+     QUIT
+     221
+Connection between Z and B
+     HELO Z
+     250
+     MAIL FROM:<a@Z>
+     250
+     RCPT TO:<bad@B>
+     550
+     QUIT
+     221
