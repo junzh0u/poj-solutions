@@ -1,0 +1,1 @@
+Official IOI 2002 Bus Terminals test cases 00 through 20, downloaded from https://ioinformatics.org/files/ioi2002tests.zip. Expected outputs are the original .sol files, renamed .out. All 21 cases passed locally.
