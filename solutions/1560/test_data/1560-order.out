@@ -1,0 +1,9 @@
+S = {b,a}
+ #|ba
+ -+--
+ b|zz
+ a|zz
+
+NOT A SEMIGROUP: a#a = z  WHICH IS NOT AN ELEMENT OF THE SET
+------------------------------
+
