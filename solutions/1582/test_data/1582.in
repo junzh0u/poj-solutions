@@ -1,0 +1,13 @@
+5
+Chicago
+DesMoines
+OklahomaCity
+Dallas
+LosAngeles
+4
+I80 Chicago 300 4 DesMoines
+I35 DesMoines 550 7.3 OklahomaCity 205 3 Dallas
+I40 OklahomaCity 1330 20.5 LosAngeles
+Rt66 Chicago 2448 46 LosAngeles
+time Chicago LosAngeles
+turns Chicago LosAngeles
