@@ -1,0 +1,9 @@
+a := b + c
+b := 3
+c := 5
+PRINT d
+PRINT a
+b := 8
+PRINT a
+RESET
+PRINT a

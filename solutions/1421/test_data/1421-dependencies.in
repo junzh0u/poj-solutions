@@ -1,0 +1,13 @@
+a := 2+3*4-5--2
+PRINT a
+z := 0*missing
+PRINT z
+c := d-d
+d := c
+PRINT c
+d := -4
+PRINT c
+PRINT d
+PRINT z
+missing := 9
+PRINT z
