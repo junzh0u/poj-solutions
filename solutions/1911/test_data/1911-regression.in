@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<a><a/></a>
+<?xml version="1.0"?>
+<a><b/></a>
+<?xml version="1.0"?>
+<a/><a/>
+<?xml version="1.0"?>
+<a x="1" x="2"/>
+<?xml version="1.0"?>
+<a x/>
+<?xml version="1.0"?>
+<a><b></a></b>
+<?xml version="1.0"?>
+<a><b/><b/></a>
+<?xml version="1.0"?>
+<a x=" > / = "/>
+<?xml version="1.0"?>
+<A></a>
+<?xml version="1.0"?>
+
+<?xml version="1.0"?>
+<a></a>text
+<?end?>
