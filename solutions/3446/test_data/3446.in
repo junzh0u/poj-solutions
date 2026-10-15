@@ -1,0 +1,17 @@
+4
+Hradcanska 2 Malostranska 2 Staromestska 2 Mustek 1 Muzeum -1
+10 00 06 12 18 24 30 36 42 48 54
+Muzeum 1 Mustek 2 Staromestska 2 Malostranska 2 Hradcanska -1
+10 03 09 15 21 27 33 39 45 51 57
+Andel 2 Karlovo 1 Narodni 2 Mustek 2 Florenc -1
+6 00 10 20 30 40 50
+Florenc 2 Mustek 2 Narodni 3 Karlovo 1 Andel -1
+6 02 12 22 32 42 52
+12:00 Hradcanska
+12:11 Andel
+1
+Hradcanska 2 Malostranska 2 Staromestska 2 Mustek 1 Muzeum 2 Hradcanska -1
+10 00 06 12 18 24 30 36 42 48 54
+12:00 Mustek
+12:00 Andel
+-1
