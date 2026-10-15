@@ -1,0 +1,27 @@
+balance 1000.00
+check 100 10.00
+check 101 20.00
+check 102 30.00
+check 103 100.00
+deposit 1 10.00
+deposit 2 20.00
+deposit 3 30.00
+deposit 4 500.00
+balance 1400.00
+1000.00
+check 100 10.00
+990.00
+deposit 2 25.00
+1015.00
+check 101 20.00
+990.00
+check 102 30.00
+960.00
+check 101 21.00
+940.00
+check 103 100.00
+840.00
+deposit 3 30.00
+870.00
+deposit 4 500.00
+1370.00

@@ -1,0 +1,10 @@
+balance 0.00
+check 10 0.01
+check 2 0.01
+deposit 2 0.01
+balance -0.01
+0.00
+check 99 0.01
+-0.01
+check 99 0.02
+-0.03
