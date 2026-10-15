@@ -1,0 +1,75 @@
+6 5 5 3 3 8 10
+lock
+c = 522
+print b
+unlock
+lock
+b = 448
+print a
+unlock
+b = 572
+print b
+lock
+a = 640
+print a
+unlock
+lock
+c = 773
+print a
+unlock
+c = 351
+print c
+lock
+a = 321
+print a
+unlock
+end
+lock
+b = 611
+print c
+unlock
+c = 282
+print b
+end
+c = 861
+print a
+c = 858
+print b
+b = 568
+print b
+lock
+b = 154
+print a
+unlock
+a = 248
+print c
+end
+lock
+a = 528
+print b
+unlock
+b = 989
+print c
+lock
+c = 653
+print b
+unlock
+end
+lock
+c = 447
+print c
+unlock
+lock
+a = 322
+print a
+unlock
+end
+a = 582
+print b
+c = 243
+print b
+lock
+a = 560
+print c
+unlock
+end

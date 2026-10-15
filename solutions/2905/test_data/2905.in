@@ -1,0 +1,134 @@
+6 3 12 8 6 1 30
+c = 83
+lock
+print b
+d = 89
+print d
+unlock
+lock
+d = 2
+print c
+unlock
+lock
+unlock
+print c
+end
+print d
+print b
+lock
+unlock
+print a
+b = 62
+b = 36
+print a
+print c
+lock
+d = 76
+unlock
+print d
+d = 6
+a = 51
+lock
+unlock
+end
+print b
+print d
+lock
+d = 79
+unlock
+b = 52
+lock
+a = 62
+print a
+unlock
+d = 48
+print c
+b = 14
+lock
+print a
+print b
+print c
+print b
+print a
+unlock
+end
+d = 20
+lock
+print a
+unlock
+print b
+print d
+lock
+unlock
+a = 17
+print a
+lock
+a = 49
+print a
+d = 12
+unlock
+print d
+a = 99
+lock
+print b
+print d
+print c
+a = 78
+unlock
+end
+lock
+print a
+print a
+c = 9
+c = 4
+a = 30
+c = 58
+unlock
+lock
+unlock
+print b
+print c
+d = 10
+lock
+c = 30
+b = 93
+print c
+a = 88
+print c
+print a
+unlock
+lock
+a = 73
+unlock
+print d
+end
+c = 63
+lock
+print b
+c = 67
+unlock
+print d
+c = 16
+lock
+print b
+d = 10
+unlock
+lock
+print a
+c = 36
+d = 70
+print b
+a = 50
+unlock
+print a
+print a
+lock
+unlock
+print c
+lock
+unlock
+lock
+unlock
+lock
+unlock
+end
