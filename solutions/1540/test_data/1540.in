@@ -1,0 +1,33 @@
+1
+START 3
+      AEIOUaeiou  START *
+      \n          END   \n
+      \c          START \c 
+This is input for example one.
+2
+START 3
+      \c    START \c
+      Xx    SKIP  \c
+      \n    END   \n
+SKIP  4
+      AEIOU START \0
+      aeiou START \0
+      Xx    SKIP  \c
+      \n    END   \n
+XaXxe     Test   XIo  iXixO
+3
+START 12
+   \c START \c    !     FINIS \0
+   A  TWO   a     E     TWO   e
+   I  TWO   i     O     TWO   o
+   U  TWO   u     a     TWO   A
+   e  TWO   E     i     TWO   I
+   o  TWO   O     u     TWO   U
+TWO   4
+  \c  TWO   \c    AEIOU START \c
+   aeiou  START \c  !  FINIS  \0
+FINIS 2
+   \c  FINIS \0   \n    END   \n
+This is some data for FSM number 3.
+!    IGNORED
+0
