@@ -1,0 +1,1 @@
+Official BAPC 2009 problem C data: https://chipcie.wisv.ch/archive/2009/bapc/data.zip (testdata/C/testdata.in and testdata.out). The primary files contain the POJ statement sample. The official dataset matched the accepted source byte for byte.
