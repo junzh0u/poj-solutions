@@ -41,3 +41,4 @@
 30      gpt-6.1-sol
 40      claude-fable-5
 40      claude-fable-5-1
+40      gpt-6-astra
