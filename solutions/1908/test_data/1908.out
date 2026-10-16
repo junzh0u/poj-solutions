@@ -1,0 +1,40 @@
+Scenario 1:
+The earliest  arrival: 300 minutes, fuel 6.25 gallons
+The economical travel: 318 minutes, fuel 5.60 gallons
+Scenario 2:
+IMPOSSIBLE
+Scenario 3:
+The earliest  arrival: 405 minutes, fuel 4.14 gallons
+The economical travel: 498 minutes, fuel 2.76 gallons
+Scenario 4:
+The earliest  arrival: 300 minutes, fuel 1.47 gallons
+The economical travel: 320 minutes, fuel 1.45 gallons
+Scenario 5:
+The earliest  arrival: 78 minutes, fuel 0.46 gallons
+The economical travel: 180 minutes, fuel 0.36 gallons
+Scenario 6:
+The earliest  arrival: 78 minutes, fuel 0.46 gallons
+The economical travel: 180 minutes, fuel 0.36 gallons
+Scenario 7:
+The earliest  arrival: 405 minutes, fuel 4.14 gallons
+The economical travel: 498 minutes, fuel 2.76 gallons
+Scenario 8:
+The earliest  arrival: 90 minutes, fuel 0.79 gallons
+The economical travel: 200 minutes, fuel 0.47 gallons
+Scenario 9:
+IMPOSSIBLE
+Scenario 10:
+The earliest  arrival: 499 minutes, fuel 2.90 gallons
+The economical travel: 500 minutes, fuel 2.77 gallons
+Scenario 11:
+The earliest  arrival: 499 minutes, fuel 2.90 gallons
+The economical travel: 500 minutes, fuel 2.77 gallons
+Scenario 12:
+The earliest  arrival: 40 minutes, fuel 0.38 gallons
+The economical travel: 240 minutes, fuel 0.25 gallons
+Scenario 13:
+The earliest  arrival: 24 minutes, fuel 4.00 gallons
+The economical travel: 240 minutes, fuel 0.25 gallons
+Scenario 14:
+The earliest  arrival: 216 minutes, fuel 36.00 gallons
+The economical travel: 1000 minutes, fuel 2.36 gallons
