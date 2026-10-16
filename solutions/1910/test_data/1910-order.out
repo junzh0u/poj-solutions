@@ -1,0 +1,8 @@
+clone BOB from ADAM is consistent and safe
+clone MIKE from TIM has no connection to ADAM
+clone TIM from BOB is consistent and safe
+clone ED from BOB was at least twice mutated with ZZZ
+clone KID from ED has no connection to ADAM
+clone LATE from MIKE has no connection to ADAM
+clone SIS from BOB is consistent and safe
+clone SON from SIS was at least twice mutated with HEM

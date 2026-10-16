@@ -1,0 +1,7 @@
+clone JOE from ADAM is consistent and safe
+clone BOB from ADAM is consistent and safe
+clone SAM from BOB is consistent and safe
+clone ED from SAM was at least twice mutated with BLD
+clone FRANK from ED has no connection to ADAM
+clone KAIN from ABEL has no connection to ADAM
+clone ABEL from KAIN has no connection to ADAM

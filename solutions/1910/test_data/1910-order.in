@@ -1,0 +1,8 @@
+clone BOB from ADAM mutating AAA ZZZ
+clone MIKE from TIM
+clone TIM from BOB
+clone ED from BOB mutating ZZZ AAA
+clone KID from ED
+clone LATE from MIKE
+clone SIS from BOB mutating HEM
+clone SON from SIS mutating HEM AAA

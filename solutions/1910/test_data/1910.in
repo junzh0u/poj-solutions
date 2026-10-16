@@ -1,0 +1,7 @@
+clone JOE from ADAM
+clone BOB from ADAM mutating HEM
+clone SAM from BOB mutating BLD
+clone ED from SAM mutating BLD
+clone FRANK from ED mutating HEM
+clone KAIN from ABEL
+clone ABEL from KAIN
