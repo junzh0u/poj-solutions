@@ -1,0 +1,17 @@
+A = (D D)
+B = ((1) (2))
+C = (D D)
+E = ((1) (1))
+F = (1 F)
+G = (1 (1 G))
+X = Y
+Y = X
+EOD
+A ? B
+C ? E
+F ? G
+X ? 3
+new ? (new)
+new ? other
+X ? other
+EOE
