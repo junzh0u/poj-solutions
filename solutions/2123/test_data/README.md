@@ -1,0 +1,3 @@
+The primary files contain the statement sample. The precedence cases distinguish the documented priorities from treating union and difference equally; the official sample does not detect that mutation. They also check non-strict inclusion, assignable numeric names, and uninitialized leading-zero names.
+
+The unary-chain input is test 03 from the Northern Subregion 2003 jury package at https://neerc.ifmo.ru/archive/2003/northern/archive.rar. Its expected output was independently calculated using the ordinal identity that unary union lowers a positive ordinal by one; the name 1000 is initially empty. This case exposed repeated ordinal rebuilding as a performance concern.
