@@ -1,0 +1,6 @@
+operator lazy_evaluation strict_evaluation
+add 5 5
+sub 0 0
+mult 0 0
+div 0 0
+rem 0 0

@@ -1,0 +1,8 @@
+f x = (add x 1)
+g x = (add (f x) (add x 1))
+loop = (loop)
+
+(g (add 2 2))
+(true 1 (loop))
+(add 2 3)
+
