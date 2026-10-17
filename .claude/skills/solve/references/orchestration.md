@@ -36,7 +36,7 @@ What the judge certifies is the **code**, not the agent's account of why anythin
 
 A **judge park** is the one hand-back to verify rather than take on trust, and the only one the parent can: every other park rests on the agent's own reasoning, but this one rests on a public page one command away. `scripts/verify-judge-park <id> --html-out <path>` reduces it to the counts that must hold — unrelated accounts failing the same way, no Accepted anywhere in the window — and the third condition, this account accepting other problems the same hour, is the run's own record. All three held for 1112 (13 System Error of the last 20 rows, five unrelated accounts, June–August 2026, four accepts by this account inside the same hour). Confirm the note records the numbers, then stamp with `--kind judge --recheck <status url>` (mandatory; the tool refuses a judge park without it).
 
-**Infrastructure interruptions** (lost browser, a logged-out session auto-login cannot restore, structural rowless clicks, site outage) are not parks: no attempt notes, no barren-counter movement, the ids stay eligible. `SKILL.md` covers re-pinning a browser that dies mid-run. An agent that dies to a usage or rate limit has likewise attempted nothing — no write-up, no park, and the id keeps its place at the top of `TODO`; wait for the reset and rerun it.
+**Infrastructure interruptions** (lost browser, a logged-out session auto-login cannot restore, structural rowless clicks, site outage) are not parks: no attempt notes, the ids stay eligible. `SKILL.md` covers re-pinning a browser that dies mid-run. An agent that dies to a usage or rate limit has likewise attempted nothing — no write-up, no park, and the id keeps its place at the top of `TODO`; wait for the reset and rerun it.
 
 Report each verdict to the user as it arrives rather than saving them for a summary, and commit in the same turn — under refill this is also what keeps the pool full.
 
@@ -57,12 +57,12 @@ A stronger-model retry runs under the higher submission cap (`AGENTS.md` § "The
 
 Solve agents may run on a cheaper model than the parent to stretch the budget — most backlog problems don't need the strongest model. Which model is the run's own choice, and the user's whenever they name one. **A model park is not a problem park**: a problem the cheap model could not finish still deserves one run on a stronger model before the park is final. Inside a run that retry is just the next agent spawned into a free slot; across runs it is whatever `--for-model` reports as owed. Both read the same record, so the retry survives the run ending, a compaction, or a model switch weeks later — which is also why nothing ends a cheap model's run at its first park: the record already guarantees the retry, and stopping early costs the accepts the model would have gone on to make. Judge the model on its record, and let a park be a park.
 
-`park-notes list` with no model shows every park as `owed` or `final`. That is a claim about future runs, not the current one: a run's own no-accept counter advances unless *that run* will itself retry the id on a stronger model. `park-notes check` validates every record; run it before trusting a listing, and in the same commit as any note you hand-edit.
+`park-notes list` with no model shows every park as `owed` or `final`, a claim about future runs rather than the current one. `park-notes check` validates every record; run it before trusting a listing, and in the same commit as any note you hand-edit.
 
 ## Stop conditions and safety
 
-- Require a finite stop condition. A refilling pool has no batch boundary to count, so count resolved problems: default to stopping after **five consecutive resolutions with no Accepted solution**, one barren pool's worth. Reset the counter on any accept. A park counts toward it unless this run will itself retry the id on a stronger model.
-- Treat usage limits, rate limits, and submission-path failures as interruptions, not verdicts: no notes, no counter movement, no replacement ids; resume the same ids after the reset.
+- Run until `TODO` is empty unless the user sets a target or stop condition; there is no default stop on a run of non-accepts.
+- Treat usage limits, rate limits, and submission-path failures as interruptions, not verdicts: no notes, no replacement ids; resume the same ids after the reset.
 - Preflight the submit path before spawning (see `SKILL.md`), pin the browser it selects for the whole run, and never let an agent substitute a target that merely looks available.
 - Confirm external state before retrying anything interrupted — a submit click, browser error, or lost agent response can hide a submission that already landed.
 - Do not push unless the user explicitly asks for that push.
