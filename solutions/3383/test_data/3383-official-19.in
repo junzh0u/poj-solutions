@@ -1,0 +1,6 @@
+EmptyA * EmptyB + (EmptyC ^ EmptyD) = Result
+EmptyA =
+EmptyB =
+EmptyC =
+EmptyD =
+Omega = 100
