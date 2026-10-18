@@ -1,0 +1,3 @@
+The primary files are the statement sample. The official files are Waterloo Local Contest 2007-09-29 problem D data and one valid output, downloaded from https://icpc.student.cs.uwaterloo.ca/~acm00/070929/data/D.1.dat and D.1.diffsample. Outputs are witnesses: alternative optimal bye sets are valid, so compare the resulting mismatch rather than requiring identical names. The nine official optimum costs are 81252196, 1602756, 89538, 0, 94361, 44782, 49785, 0, and 0, as recorded by the original Dcheck.c.
+
+The greedy-trap case distinguishes dynamic programming from greedily taking the closest pair. Its optimum cost is 8; closest-first incurs 26.
