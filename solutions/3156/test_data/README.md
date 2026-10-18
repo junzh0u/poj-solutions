@@ -1,0 +1,1 @@
+The two sample pairs are separate inputs, as required by the single-case statement. The 20 NEERC cases and expected answers come from https://neerc.ifmo.ru/archive/2006/tests.rar (tests/interconnect/tests/01 through 20). All passed with absolute error below 1e-7; the official checker permits 1.1e-6.
