@@ -1,0 +1,1 @@
+Official NEERC 2007 Japanese Writing tests from https://neerc.ifmo.ru/archive/2007/archive-neerc-2007.rar, directory problems/japanese/tests/. The primary pair is test 01 (the statement sample); the remaining pairs retain their official test numbers. All 28 input/output pairs passed locally.
