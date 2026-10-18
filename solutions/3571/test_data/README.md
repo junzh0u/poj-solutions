@@ -1,0 +1,1 @@
+Official NEERC 2007 Game tests from https://neerc.ifmo.ru/archive/2007/archive-neerc-2007.rar, directory `problems/game/tests/`. Primary files are test 01; the remaining pairs retain their official test numbers. Each input is a separate invocation. All 42 output values matched the submitted program to ten decimal places.
