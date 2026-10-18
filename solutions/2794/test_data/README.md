@@ -1,0 +1,1 @@
+The primary pair is the POJ statement sample. The 20 jury pairs are from the NEERC 2005 published tests and jury solutions package, https://neerc.ifmo.ru/archive/2005/problems.rar, under problems/double/tests/. Line endings are normalized. Each pair is a separate invocation; compare numeric answers with absolute tolerance 1e-6. All 20 passed locally.
