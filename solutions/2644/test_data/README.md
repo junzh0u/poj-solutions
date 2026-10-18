@@ -1,0 +1,3 @@
+Official cases come from https://icpc.student.cs.uwaterloo.ca/~acm00/990619/data/ (problem D, files D.1 through D.F). The primary pair is D.1, the statement sample. Expected outputs are valid shortest witnesses; other shortest sequences are also correct. All official witnesses and generated outputs were simulated from every open starting cell, and their lengths agree.
+
+The step case is from https://poj.org/showmessage?message_id=36354 and distinguishes single steps from sliding to a wall. Sliding cannot solve it, whereas five single steps suffice. Its expected witness was checked against exhaustive breadth-first search.
