@@ -1,0 +1,1 @@
+Official NEERC 2009 Asteroids tests 01–47 were obtained from https://neerc.ifmo.ru/archive/2009/neerc-2009-archive.rar (asteroids/tests). Each input is a separate program invocation. All pass with maximum absolute error below 7e-12. The primary pair contains the POJ sample.
