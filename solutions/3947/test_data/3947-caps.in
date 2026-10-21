@@ -1,0 +1,10 @@
+start 0 0
+arc 2 0 -2
+close
+start 0 0
+arc 2 0 -100
+close
+start 100 99
+arc 100 100 -1
+close
+end
