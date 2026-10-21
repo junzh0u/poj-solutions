@@ -1,0 +1,1 @@
+The primary files contain the POJ sample. The 82 official cases are J.in and J.ans from the Aizu 2008 regional contest package, downloaded from https://storage.googleapis.com/files.icpc.jp/regional2008/2008RegionalData.zip via https://fileserv.icpc.jp/regional2008/ on 2026-10-21. Outputs are compared numerically with absolute tolerance 0.00001.
